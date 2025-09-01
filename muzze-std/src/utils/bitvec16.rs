@@ -16,18 +16,6 @@ bitflags! {
     pub struct BitVec16: u16 {}
 }
 
-/// Iterator over the bits of a BitVec16
-///
-/// This iterator yields each bit of the BitVec16 as a boolean value,
-/// starting from bit 0 (least significant) to bit 15 (most significant).
-/// It implements ExactSizeIterator for efficient collection operations.
-pub struct BitVec16Iter {
-    /// The BitVec16 being iterated over
-    bitvec: BitVec16,
-    /// Current bit index (0-15)
-    index: usize,
-}
-
 impl BitVec16 {
     /// Creates a new BitVec16 from a u16 value
     ///
@@ -294,6 +282,18 @@ impl BitVec16 {
     }
 }
 
+/// Iterator over the bits of a BitVec16
+///
+/// This iterator yields each bit of the BitVec16 as a boolean value,
+/// starting from bit 0 (least significant) to bit 15 (most significant).
+/// It implements ExactSizeIterator for efficient collection operations.
+pub struct BitVec16Iter {
+    /// The BitVec16 being iterated over
+    vec: BitVec16,
+    /// Current bit index (0-15)
+    index: usize,
+}
+
 impl BitVec16Iter {
     /// The total number of bits in a BitVec16
     const LENGTH: usize = 16;
@@ -305,8 +305,8 @@ impl BitVec16Iter {
     ///
     /// # Returns
     /// A new iterator positioned at bit 0
-    fn new(bitvec: BitVec16) -> Self {
-        Self { bitvec, index: 0 }
+    fn new(vec: BitVec16) -> Self {
+        Self { vec, index: 0 }
     }
 }
 
@@ -315,7 +315,7 @@ impl Iterator for BitVec16Iter {
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.index < Self::LENGTH {
-            let bit = self.bitvec.bit(self.index);
+            let bit = self.vec.bit(self.index);
             self.index += 1;
             Some(bit)
         } else {
