@@ -22,6 +22,8 @@ impl U4Vec16 {
     const ITEM_MASK: u64 = 0b1111;
     /// Size of each item in bits
     const ITEM_SIZE: usize = 4;
+    /// The total number of items in a U4Vec16
+    const CAPACITY: usize = 16;
 
     /// Creates a new U4Vec16 from a u64 value
     ///
@@ -43,6 +45,22 @@ impl U4Vec16 {
     #[inline]
     pub const fn from_u64(value: u64) -> Self {
         Self::from_bits_retain(value)
+    }
+
+    /// Returns the total number of items in a U4Vec16
+    ///
+    /// # Returns
+    /// The total number of items in a U4Vec16
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::U4Vec16;
+    /// let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
+    /// assert_eq!(vec.capacity(), 16);
+    /// ```
+    #[inline]
+    pub const fn capacity(&self) -> usize {
+        Self::CAPACITY
     }
 
     /// Returns the underlying u64 value of this U4Vec16
@@ -305,9 +323,6 @@ pub struct U4Vec16Iter {
 }
 
 impl U4Vec16Iter {
-    /// The total number of items in a U4Vec16
-    const LENGTH: usize = 16;
-
     /// Creates a new U4Vec16Iter starting from the beginning
     ///
     /// # Arguments
@@ -333,7 +348,7 @@ impl Iterator for U4Vec16Iter {
     /// # Returns
     /// Some(u8) containing the next 4-bit item, or None if exhausted
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index < Self::LENGTH {
+        if self.index < U4Vec16::CAPACITY {
             let item = self.vec.item(self.index);
             self.index += 1;
             Some(item)
@@ -351,7 +366,7 @@ impl Iterator for U4Vec16Iter {
     /// A tuple (usize, Option<usize>) where both values are the same
     /// and represent the exact number of remaining items
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let remaining = Self::LENGTH - self.index;
+        let remaining = U4Vec16::CAPACITY - self.index;
         (remaining, Some(remaining))
     }
 }

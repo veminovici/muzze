@@ -17,6 +17,9 @@ bitflags! {
 }
 
 impl BitVec16 {
+    /// The total number of bits in a BitVec16
+    const CAPACITY: usize = 16;
+
     /// Creates a new BitVec16 from a u16 value
     ///
     /// This method preserves all bits from the input value, including
@@ -36,6 +39,15 @@ impl BitVec16 {
     #[inline]
     pub const fn from_u16(value: u16) -> Self {
         Self::from_bits_retain(value)
+    }
+
+    /// Returns the total number of bits in a BitVec16
+    ///
+    /// # Returns
+    /// The total number of bits in a BitVec16
+    #[inline]
+    pub const fn capacity(&self) -> usize {
+        Self::CAPACITY
     }
 
     /// Returns the underlying u16 value of this BitVec16
@@ -339,9 +351,6 @@ pub struct BitVec16Iter {
 }
 
 impl BitVec16Iter {
-    /// The total number of bits in a BitVec16
-    const LENGTH: usize = 16;
-
     /// Creates a new BitVec16Iter starting from the beginning
     ///
     /// # Arguments
@@ -358,7 +367,7 @@ impl Iterator for BitVec16Iter {
     type Item = bool;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index < Self::LENGTH {
+        if self.index < BitVec16::CAPACITY {
             let bit = self.vec.bit(self.index);
             self.index += 1;
             Some(bit)
@@ -368,7 +377,7 @@ impl Iterator for BitVec16Iter {
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let remaining = Self::LENGTH - self.index;
+        let remaining = BitVec16::CAPACITY - self.index;
         (remaining, Some(remaining))
     }
 }
