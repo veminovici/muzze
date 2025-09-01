@@ -1,3 +1,3 @@
-pub fn hello() -> &'static str {
-    "hello from muzze-std"
-}
+mod utils;
+
+pub use utils::*;
