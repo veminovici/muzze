@@ -148,6 +148,33 @@ pub const HARMONIC_MINOR: Scale = Scale::from_u16(0b0000_1100_1101_0110);
 /// that are part of the melodic minor scale structure.
 pub const MELODIC_MINOR: Scale = Scale::from_u16(0b0000_1101_0101_0110);
 
+/// Pentatonic major scale: Whole-Whole-WholeHalf-Whole
+pub const PENTATONIC_MAJOR: Scale = Scale::from_u16(0b0000_0001_0100_1010);
+
+/// Pentatonic minor scale: WholeHalft-Whole-Whole-WholeHalf
+pub const PENTATONIC_MINOR: Scale = Scale::from_u16(0b0000_0010_0101_0100);
+
+/// Blues major scale: Whole-Half-Half-WholeHalf-Whole
+pub const BLUES_MAJOR: Scale = Scale::from_u16(0b0000_0001_0100_1110);
+
+/// Blues minor scale: WholeHalf-Whole-Half-Half-WholeHalf-Whole
+pub const BLUES_MINOR: Scale = Scale::from_u16(0b0000_1010_0111_0100);
+
+/// Jazz whole tone scale: Whole-Whole-Whole-Whole-Whole
+pub const JAZZ_WHOLE_TONE: Scale = Scale::from_u16(0b0000_0010_1010_1010);
+
+/// Jazz whole half diminished scale: Whole-Half-Whole-Half-Whole-Half-Whole
+pub const JAZZ_WHOLEHALF_DIMINISHED: Scale = Scale::from_u16(0b0000_0101_1011_0110);
+
+/// Bibop major scale: Whole-Whole-Half-Whole-Half-Half-Whole-Half
+pub const BIBOP_MAJOR: Scale = Scale::from_u16(0b0000_1101_1101_1010);
+
+/// Bibop minor scale: Whole-Half-Half-Half-Whole-Whole-Half-Whole
+pub const BIBOP_MINOR: Scale = Scale::from_u16(0b0000_1011_0101_1110);
+
+/// Bibop dominant scale: Whole-Whole-Half-Whole-Whole-Half-Half-Half
+pub const BIBOP_DOMINANT: Scale = Scale::from_u16(0b0000_1111_0101_1010);
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -159,8 +186,14 @@ mod tests {
     /// and step pattern [2, 2, 1, 2, 2, 2, 1].
     #[test]
     fn test_major_scale() {
-        assert_eq!(MAJOR.intervals().collect::<Vec<u8>>(), vec![2, 4, 5, 7, 9, 11, 12]);
-        assert_eq!(MAJOR.steps().collect::<Vec<u8>>(), vec![2, 2, 1, 2, 2, 2, 1]);
+        assert_eq!(
+            MAJOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 4, 5, 7, 9, 11, 12]
+        );
+        assert_eq!(
+            MAJOR.steps().collect::<Vec<u8>>(),
+            vec![2, 2, 1, 2, 2, 2, 1]
+        );
     }
 
     /// Tests that the natural minor scale produces the correct intervals and step pattern
@@ -170,8 +203,14 @@ mod tests {
     /// and step pattern [2, 1, 2, 2, 1, 2, 2].
     #[test]
     fn test_natural_minor_scale() {
-        assert_eq!(NATURAL_MINOR.intervals().collect::<Vec<u8>>(), vec![2, 3, 5, 7, 8, 10, 12]);
-        assert_eq!(NATURAL_MINOR.steps().collect::<Vec<u8>>(), vec![2, 1, 2, 2, 1, 2, 2]);
+        assert_eq!(
+            NATURAL_MINOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 3, 5, 7, 8, 10, 12]
+        );
+        assert_eq!(
+            NATURAL_MINOR.steps().collect::<Vec<u8>>(),
+            vec![2, 1, 2, 2, 1, 2, 2]
+        );
     }
 
     /// Tests that the harmonic minor scale produces the correct intervals and step pattern
@@ -181,8 +220,14 @@ mod tests {
     /// and step pattern [2, 1, 2, 2, 1, 3, 1], including the characteristic augmented 2nd.
     #[test]
     fn test_harmonic_minor_scale() {
-        assert_eq!(HARMONIC_MINOR.intervals().collect::<Vec<u8>>(), vec![2, 3, 5, 7, 8, 11, 12]);
-        assert_eq!(HARMONIC_MINOR.steps().collect::<Vec<u8>>(), vec![2, 1, 2, 2, 1, 3, 1]);
+        assert_eq!(
+            HARMONIC_MINOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 3, 5, 7, 8, 11, 12]
+        );
+        assert_eq!(
+            HARMONIC_MINOR.steps().collect::<Vec<u8>>(),
+            vec![2, 1, 2, 2, 1, 3, 1]
+        );
     }
 
     /// Tests that the melodic minor scale produces the correct intervals and step pattern
@@ -192,7 +237,121 @@ mod tests {
     /// and step pattern [2, 1, 2, 2, 2, 2, 1], avoiding the augmented 2nd.
     #[test]
     fn test_melodic_minor_scale() {
-        assert_eq!(MELODIC_MINOR.intervals().collect::<Vec<u8>>(), vec![2, 3, 5, 7, 9, 11, 12]);
-        assert_eq!(MELODIC_MINOR.steps().collect::<Vec<u8>>(), vec![2, 1, 2, 2, 2, 2, 1]);
+        assert_eq!(
+            MELODIC_MINOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 3, 5, 7, 9, 11, 12]
+        );
+        assert_eq!(
+            MELODIC_MINOR.steps().collect::<Vec<u8>>(),
+            vec![2, 1, 2, 2, 2, 2, 1]
+        );
+    }
+
+    #[test]
+    fn test_pentatonic_major_scale() {
+        assert_eq!(
+            PENTATONIC_MAJOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 4, 7, 9]
+        );
+        assert_eq!(
+            PENTATONIC_MAJOR.steps().collect::<Vec<u8>>(),
+            vec![2, 2, 3, 2]
+        );
+    }
+
+    #[test]
+    fn test_pentatonic_minor_scale() {
+        assert_eq!(
+            PENTATONIC_MINOR.intervals().collect::<Vec<u8>>(),
+            vec![3, 5, 7, 10]
+        );
+        assert_eq!(
+            PENTATONIC_MINOR.steps().collect::<Vec<u8>>(),
+            vec![3, 2, 2, 3]
+        );
+    }
+
+    #[test]
+    fn test_blues_minor_scale() {
+        assert_eq!(
+            BLUES_MINOR.intervals().collect::<Vec<u8>>(),
+            vec![3, 5, 6, 7, 10, 12]
+        );
+        assert_eq!(
+            BLUES_MINOR.steps().collect::<Vec<u8>>(),
+            vec![3, 2, 1, 1, 3, 2]
+        );
+    }
+
+    #[test]
+    fn test_blues_major_scale() {
+        assert_eq!(
+            BLUES_MAJOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 3, 4, 7, 9]
+        );
+        assert_eq!(
+            BLUES_MAJOR.steps().collect::<Vec<u8>>(),
+            vec![2, 1, 1, 3, 2]
+        );
+    }
+
+    #[test]
+    fn test_jazz_whole_tone_scale() {
+        assert_eq!(
+            JAZZ_WHOLE_TONE.intervals().collect::<Vec<u8>>(),
+            vec![2, 4, 6, 8, 10]
+        );
+        assert_eq!(
+            JAZZ_WHOLE_TONE.steps().collect::<Vec<u8>>(),
+            vec![2, 2, 2, 2, 2]
+        );
+    }
+
+    #[test]
+    fn test_jazz_wholehalf_diminished_scale() {
+        assert_eq!(
+            JAZZ_WHOLEHALF_DIMINISHED.intervals().collect::<Vec<u8>>(),
+            vec![2, 3, 5, 6, 8, 9, 11]
+        );
+        assert_eq!(
+            JAZZ_WHOLEHALF_DIMINISHED.steps().collect::<Vec<u8>>(),
+            vec![2, 1, 2, 1, 2, 1, 2]
+        );
+    }
+
+    #[test]
+    fn test_bibop_major_scale() {
+        assert_eq!(
+            BIBOP_MAJOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 4, 5, 7, 8, 9, 11, 12]
+        );
+        assert_eq!(
+            BIBOP_MAJOR.steps().collect::<Vec<u8>>(),
+            vec![2, 2, 1, 2, 1, 1, 2, 1]
+        );
+    }
+
+    #[test]
+    fn test_bibop_minor_scale() {
+        assert_eq!(
+            BIBOP_MINOR.intervals().collect::<Vec<u8>>(),
+            vec![2, 3, 4, 5, 7, 9, 10, 12]
+        );
+        assert_eq!(
+            BIBOP_MINOR.steps().collect::<Vec<u8>>(),
+            vec![2, 1, 1, 1, 2, 2, 1, 2]
+        );
+    }
+
+    #[test]
+    fn test_bibop_dominant_scale() {
+        assert_eq!(
+            BIBOP_DOMINANT.intervals().collect::<Vec<u8>>(),
+            vec![2, 4, 5, 7, 9, 10, 11, 12]
+        );
+        assert_eq!(
+            BIBOP_DOMINANT.steps().collect::<Vec<u8>>(),
+            vec![2, 2, 1, 2, 2, 1, 1, 1]
+        );
     }
 }
