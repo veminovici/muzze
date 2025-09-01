@@ -359,9 +359,33 @@ impl Iterator for U4Vec16Iter {
 impl ExactSizeIterator for U4Vec16Iter {}
 
 impl Index<usize> for U4Vec16 {
+    /// The output type when indexing into U4Vec16
     type Output = u8;
 
+    /// Returns a reference to the 4-bit item at the specified index
+    ///
+    /// This method allows using bracket notation to access items in the U4Vec16.
+    /// It returns a reference to a static u8 value representing the 4-bit item.
+    /// The returned value is always in the range 0-15.
+    ///
+    /// # Arguments
+    /// * `index` - The item position to access (0-15)
+    ///
+    /// # Returns
+    /// A reference to a u8 value representing the 4-bit item at the specified position
+    ///
+    /// # Panics
+    /// This method will panic if the index is out of bounds (> 15)
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::U4Vec16;
+    /// let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
+    /// assert_eq!(vec[0], 0x0F); // Access item at position 0
+    /// assert_eq!(vec[15], 0x1); // Access item at position 15
+    /// ```
     fn index(&self, index: usize) -> &Self::Output {
+        // Static array of all possible 4-bit values (0-15) for efficient lookup
         const VALS: [u8; 16] = [
             0b0000, 0b0001, 0b0010, 0b0011, 0b0100, 0b0101, 0b0110, 0b0111, 0b1000, 0b1001, 0b1010,
             0b1011, 0b1100, 0b1101, 0b1110, 0b1111,
@@ -471,6 +495,11 @@ mod tests {
         assert_eq!(items.len(), 16);
     }
 
+    /// Tests that the Index trait implementation works correctly
+    ///
+    /// This test verifies that bracket notation (vec[index]) correctly
+    /// accesses the 4-bit items at each position, returning the expected
+    /// values based on the test pattern defined in VAL constant.
     #[test]
     fn test_index() {
         let vec = U4Vec16::from_u64(VAL);

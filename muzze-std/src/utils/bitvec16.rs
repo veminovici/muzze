@@ -280,6 +280,50 @@ impl BitVec16 {
     pub fn iter_bits(&self) -> BitVec16Iter {
         BitVec16Iter::new(*self)
     }
+
+    /// Returns an iterator over the indices of bits that are set (true)
+    ///
+    /// This method yields the positions (0-15) where bits are set to true.
+    /// It's useful for finding which specific bits are active in the bit vector.
+    ///
+    /// # Returns
+    /// An iterator that yields usize values representing the positions of set bits
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::BitVec16;
+    /// let bitvec = BitVec16::from_u16(0b1000_0000_0000_1101);
+    /// let on_indices: Vec<usize> = bitvec.indeces_on().collect();
+    /// assert_eq!(on_indices, vec![0, 2, 3, 15]);
+    /// ```
+    #[inline]
+    pub fn indeces_on(&self) -> impl Iterator<Item = usize> {
+        self.iter_bits()
+            .enumerate()
+            .filter_map(|(i, b)| if b { Some(i) } else { None })
+    }
+
+    /// Returns an iterator over the indices of bits that are not set (false)
+    ///
+    /// This method yields the positions (0-15) where bits are set to false.
+    /// It's useful for finding which specific bits are inactive in the bit vector.
+    ///
+    /// # Returns
+    /// An iterator that yields usize values representing the positions of unset bits
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::BitVec16;
+    /// let bitvec = BitVec16::from_u16(0b1000_0000_0000_1101);
+    /// let off_indices: Vec<usize> = bitvec.indeces_off().collect();
+    /// assert_eq!(off_indices, vec![1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+    /// ```
+    #[inline]
+    pub fn indeces_off(&self) -> impl Iterator<Item = usize> {
+        self.iter_bits()
+            .enumerate()
+            .filter_map(|(i, b)| if !b { Some(i) } else { None })
+    }
 }
 
 /// Iterator over the bits of a BitVec16
@@ -533,5 +577,19 @@ mod tests {
         let bitvec = BitVec16::from_u16(0xFFFF);
         let bits: Vec<bool> = bitvec.iter_bits().collect();
         assert_eq!(bits, vec![true; 16]);
+    }
+
+    #[test]
+    fn test_indeces_on() {
+        let bitvec = BitVec16::from_u16(0b1000_0000_0000_1101);
+        let indeces: Vec<usize> = bitvec.indeces_on().collect();
+        assert_eq!(indeces, vec![0, 2, 3, 15]);
+    }
+
+    #[test]
+    fn test_indeces_off() {
+        let bitvec = BitVec16::from_u16(0b1000_0000_0000_1101);
+        let indeces: Vec<usize> = bitvec.indeces_off().collect();
+        assert_eq!(indeces, vec![1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
     }
 }
