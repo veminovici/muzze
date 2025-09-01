@@ -88,6 +88,29 @@ impl Scale {
             step
         })
     }
+
+    /// Applies the scale to a root note
+    ///
+    /// This method applies the scale to a root note, returning an iterator
+    /// over the notes in the scale.
+    ///
+    /// # Arguments
+    /// * `root` - The root note to apply the scale to
+    ///
+    /// # Returns
+    /// An iterator that yields u8 values representing the notes in the scale
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::Scale;
+    /// let scale = Scale::from_u16(0b0000_0000_0000_1111);
+    /// let notes: Vec<u8> = scale.apply(4).collect();
+    /// // For a major scale, this would yield [4, 6, 7, 9, 11, 12, 14, 16]
+    /// ```
+    #[inline]
+    pub fn apply(&self, root: u8) -> impl Iterator<Item = u8> {
+        std::iter::once(root).chain(self.intervals().map(move |interval| interval + root))
+    }
 }
 
 /// Major scale: Whole-Whole-Half-Whole-Whole-Whole-Half
@@ -179,6 +202,25 @@ pub const BIBOP_DOMINANT: Scale = Scale::from_u16(0b0000_1111_0101_1010);
 mod tests {
     use super::*;
 
+    const C: u8 = 60;
+    // const CS: u8 = 61;
+    const D: u8 = 62;
+    // const DS: u8 = 63;
+    const EF: u8 = 63;
+    const E: u8 = 64;
+    const F: u8 = 65;
+    const FS: u8 = 66;
+    // const FS: u8 = 66;
+    const GF: u8 = 66;
+    const G: u8 = 67;
+    const GS: u8 = 68;
+    const AF: u8 = 68;
+    const A: u8 = 69;
+    const AS: u8 = 70;
+    const BF: u8 = 70;
+    const B: u8 = 71;
+    const C1: u8 = 72;
+
     /// Tests that the major scale produces the correct intervals and step pattern
     ///
     /// This test verifies that the major scale constant correctly represents
@@ -193,6 +235,11 @@ mod tests {
         assert_eq!(
             MAJOR.steps().collect::<Vec<u8>>(),
             vec![2, 2, 1, 2, 2, 2, 1]
+        );
+
+        assert_eq!(
+            MAJOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, E, F, G, A, B, C1]
         );
     }
 
@@ -211,6 +258,11 @@ mod tests {
             NATURAL_MINOR.steps().collect::<Vec<u8>>(),
             vec![2, 1, 2, 2, 1, 2, 2]
         );
+
+        assert_eq!(
+            NATURAL_MINOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, EF, F, G, AF, BF, C1]
+        );
     }
 
     /// Tests that the harmonic minor scale produces the correct intervals and step pattern
@@ -227,6 +279,11 @@ mod tests {
         assert_eq!(
             HARMONIC_MINOR.steps().collect::<Vec<u8>>(),
             vec![2, 1, 2, 2, 1, 3, 1]
+        );
+
+        assert_eq!(
+            HARMONIC_MINOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, EF, F, G, AF, B, C1]
         );
     }
 
@@ -245,6 +302,11 @@ mod tests {
             MELODIC_MINOR.steps().collect::<Vec<u8>>(),
             vec![2, 1, 2, 2, 2, 2, 1]
         );
+
+        assert_eq!(
+            MELODIC_MINOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, EF, F, G, A, B, C1]
+        );
     }
 
     #[test]
@@ -256,6 +318,11 @@ mod tests {
         assert_eq!(
             PENTATONIC_MAJOR.steps().collect::<Vec<u8>>(),
             vec![2, 2, 3, 2]
+        );
+
+        assert_eq!(
+            PENTATONIC_MAJOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, E, G, A]
         );
     }
 
@@ -269,6 +336,11 @@ mod tests {
             PENTATONIC_MINOR.steps().collect::<Vec<u8>>(),
             vec![3, 2, 2, 3]
         );
+
+        assert_eq!(
+            PENTATONIC_MINOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, EF, F, G, BF]
+        );
     }
 
     #[test]
@@ -280,6 +352,11 @@ mod tests {
         assert_eq!(
             BLUES_MINOR.steps().collect::<Vec<u8>>(),
             vec![3, 2, 1, 1, 3, 2]
+        );
+
+        assert_eq!(
+            BLUES_MINOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, EF, F, GF, G, BF, C1]
         );
     }
 
@@ -293,6 +370,10 @@ mod tests {
             BLUES_MAJOR.steps().collect::<Vec<u8>>(),
             vec![2, 1, 1, 3, 2]
         );
+        assert_eq!(
+            BLUES_MAJOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, EF, E, G, A]
+        );
     }
 
     #[test]
@@ -304,6 +385,10 @@ mod tests {
         assert_eq!(
             JAZZ_WHOLE_TONE.steps().collect::<Vec<u8>>(),
             vec![2, 2, 2, 2, 2]
+        );
+        assert_eq!(
+            JAZZ_WHOLE_TONE.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, E, FS, GS, AS]
         );
     }
 
@@ -317,6 +402,10 @@ mod tests {
             JAZZ_WHOLEHALF_DIMINISHED.steps().collect::<Vec<u8>>(),
             vec![2, 1, 2, 1, 2, 1, 2]
         );
+        assert_eq!(
+            JAZZ_WHOLEHALF_DIMINISHED.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, EF, F, GF, AF, A, B]
+        );
     }
 
     #[test]
@@ -328,6 +417,10 @@ mod tests {
         assert_eq!(
             BIBOP_MAJOR.steps().collect::<Vec<u8>>(),
             vec![2, 2, 1, 2, 1, 1, 2, 1]
+        );
+        assert_eq!(
+            BIBOP_MAJOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, E, F, G, AF, A, B, C1]
         );
     }
 
@@ -341,6 +434,10 @@ mod tests {
             BIBOP_MINOR.steps().collect::<Vec<u8>>(),
             vec![2, 1, 1, 1, 2, 2, 1, 2]
         );
+        assert_eq!(
+            BIBOP_MINOR.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, EF, E, F, G, A, BF, C1]
+        );
     }
 
     #[test]
@@ -352,6 +449,10 @@ mod tests {
         assert_eq!(
             BIBOP_DOMINANT.steps().collect::<Vec<u8>>(),
             vec![2, 2, 1, 2, 2, 1, 1, 1]
+        );
+        assert_eq!(
+            BIBOP_DOMINANT.apply(C).collect::<Vec<u8>>(),
+            vec![C, D, E, F, G, A, BF, B, C1]
         );
     }
 }
