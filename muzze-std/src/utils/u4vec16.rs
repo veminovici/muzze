@@ -5,6 +5,7 @@
 //! compact storage and efficient access to small integer values.
 
 use bitflags::bitflags;
+use std::ops::Index;
 
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -357,6 +358,20 @@ impl Iterator for U4Vec16Iter {
 
 impl ExactSizeIterator for U4Vec16Iter {}
 
+impl Index<usize> for U4Vec16 {
+    type Output = u8;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        const VALS: [u8; 16] = [
+            0b0000, 0b0001, 0b0010, 0b0011, 0b0100, 0b0101, 0b0110, 0b0111, 0b1000, 0b1001, 0b1010,
+            0b1011, 0b1100, 0b1101, 0b1110, 0b1111,
+        ];
+
+        let item = self.item(index);
+        &VALS[item as usize]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -454,5 +469,26 @@ mod tests {
 
         let items: Vec<u8> = vec.iter_items().collect();
         assert_eq!(items.len(), 16);
+    }
+
+    #[test]
+    fn test_index() {
+        let vec = U4Vec16::from_u64(VAL);
+        assert_eq!(vec[0], 0b1010);
+        assert_eq!(vec[1], 0b1011);
+        assert_eq!(vec[2], 0b1110);
+        assert_eq!(vec[3], 0b1111);
+        assert_eq!(vec[4], 0b0000);
+        assert_eq!(vec[5], 0b0000);
+        assert_eq!(vec[6], 0b0000);
+        assert_eq!(vec[7], 0b0000);
+        assert_eq!(vec[8], 0b0000);
+        assert_eq!(vec[9], 0b0000);
+        assert_eq!(vec[10], 0b0000);
+        assert_eq!(vec[11], 0b0000);
+        assert_eq!(vec[12], 0b1010);
+        assert_eq!(vec[13], 0b1011);
+        assert_eq!(vec[14], 0b1110);
+        assert_eq!(vec[15], 0b1111);
     }
 }
