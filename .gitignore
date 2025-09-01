@@ -1,0 +1,14 @@
+# Rust
+/target
+**/*.rs.bk
+
+# macOS
+.DS_Store
+
+# IDEs/Editors
+/.idea
+/.vscode
+*.iml
+
+# For library workspaces, generally ignore Cargo.lock
+Cargo.lock
