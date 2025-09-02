@@ -198,11 +198,49 @@ pub const BIBOP_MINOR: Scale = Scale::from_u16(0b0000_1011_0101_1110);
 /// Bibop dominant scale: Whole-Whole-Half-Whole-Whole-Half-Half-Half
 pub const BIBOP_DOMINANT: Scale = Scale::from_u16(0b0000_1111_0101_1010);
 
+/// Builder for constructing Scale instances
+///
+/// The ScaleBuilder provides a fluent interface for constructing Scale
+/// instances by setting individual semitone intervals. This is useful when
+/// you need to build a scale programmatically or create custom scales
+/// that aren't predefined as constants.
+///
+/// # Examples
+/// ```
+/// use muzze_std::ScaleBuilder;
+/// let scale = ScaleBuilder::default()
+///     .set_interval(2)  // Major 2nd
+///     .set_interval(4)  // Major 3rd
+///     .set_interval(5)  // Perfect 4th
+///     .set_interval(7)  // Perfect 5th
+///     .set_interval(9)  // Major 6th
+///     .set_interval(11) // Major 7th
+///     .set_interval(12) // Octave
+///     .build();
+/// // This creates a major scale
+/// ```
 pub struct ScaleBuilder {
+    /// The underlying BitVec16Builder used for bit manipulation
     vec_builder: BitVec16Builder,
 }
 
 impl ScaleBuilder {
+    /// Creates a new ScaleBuilder with no intervals initially set
+    ///
+    /// This method initializes the builder with an empty scale (no intervals set).
+    /// The builder can then be used to add specific semitone intervals using
+    /// the `set_interval` method.
+    ///
+    /// # Returns
+    /// A new ScaleBuilder instance ready for configuration
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::ScaleBuilder;
+    /// let builder = ScaleBuilder::default();
+    /// let scale = builder.build();
+    /// assert_eq!(scale.intervals().count(), 0);
+    /// ```
     #[inline]
     const fn new() -> Self {
         Self {
@@ -210,12 +248,60 @@ impl ScaleBuilder {
         }
     }
 
+    /// Adds a semitone interval to the scale being constructed
+    ///
+    /// This method adds the specified semitone interval to the scale.
+    /// The interval parameter represents the number of semitones from the root note.
+    /// For example, interval 2 represents a major 2nd, interval 12 represents an octave.
+    ///
+    /// # Arguments
+    /// * `interval` - The semitone interval to add (1-16)
+    ///
+    /// # Returns
+    /// A new ScaleBuilder with the specified interval added
+    ///
+    /// # Panics
+    /// This method will panic if the interval is out of bounds (< 1 or > 16)
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::ScaleBuilder;
+    /// let scale = ScaleBuilder::default()
+    ///     .set_interval(2)  // Add major 2nd
+    ///     .set_interval(7)  // Add perfect 5th
+    ///     .set_interval(12) // Add octave
+    ///     .build();
+    /// let intervals: Vec<u8> = scale.intervals().collect();
+    /// assert_eq!(intervals, vec![2, 7, 12]);
+    /// ```
     #[inline]
     pub const fn set_interval(self, interval: u8) -> Self {
         let vec_builder = self.vec_builder.set_index(interval - 1);
         Self { vec_builder }
     }
 
+    /// Finalizes the builder and returns the constructed Scale
+    ///
+    /// This method consumes the builder and returns the final Scale
+    /// instance with all the intervals that were added during construction.
+    ///
+    /// # Returns
+    /// The constructed Scale instance
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::ScaleBuilder;
+    /// let scale = ScaleBuilder::default()
+    ///     .set_interval(2)
+    ///     .set_interval(4)
+    ///     .set_interval(5)
+    ///     .set_interval(7)
+    ///     .set_interval(9)
+    ///     .set_interval(11)
+    ///     .set_interval(12)
+    ///     .build();
+    /// // This creates a major scale with intervals [2, 4, 5, 7, 9, 11, 12]
+    /// ```
     #[inline]
     pub const fn build(self) -> Scale {
         Scale::from_u16(self.vec_builder.build().inner())
@@ -223,6 +309,13 @@ impl ScaleBuilder {
 }
 
 impl Default for ScaleBuilder {
+    /// Creates a default ScaleBuilder instance
+    ///
+    /// This implementation provides a convenient way to create a new builder
+    /// using the `Default` trait, which is equivalent to calling `ScaleBuilder::new()`.
+    ///
+    /// # Returns
+    /// A new ScaleBuilder instance with no intervals initially set
     fn default() -> Self {
         Self::new()
     }
@@ -486,6 +579,11 @@ mod tests {
         );
     }
 
+    /// Tests that the ScaleBuilder correctly constructs Scale instances
+    ///
+    /// This test verifies that the builder pattern works correctly by setting
+    /// multiple semitone intervals and ensuring the final result matches the
+    /// expected major scale intervals.
     #[test]
     fn test_scale_builder() {
         let scale = ScaleBuilder::default()
