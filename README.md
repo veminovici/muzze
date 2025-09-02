@@ -2,6 +2,8 @@
 
 A Rust workspace for musical computations and data structures, providing efficient representations of musical concepts using bit vectors and specialized data types.
 
+[![Rust](https://github.com/veminovici/muzze/actions/workflows/rust.yml/badge.svg)](https://github.com/veminovici/muzze/actions/workflows/rust.yml)
+
 ## Workspace Structure
 
 This workspace contains the following crates:
