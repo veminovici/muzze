@@ -323,6 +323,129 @@ impl Default for ScaleBuilder {
     }
 }
 
+/// Builder for constructing Scale instances using step intervals
+///
+/// The ScaleStepBuilder provides a fluent interface for constructing Scale
+/// instances by adding consecutive step intervals. This is useful when you
+/// want to build a scale by specifying the step pattern (e.g., whole steps,
+/// half steps) rather than absolute semitone intervals.
+///
+/// # Examples
+/// ```
+/// use muzze_std::ScaleStepBuilder;
+/// let scale = ScaleStepBuilder::default()
+///     .add_step(2)  // Whole step
+///     .add_step(2)  // Whole step
+///     .add_step(1)  // Half step
+///     .add_step(2)  // Whole step
+///     .add_step(2)  // Whole step
+///     .add_step(2)  // Whole step
+///     .add_step(1)  // Half step
+///     .build();
+/// // This creates a major scale with step pattern [2, 2, 1, 2, 2, 2, 1]
+/// ```
+pub struct ScaleStepBuilder {
+    /// The underlying ScaleBuilder used for bit manipulation
+    scale_builder: ScaleBuilder,
+    /// The last interval that was added to track cumulative position
+    last_interval: u8,
+}
+
+impl ScaleStepBuilder {
+    /// Creates a new ScaleStepBuilder with no intervals initially set
+    ///
+    /// This method initializes the builder with an empty scale (no intervals set)
+    /// and resets the interval tracking. The builder can then be used to add
+    /// step intervals using the `add_step` method.
+    ///
+    /// # Returns
+    /// A new ScaleStepBuilder instance ready for configuration
+    #[inline]
+    const fn new() -> Self {
+        Self {
+            scale_builder: ScaleBuilder::new(),
+            last_interval: 0,
+        }
+    }
+
+    /// Adds a step interval to the scale being constructed
+    ///
+    /// This method adds a step interval to the scale, where the step represents
+    /// the number of semitones to move from the last added interval. This allows
+    /// building scales by specifying step patterns (e.g., whole steps = 2,
+    /// half steps = 1) rather than absolute semitone positions.
+    ///
+    /// # Arguments
+    /// * `step` - The number of semitones to add from the last interval (1-16)
+    ///
+    /// # Returns
+    /// A new ScaleStepBuilder with the specified step interval added
+    ///
+    /// # Panics
+    /// This method will panic if the resulting interval exceeds 16 semitones
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::ScaleStepBuilder;
+    /// let scale = ScaleStepBuilder::default()
+    ///     .add_step(2)  // Add whole step (major 2nd)
+    ///     .add_step(2)  // Add whole step (major 3rd)
+    ///     .add_step(1)  // Add half step (perfect 4th)
+    ///     .build();
+    /// let intervals: Vec<u8> = scale.intervals().collect();
+    /// assert_eq!(intervals, vec![2, 4, 5]);
+    /// ```
+    pub const fn add_step(self, step: u8) -> Self {
+        let interval = self.last_interval + step;
+        let last_interval = interval;
+        Self {
+            scale_builder: self.scale_builder.set_interval(last_interval),
+            last_interval,
+        }
+    }
+
+    /// Finalizes the builder and returns the constructed Scale
+    ///
+    /// This method consumes the builder and returns the final Scale
+    /// instance with all the step intervals that were added during construction.
+    ///
+    /// # Returns
+    /// The constructed Scale instance
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::{MAJOR, ScaleStepBuilder};
+    /// let scale = ScaleStepBuilder::default()
+    ///     .add_step(2)
+    ///     .add_step(2)
+    ///     .add_step(1)
+    ///     .add_step(2)
+    ///     .add_step(2)
+    ///     .add_step(2)
+    ///     .add_step(1)
+    ///     .build();
+    /// // This creates a major scale with intervals [2, 4, 5, 7, 9, 11, 12]
+    /// assert_eq!(scale, MAJOR);
+    /// ```
+    #[inline]
+    pub const fn build(self) -> Scale {
+        self.scale_builder.build()
+    }
+}
+
+impl Default for ScaleStepBuilder {
+    /// Creates a default ScaleStepBuilder instance
+    ///
+    /// This implementation provides a convenient way to create a new builder
+    /// using the `Default` trait, which is equivalent to calling `ScaleStepBuilder::new()`.
+    ///
+    /// # Returns
+    /// A new ScaleStepBuilder instance with no intervals initially set
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -597,6 +720,25 @@ mod tests {
             .set_interval(11)
             .set_interval(12)
             .build();
+        assert_eq!(
+            scale.intervals().collect::<Vec<u8>>(),
+            vec![2, 4, 5, 7, 9, 11, 12]
+        );
+        assert_eq!(scale, MAJOR);
+    }
+
+    #[test]
+    fn test_scale_step_builder() {
+        let scale = ScaleStepBuilder::default()
+            .add_step(2)
+            .add_step(2)
+            .add_step(1)
+            .add_step(2)
+            .add_step(2)
+            .add_step(2)
+            .add_step(1)
+            .build();
+
         assert_eq!(
             scale.intervals().collect::<Vec<u8>>(),
             vec![2, 4, 5, 7, 9, 11, 12]
