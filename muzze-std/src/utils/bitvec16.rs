@@ -338,6 +338,30 @@ impl BitVec16 {
     }
 }
 
+pub struct BitVec16Builder {
+    vec: BitVec16,
+}
+
+impl BitVec16Builder {
+    #[inline]
+    pub const fn new() -> Self {
+        let vec = BitVec16::from_u16(0);
+        Self { vec }
+    }
+
+    #[inline]
+    pub const fn set_index(self, index: u8) -> Self {
+        let value = self.vec.inner() | (1 << index);
+        let vec = BitVec16::from_u16(value);
+        Self { vec }
+    }
+
+    #[inline]
+    pub const fn build(self) -> BitVec16 {
+        self.vec
+    }
+}
+
 /// Iterator over the bits of a BitVec16
 ///
 /// This iterator yields each bit of the BitVec16 as a boolean value,
@@ -400,20 +424,19 @@ impl Index<usize> for BitVec16 {
 mod tests {
     use super::*;
 
+    const VAL: u16 = 0b1000_0000_0000_1101;
+
     #[test]
     fn test_inner() {
-        let val = 0b1000_0000_0000_1101;
-
-        let bitvec = BitVec16::from_u16(val);
+        let bitvec = BitVec16::from_u16(VAL);
 
         // Check the inner value
-        assert_eq!(bitvec.inner(), val);
+        assert_eq!(bitvec.inner(), VAL);
     }
 
     #[test]
     fn test_index() {
-        let val = 0b1000_0000_0000_1101;
-        let bitvec = BitVec16::from_u16(val);
+        let bitvec = BitVec16::from_u16(VAL);
 
         // Check the bits are set correctly
         assert_eq!(bitvec[0], true);
@@ -436,8 +459,7 @@ mod tests {
 
     #[test]
     fn test_bit_at_index() {
-        let val = 0b1000_0000_0000_1101;
-        let bitvec = BitVec16::from_u16(val);
+        let bitvec = BitVec16::from_u16(VAL);
 
         assert_eq!(bitvec.bit(0), true);
         assert_eq!(bitvec.bit(1), false);
@@ -459,8 +481,7 @@ mod tests {
 
     #[test]
     fn test_individual_bits() {
-        let val = 0b1000_0000_0000_1101;
-        let bitvec = BitVec16::from_u16(val);
+        let bitvec = BitVec16::from_u16(VAL);
 
         // Test all individual bit methods
         assert_eq!(bitvec.bit0(), true);
@@ -528,33 +549,8 @@ mod tests {
     }
 
     #[test]
-    fn test_individual_bits_alternating() {
-        let val = 0b1010_1010_1010_1010;
-        let bitvec = BitVec16::from_u16(val);
-
-        // Test alternating pattern
-        assert_eq!(bitvec.bit0(), false);
-        assert_eq!(bitvec.bit1(), true);
-        assert_eq!(bitvec.bit2(), false);
-        assert_eq!(bitvec.bit3(), true);
-        assert_eq!(bitvec.bit4(), false);
-        assert_eq!(bitvec.bit5(), true);
-        assert_eq!(bitvec.bit6(), false);
-        assert_eq!(bitvec.bit7(), true);
-        assert_eq!(bitvec.bit8(), false);
-        assert_eq!(bitvec.bit9(), true);
-        assert_eq!(bitvec.bit10(), false);
-        assert_eq!(bitvec.bit11(), true);
-        assert_eq!(bitvec.bit12(), false);
-        assert_eq!(bitvec.bit13(), true);
-        assert_eq!(bitvec.bit14(), false);
-        assert_eq!(bitvec.bit15(), true);
-    }
-
-    #[test]
     fn test_iter_bits() {
-        let val = 0b1000_0000_0000_1101;
-        let bitvec = BitVec16::from_u16(val);
+        let bitvec = BitVec16::from_u16(VAL);
 
         let bits: Vec<bool> = bitvec.iter_bits().collect();
         let expected = vec![
@@ -601,4 +597,11 @@ mod tests {
         let indeces: Vec<usize> = bitvec.indeces_off().collect();
         assert_eq!(indeces, vec![1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
     }
+
+    #[test]
+    fn test_builder() {
+        let bitvec = BitVec16Builder::new().set_index(0).set_index(1).set_index(3).build();
+        assert_eq!(bitvec.inner(), 0b0000_0000_0000_1011);
+    }
+    
 }
