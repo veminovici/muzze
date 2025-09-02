@@ -19,6 +19,7 @@ use crate::{BitVec16, BitVec16Builder};
 /// let major_scale = Scale::from_u16(0b0000_0000_0000_1111);
 /// let intervals: Vec<u8> = major_scale.intervals().collect();
 /// ```
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Scale(BitVec16);
 
 impl Scale {
@@ -290,7 +291,7 @@ impl ScaleBuilder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::ScaleBuilder;
+    /// use muzze_std::{MAJOR, ScaleBuilder};
     /// let scale = ScaleBuilder::default()
     ///     .set_interval(2)
     ///     .set_interval(4)
@@ -301,6 +302,7 @@ impl ScaleBuilder {
     ///     .set_interval(12)
     ///     .build();
     /// // This creates a major scale with intervals [2, 4, 5, 7, 9, 11, 12]
+    /// assert_eq!(scale, MAJOR);
     /// ```
     #[inline]
     pub const fn build(self) -> Scale {
@@ -599,5 +601,6 @@ mod tests {
             scale.intervals().collect::<Vec<u8>>(),
             vec![2, 4, 5, 7, 9, 11, 12]
         );
+        assert_eq!(scale, MAJOR);
     }
 }
