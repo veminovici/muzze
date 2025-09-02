@@ -332,7 +332,7 @@ impl Default for ScaleBuilder {
 ///
 /// # Examples
 /// ```
-/// use muzze_std::ScaleStepBuilder;
+/// use muzze_std::{MAJOR, ScaleStepBuilder};
 /// let scale = ScaleStepBuilder::default()
 ///     .add_step(2)  // Whole step
 ///     .add_step(2)  // Whole step
@@ -343,6 +343,7 @@ impl Default for ScaleBuilder {
 ///     .add_step(1)  // Half step
 ///     .build();
 /// // This creates a major scale with step pattern [2, 2, 1, 2, 2, 2, 1]
+/// assert_eq!(scale, MAJOR);
 /// ```
 pub struct ScaleStepBuilder {
     /// The underlying ScaleBuilder used for bit manipulation
