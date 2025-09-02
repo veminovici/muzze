@@ -338,17 +338,76 @@ impl BitVec16 {
     }
 }
 
+/// Builder for constructing BitVec16 instances
+///
+/// The BitVec16Builder provides a fluent interface for constructing BitVec16
+/// instances by setting individual bits. This is useful when you need to
+/// build a bit vector programmatically or when the bit pattern is not known
+/// at compile time.
+///
+/// # Examples
+/// ```
+/// use muzze_std::BitVec16Builder;
+/// let bitvec = BitVec16Builder::default()
+///     .set_index(0)
+///     .set_index(2)
+///     .set_index(15)
+///     .build();
+/// assert_eq!(bitvec.inner(), 0b1000_0000_0000_0101);
+/// ```
 pub struct BitVec16Builder {
+    /// The BitVec16 being constructed
     vec: BitVec16,
 }
 
 impl BitVec16Builder {
+    /// Creates a new BitVec16Builder with all bits initially set to false
+    ///
+    /// This method initializes the builder with an empty BitVec16 (all bits unset).
+    /// The builder can then be used to set specific bits using the `set_index` method.
+    ///
+    /// # Returns
+    /// A new BitVec16Builder instance ready for configuration
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::BitVec16Builder;
+    /// let builder = BitVec16Builder::default();
+    /// let bitvec = builder.build();
+    /// assert_eq!(bitvec.inner(), 0);
+    /// ```
     #[inline]
     pub(crate) const fn new() -> Self {
         let vec = BitVec16::from_u16(0);
         Self { vec }
     }
 
+    /// Sets the bit at the specified index to true
+    ///
+    /// This method sets the bit at the given position (0-15) to true,
+    /// leaving all other bits unchanged. The method returns a new builder
+    /// instance, allowing for method chaining.
+    ///
+    /// # Arguments
+    /// * `index` - The bit position to set (0-15)
+    ///
+    /// # Returns
+    /// A new BitVec16Builder with the specified bit set
+    ///
+    /// # Panics
+    /// This method will panic if the index is out of bounds (> 15)
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::BitVec16Builder;
+    /// let bitvec = BitVec16Builder::default()
+    ///     .set_index(0)
+    ///     .set_index(7)
+    ///     .build();
+    /// assert_eq!(bitvec.bit(0), true);
+    /// assert_eq!(bitvec.bit(7), true);
+    /// assert_eq!(bitvec.bit(1), false);
+    /// ```
     #[inline]
     pub const fn set_index(self, index: u8) -> Self {
         let value = self.vec.inner() | (1 << index);
@@ -356,6 +415,24 @@ impl BitVec16Builder {
         Self { vec }
     }
 
+    /// Finalizes the builder and returns the constructed BitVec16
+    ///
+    /// This method consumes the builder and returns the final BitVec16
+    /// instance with all the bits that were set during construction.
+    ///
+    /// # Returns
+    /// The constructed BitVec16 instance
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_std::BitVec16Builder;
+    /// let bitvec = BitVec16Builder::default()
+    ///     .set_index(0)
+    ///     .set_index(2)
+    ///     .set_index(3)
+    ///     .build();
+    /// assert_eq!(bitvec.inner(), 0b0000_0000_0000_1101);
+    /// ```
     #[inline]
     pub const fn build(self) -> BitVec16 {
         self.vec
@@ -363,6 +440,13 @@ impl BitVec16Builder {
 }
 
 impl Default for BitVec16Builder {
+    /// Creates a default BitVec16Builder instance
+    ///
+    /// This implementation provides a convenient way to create a new builder
+    /// using the `Default` trait, which is equivalent to calling `BitVec16Builder::new()`.
+    ///
+    /// # Returns
+    /// A new BitVec16Builder instance with all bits initially unset
     fn default() -> Self {
         Self::new()
     }
@@ -604,6 +688,10 @@ mod tests {
         assert_eq!(indeces, vec![1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
     }
 
+    /// Tests that the BitVec16Builder correctly constructs BitVec16 instances
+    ///
+    /// This test verifies that the builder pattern works correctly by setting
+    /// multiple bits and ensuring the final result matches the expected bit pattern.
     #[test]
     fn test_builder() {
         let bitvec = BitVec16Builder::default()
