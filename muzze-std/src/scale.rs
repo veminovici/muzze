@@ -4,7 +4,7 @@
 //! Each bit position represents a semitone interval from the root note.
 //! The scales are defined using standard Western music theory patterns.
 
-use crate::BitVec16;
+use crate::{BitVec16, BitVec16Builder};
 
 /// Represents a musical scale using a 16-bit vector
 ///
@@ -197,6 +197,36 @@ pub const BIBOP_MINOR: Scale = Scale::from_u16(0b0000_1011_0101_1110);
 
 /// Bibop dominant scale: Whole-Whole-Half-Whole-Whole-Half-Half-Half
 pub const BIBOP_DOMINANT: Scale = Scale::from_u16(0b0000_1111_0101_1010);
+
+pub struct ScaleBuilder {
+    vec_builder: BitVec16Builder,
+}
+
+impl ScaleBuilder {
+    #[inline]
+    const fn new() -> Self {
+        Self {
+            vec_builder: BitVec16Builder::new(),
+        }
+    }
+
+    #[inline]
+    pub const fn set_interval(self, interval: u8) -> Self {
+        let vec_builder = self.vec_builder.set_index(interval - 1);
+        Self { vec_builder }
+    }
+
+    #[inline]
+    pub const fn build(self) -> Scale {
+        Scale::from_u16(self.vec_builder.build().inner())
+    }
+}
+
+impl Default for ScaleBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -453,6 +483,23 @@ mod tests {
         assert_eq!(
             BIBOP_DOMINANT.apply(C).collect::<Vec<u8>>(),
             vec![C, D, E, F, G, A, BF, B, C1]
+        );
+    }
+
+    #[test]
+    fn test_scale_builder() {
+        let scale = ScaleBuilder::default()
+            .set_interval(2)
+            .set_interval(4)
+            .set_interval(5)
+            .set_interval(7)
+            .set_interval(9)
+            .set_interval(11)
+            .set_interval(12)
+            .build();
+        assert_eq!(
+            scale.intervals().collect::<Vec<u8>>(),
+            vec![2, 4, 5, 7, 9, 11, 12]
         );
     }
 }

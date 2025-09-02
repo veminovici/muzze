@@ -344,7 +344,7 @@ pub struct BitVec16Builder {
 
 impl BitVec16Builder {
     #[inline]
-    pub const fn new() -> Self {
+    pub(crate) const fn new() -> Self {
         let vec = BitVec16::from_u16(0);
         Self { vec }
     }
@@ -359,6 +359,12 @@ impl BitVec16Builder {
     #[inline]
     pub const fn build(self) -> BitVec16 {
         self.vec
+    }
+}
+
+impl Default for BitVec16Builder {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -600,8 +606,11 @@ mod tests {
 
     #[test]
     fn test_builder() {
-        let bitvec = BitVec16Builder::new().set_index(0).set_index(1).set_index(3).build();
+        let bitvec = BitVec16Builder::default()
+            .set_index(0)
+            .set_index(1)
+            .set_index(3)
+            .build();
         assert_eq!(bitvec.inner(), 0b0000_0000_0000_1011);
     }
-    
 }
