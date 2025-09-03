@@ -205,6 +205,150 @@ impl U4Vec16 {
     }
 }
 
+/// Builder for constructing U4Vec16 instances
+///
+/// U4Vec16Builder provides a fluent interface for constructing U4Vec16 instances
+/// by setting individual 4-bit items. This is useful when you need to build
+/// a U4Vec16 incrementally or when the final pattern is not known at compile time.
+///
+/// # Examples
+///
+/// ```rust
+/// use muzze_bitflags::u4vec16::U4Vec16Builder;
+///
+/// // Build a U4Vec16 with specific items
+/// let vec = U4Vec16Builder::new()
+///     .set_item(0, 5)   // Set item 0 to 5
+///     .set_item(1, 10)  // Set item 1 to 10
+///     .set_item(15, 15) // Set item 15 to 15
+///     .build();
+///
+/// assert_eq!(vec.item(0), 5);
+/// assert_eq!(vec.item(1), 10);
+/// assert_eq!(vec.item(15), 15);
+/// ```
+///
+/// # Performance
+///
+/// The builder pattern allows for efficient construction of U4Vec16 instances
+/// without intermediate allocations. Each `set_item` call returns a new builder
+/// instance, allowing for method chaining.
+pub struct U4Vec16Builder {
+    /// The U4Vec16 being constructed
+    vec: U4Vec16,
+}
+
+impl U4Vec16Builder {
+    /// Creates a new U4Vec16Builder with all items initialized to 0
+    ///
+    /// This method creates a fresh builder instance with a U4Vec16 containing
+    /// all zeros. You can then use `set_item` to configure specific positions
+    /// and `build` to finalize the construction.
+    ///
+    /// # Returns
+    /// A new U4Vec16Builder instance with all items set to 0
+    ///
+    /// # Example
+    /// ```rust
+    /// use muzze_bitflags::u4vec16::U4Vec16Builder;
+    ///
+    /// let builder = U4Vec16Builder::new();
+    /// let vec = builder.build();
+    /// assert_eq!(vec.inner(), 0);
+    /// ```
+    #[inline]
+    pub const fn new() -> Self {
+        Self {
+            vec: U4Vec16::from_u64(0),
+        }
+    }
+
+    /// Sets a 4-bit item at the specified index
+    ///
+    /// This method sets the 4-bit item at the given index to the specified value.
+    /// The value must be in the range 0-15 (4 bits). This method returns a new
+    /// builder instance, allowing for method chaining.
+    ///
+    /// # Arguments
+    /// * `index` - The item position to set (0-15)
+    /// * `value` - The 4-bit value to set (0-15)
+    ///
+    /// # Returns
+    /// A new U4Vec16Builder instance with the specified item set
+    ///
+    /// # Panics
+    /// This method will panic if the index is out of bounds (> 15)
+    ///
+    /// # Example
+    /// ```rust
+    /// use muzze_bitflags::u4vec16::U4Vec16Builder;
+    ///
+    /// let vec = U4Vec16Builder::new()
+    ///     .set_item(0, 5)
+    ///     .set_item(1, 10)
+    ///     .build();
+    ///
+    /// assert_eq!(vec.item(0), 5);
+    /// assert_eq!(vec.item(1), 10);
+    /// ```
+    #[inline]
+    pub fn set_item(self, index: usize, value: u8) -> Self {
+        let mut vec = self.vec;
+        vec.set_item(index, value);
+
+        Self { vec }
+    }
+
+    /// Finalizes the construction and returns the built U4Vec16
+    ///
+    /// This method consumes the builder and returns the constructed U4Vec16.
+    /// After calling this method, the builder can no longer be used.
+    ///
+    /// # Returns
+    /// The constructed U4Vec16 instance
+    ///
+    /// # Example
+    /// ```rust
+    /// use muzze_bitflags::u4vec16::U4Vec16Builder;
+    ///
+    /// let builder = U4Vec16Builder::new()
+    ///     .set_item(0, 5)
+    ///     .set_item(15, 10);
+    ///
+    /// let vec = builder.build();
+    /// assert_eq!(vec.item(0), 5);
+    /// assert_eq!(vec.item(15), 10);
+    /// ```
+    #[inline]
+    pub const fn build(self) -> U4Vec16 {
+        self.vec
+    }
+}
+
+impl Default for U4Vec16Builder {
+    /// Creates a default U4Vec16Builder with all items initialized to 0
+    ///
+    /// This implementation allows using `U4Vec16Builder::default()` as an
+    /// alternative to `U4Vec16Builder::new()`.
+    ///
+    /// # Returns
+    /// A new U4Vec16Builder instance with all items set to 0
+    ///
+    /// # Example
+    /// ```rust
+    /// use muzze_bitflags::u4vec16::U4Vec16Builder;
+    ///
+    /// let vec = U4Vec16Builder::default()
+    ///     .set_item(0, 5)
+    ///     .build();
+    ///
+    /// assert_eq!(vec.item(0), 5);
+    /// ```
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Iterator over the 4-bit items of a U4Vec16
 ///
 /// This iterator yields each 4-bit item of the U4Vec16 as a u8 value,
@@ -443,5 +587,237 @@ mod tests {
             0x00, 0x0D,
         ]);
         assert_eq!(vec.inner(), 0xD000_0000_0000_000A);
+    }
+
+    // U4Vec16Builder tests
+
+    /// Tests that U4Vec16Builder::new() creates a builder with all items set to 0
+    #[test]
+    fn test_builder_new() {
+        let builder = U4Vec16Builder::new();
+        let vec = builder.build();
+        assert_eq!(vec.inner(), 0);
+
+        // Verify all items are 0
+        for i in 0..16 {
+            assert_eq!(vec.item(i), 0);
+        }
+    }
+
+    /// Tests that U4Vec16Builder::default() creates a builder with all items set to 0
+    #[test]
+    fn test_builder_default() {
+        let builder = U4Vec16Builder::default();
+        let vec = builder.build();
+        assert_eq!(vec.inner(), 0);
+
+        // Verify all items are 0
+        for i in 0..16 {
+            assert_eq!(vec.item(i), 0);
+        }
+    }
+
+    /// Tests that set_item correctly sets individual items
+    #[test]
+    fn test_builder_set_item() {
+        let vec = U4Vec16Builder::new()
+            .set_item(0, 5)
+            .set_item(1, 10)
+            .set_item(15, 15)
+            .build();
+
+        assert_eq!(vec.item(0), 5);
+        assert_eq!(vec.item(1), 10);
+        assert_eq!(vec.item(15), 15);
+
+        // Verify other items remain 0
+        for i in 2..15 {
+            assert_eq!(vec.item(i), 0);
+        }
+    }
+
+    /// Tests that set_item can be chained multiple times
+    #[test]
+    fn test_builder_set_item_chaining() {
+        let vec = U4Vec16Builder::new()
+            .set_item(0, 1)
+            .set_item(1, 2)
+            .set_item(2, 3)
+            .set_item(3, 4)
+            .set_item(4, 5)
+            .set_item(5, 6)
+            .set_item(6, 7)
+            .set_item(7, 8)
+            .set_item(8, 9)
+            .set_item(9, 10)
+            .set_item(10, 11)
+            .set_item(11, 12)
+            .set_item(12, 13)
+            .set_item(13, 14)
+            .set_item(14, 15)
+            .set_item(15, 0)
+            .build();
+
+        // Verify all items are set correctly
+        for i in 0..15 {
+            assert_eq!(vec.item(i), (i + 1) as u8);
+        }
+        assert_eq!(vec.item(15), 0);
+    }
+
+    /// Tests that set_item can overwrite previously set items
+    #[test]
+    fn test_builder_set_item_overwrite() {
+        let vec = U4Vec16Builder::new()
+            .set_item(0, 5)
+            .set_item(0, 10) // Overwrite item 0
+            .set_item(1, 15)
+            .set_item(1, 3) // Overwrite item 1
+            .build();
+
+        assert_eq!(vec.item(0), 10);
+        assert_eq!(vec.item(1), 3);
+
+        // Verify other items remain 0
+        for i in 2..16 {
+            assert_eq!(vec.item(i), 0);
+        }
+    }
+
+    /// Tests that set_item works with edge values (0 and 15)
+    #[test]
+    fn test_builder_set_item_edge_values() {
+        let vec = U4Vec16Builder::new()
+            .set_item(0, 0) // Minimum value
+            .set_item(1, 15) // Maximum value
+            .set_item(15, 0) // Minimum value at max index
+            .build();
+
+        assert_eq!(vec.item(0), 0);
+        assert_eq!(vec.item(1), 15);
+        assert_eq!(vec.item(15), 0);
+    }
+
+    /// Tests that set_item works with all possible 4-bit values
+    #[test]
+    fn test_builder_set_item_all_values() {
+        let mut builder = U4Vec16Builder::new();
+
+        // Set each item to its index value (0-15)
+        for i in 0..16 {
+            builder = builder.set_item(i, i as u8);
+        }
+
+        let vec = builder.build();
+
+        // Verify all items are set correctly
+        for i in 0..16 {
+            assert_eq!(vec.item(i), i as u8);
+        }
+    }
+
+    /// Tests that set_item works with all possible indices
+    #[test]
+    fn test_builder_set_item_all_indices() {
+        let mut builder = U4Vec16Builder::new();
+
+        // Set each index to value 5
+        for i in 0..16 {
+            builder = builder.set_item(i, 5);
+        }
+
+        let vec = builder.build();
+
+        // Verify all items are set to 5
+        for i in 0..16 {
+            assert_eq!(vec.item(i), 5);
+        }
+    }
+
+    /// Tests that build consumes the builder
+    #[test]
+    fn test_builder_build_consumes() {
+        let builder = U4Vec16Builder::new().set_item(0, 5).set_item(1, 10);
+
+        let vec = builder.build();
+        assert_eq!(vec.item(0), 5);
+        assert_eq!(vec.item(1), 10);
+
+        // Builder is consumed, cannot be used again
+        // This would not compile:
+        // let _ = builder.build(); // Error: value used after move
+    }
+
+    /// Tests that the builder pattern produces the same result as direct construction
+    #[test]
+    fn test_builder_equivalent_to_direct() {
+        // Build using builder pattern
+        let builder_vec = U4Vec16Builder::new()
+            .set_item(0, 5)
+            .set_item(1, 10)
+            .set_item(15, 15)
+            .build();
+
+        // Build using direct construction
+        let mut direct_vec = U4Vec16::from_u64(0);
+        direct_vec.set_item(0, 5);
+        direct_vec.set_item(1, 10);
+        direct_vec.set_item(15, 15);
+
+        // Both should produce the same result
+        assert_eq!(builder_vec.inner(), direct_vec.inner());
+        assert_eq!(builder_vec.item(0), direct_vec.item(0));
+        assert_eq!(builder_vec.item(1), direct_vec.item(1));
+        assert_eq!(builder_vec.item(15), direct_vec.item(15));
+    }
+
+    /// Tests that the builder pattern works with complex patterns
+    #[test]
+    fn test_builder_complex_pattern() {
+        let vec = U4Vec16Builder::new()
+            .set_item(0, 0xF) // 15
+            .set_item(1, 0xE) // 14
+            .set_item(2, 0xD) // 13
+            .set_item(3, 0xC) // 12
+            .set_item(4, 0xB) // 11
+            .set_item(5, 0xA) // 10
+            .set_item(6, 0x9) // 9
+            .set_item(7, 0x8) // 8
+            .set_item(8, 0x7) // 7
+            .set_item(9, 0x6) // 6
+            .set_item(10, 0x5) // 5
+            .set_item(11, 0x4) // 4
+            .set_item(12, 0x3) // 3
+            .set_item(13, 0x2) // 2
+            .set_item(14, 0x1) // 1
+            .set_item(15, 0x0) // 0
+            .build();
+
+        // Verify the pattern
+        for i in 0..16 {
+            assert_eq!(vec.item(i), (15 - i) as u8);
+        }
+    }
+
+    /// Tests that the builder pattern works with sparse patterns
+    #[test]
+    fn test_builder_sparse_pattern() {
+        let vec = U4Vec16Builder::new()
+            .set_item(0, 1)
+            .set_item(7, 7)
+            .set_item(15, 15)
+            .build();
+
+        assert_eq!(vec.item(0), 1);
+        assert_eq!(vec.item(7), 7);
+        assert_eq!(vec.item(15), 15);
+
+        // Verify other items remain 0
+        for i in 1..7 {
+            assert_eq!(vec.item(i), 0);
+        }
+        for i in 8..15 {
+            assert_eq!(vec.item(i), 0);
+        }
     }
 }

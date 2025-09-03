@@ -5,7 +5,9 @@ A Rust library providing efficient bit vector and packed data structures optimiz
 ## Features
 
 - **BitVec16**: A 16-bit vector with efficient bit-level operations, iteration, and builder pattern
+- **BitVec16Builder**: Fluent interface for constructing custom BitVec16 instances
 - **U4Vec16**: A vector of 16 elements, each being a 4-bit unsigned integer (0-15) with fast access
+- **U4Vec16Builder**: Fluent interface for constructing custom U4Vec16 instances
 - **U4x2**: A packed representation of two 4-bit unsigned integers in a single u8 for memory efficiency
 - **Zero-allocation iterators** for efficient processing
 - **Const functions** for compile-time evaluation
@@ -84,6 +86,32 @@ assert_eq!(vec[15], 0x1);
 assert_eq!(vec.inner(), 0x1234567890ABCDEF);
 ```
 
+### U4Vec16Builder - Fluent Interface for U4Vec16
+
+```rust
+use muzze_bitflags::u4vec16::U4Vec16Builder;
+
+// Build a U4Vec16 with specific items
+let vec = U4Vec16Builder::new()
+    .set_item(0, 5)   // Set item 0 to 5
+    .set_item(1, 10)  // Set item 1 to 10
+    .set_item(15, 15) // Set item 15 to 15
+    .build();
+
+assert_eq!(vec.item(0), 5);
+assert_eq!(vec.item(1), 10);
+assert_eq!(vec.item(15), 15);
+
+// Using Default trait
+let vec_default = U4Vec16Builder::default()
+    .set_item(0, 3)
+    .set_item(7, 7)
+    .build();
+
+assert_eq!(vec_default.item(0), 3);
+assert_eq!(vec_default.item(7), 7);
+```
+
 ### U4x2 - Packed Two 4-bit Values
 
 ```rust
@@ -110,6 +138,7 @@ assert_eq!(velocity_pair.second(), 12);
 - **Scale Representation**: Use BitVec16 to represent musical scales where each bit represents a semitone interval
 - **Note Velocities**: Use U4x2 to pack note velocity pairs efficiently (0-15 range)
 - **Chord Analysis**: Use U4Vec16 to store chord tone information compactly
+- **Custom Chord Construction**: Use U4Vec16Builder to build custom chord patterns incrementally
 - **Interval Tracking**: Use BitVec16 to track which intervals are present in a chord or scale
 - **Musical Parameters**: Use U4x2 for pairs of musical parameters like attack/release times
 
@@ -117,6 +146,7 @@ assert_eq!(velocity_pair.second(), 12);
 
 - **Flags and Masks**: BitVec16 for efficient boolean flag storage and bit manipulation
 - **Small Integer Arrays**: U4Vec16 for compact storage of values 0-15 (perfect for small counters, indices)
+- **Custom Data Construction**: U4Vec16Builder for building custom packed data structures incrementally
 - **Data Packing**: U4x2 for memory-efficient storage of small value pairs
 - **Configuration Storage**: Use packed structures to store multiple configuration values
 - **Game Development**: Efficient storage for game state, player stats, or inventory items
@@ -257,6 +287,16 @@ assert_eq!(complex_bitvec.inner(), 0b1010_1010);
 - `Index<usize>` - Support for bracket notation access
 - `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
 
+### U4Vec16Builder
+
+#### Methods
+- `new() -> U4Vec16Builder` - Create new builder with all items set to 0
+- `set_item(index: usize, value: u8) -> U4Vec16Builder` - Set 4-bit item at index (0-15)
+- `build() -> U4Vec16` - Finalize construction and return U4Vec16
+
+#### Traits
+- `Default` - Creates a builder with no items set
+
 #### Examples
 ```rust
 use muzze_bitflags::U4Vec16;
@@ -298,6 +338,86 @@ assert_eq!(mutable_vec.item(15), 10);
 // Reset items
 mutable_vec.reset_item(0);
 assert_eq!(mutable_vec.item(0), 0);
+```
+
+#### Examples
+```rust
+use muzze_bitflags::u4vec16::U4Vec16Builder;
+
+// Build a U4Vec16 with specific items
+let vec = U4Vec16Builder::new()
+    .set_item(0, 5)   // Set item 0 to 5
+    .set_item(1, 10)  // Set item 1 to 10
+    .set_item(15, 15) // Set item 15 to 15
+    .build();
+
+assert_eq!(vec.item(0), 5);
+assert_eq!(vec.item(1), 10);
+assert_eq!(vec.item(15), 15);
+
+// Using Default trait
+let vec_default = U4Vec16Builder::default()
+    .set_item(0, 3)
+    .set_item(7, 7)
+    .build();
+
+assert_eq!(vec_default.item(0), 3);
+assert_eq!(vec_default.item(7), 7);
+
+// Method chaining with overwrites
+let vec_chained = U4Vec16Builder::new()
+    .set_item(0, 5)
+    .set_item(0, 10)  // Overwrite item 0
+    .set_item(1, 15)
+    .set_item(1, 3)   // Overwrite item 1
+    .build();
+
+assert_eq!(vec_chained.item(0), 10);
+assert_eq!(vec_chained.item(1), 3);
+
+// Complex pattern construction
+let complex_vec = U4Vec16Builder::new()
+    .set_item(0, 15)  // 15
+    .set_item(1, 14)  // 14
+    .set_item(2, 13)  // 13
+    .set_item(3, 12)  // 12
+    .set_item(4, 11)  // 11
+    .set_item(5, 10)  // 10
+    .set_item(6, 9)   // 9
+    .set_item(7, 8)   // 8
+    .set_item(8, 7)   // 7
+    .set_item(9, 6)   // 6
+    .set_item(10, 5)  // 5
+    .set_item(11, 4)  // 4
+    .set_item(12, 3)  // 3
+    .set_item(13, 2)  // 2
+    .set_item(14, 1)  // 1
+    .set_item(15, 0)  // 0
+    .build();
+
+// Verify the descending pattern
+for i in 0..16 {
+    assert_eq!(complex_vec.item(i), (15 - i) as u8);
+}
+
+// Sparse pattern (only a few items set)
+let sparse_vec = U4Vec16Builder::new()
+    .set_item(0, 1)
+    .set_item(7, 7)
+    .set_item(15, 15)
+    .build();
+
+assert_eq!(sparse_vec.item(0), 1);
+assert_eq!(sparse_vec.item(7), 7);
+assert_eq!(sparse_vec.item(15), 15);
+
+// All other items remain 0
+for i in 1..7 {
+    assert_eq!(sparse_vec.item(i), 0);
+}
+for i in 8..15 {
+    assert_eq!(sparse_vec.item(i), 0);
+}
 ```
 
 ### U4x2
@@ -393,7 +513,9 @@ Contributions are welcome! Please:
 ### Version 0.1.0
 - Initial release
 - BitVec16 with builder pattern and iteration
+- BitVec16Builder for fluent construction
 - U4Vec16 with 16-element 4-bit storage
+- U4Vec16Builder for fluent construction
 - U4x2 packed two 4-bit values
 - Comprehensive test suite
 - Zero-allocation iterators
