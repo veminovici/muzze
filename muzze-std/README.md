@@ -7,6 +7,7 @@ A Rust library for musical computations and data structures, providing efficient
 - **Scale**: Musical scale representation with predefined scales and builders
 - **ScaleBuilder**: Fluent interface for constructing custom scales
 - **ScaleStepBuilder**: Build scales using step patterns (whole steps, half steps)
+- **Accidental**: Musical accidental types with Unicode symbols (sharps, flats, naturals)
 - **Bit Vector Support**: Built on top of `muzze-bitflags` for efficient bit operations
 
 ## Installation
@@ -75,6 +76,29 @@ let c_major_notes: Vec<u8> = MAJOR.apply(C).collect();
 // Result: [60, 62, 64, 65, 67, 69, 71, 72] (C, D, E, F, G, A, B, C)
 ```
 
+### Working with Musical Accidentals
+
+```rust
+use muzze_std::Accidental;
+
+// Create accidentals
+let natural = Accidental::Natural;
+let sharp = Accidental::Sharp;
+let flat = Accidental::Flat;
+let double_sharp = Accidental::DoubleSharp;
+
+// Display as Unicode symbols
+assert_eq!(natural.to_string(), "");
+assert_eq!(sharp.to_string(), "♯");
+assert_eq!(flat.to_string(), "♭");
+assert_eq!(double_sharp.to_string(), "♯♯");
+
+// Convert to/from numeric values
+assert_eq!(u8::from(sharp), 8);
+assert_eq!(Accidental::from(8), Accidental::Sharp);
+assert_eq!(u8::from(Accidental::Reset), 15);
+```
+
 ### Working with Bit Vectors
 
 ```rust
@@ -99,7 +123,9 @@ let set_indices: Vec<usize> = custom_bits.indeces_on().collect();
 // Result: [0, 2, 4]
 ```
 
-## Available Scales
+## Available Musical Types
+
+### Predefined Scales
 
 The library includes many predefined scales:
 
@@ -126,6 +152,17 @@ The library includes many predefined scales:
 - `BIBOP_MINOR` - Bebop minor scale
 - `BIBOP_DOMINANT` - Bebop dominant scale
 
+### Musical Accidentals
+
+The library provides comprehensive accidental types for musical notation:
+
+- `Accidental::Natural` - No pitch modification (value: 0)
+- `Accidental::Reset` - Explicitly cancels previous accidentals (value: 15)
+- `Accidental::Flat` - Lowers pitch by one semitone (value: 2)
+- `Accidental::DoubleFlat` - Lowers pitch by two semitones (value: 3)
+- `Accidental::Sharp` - Raises pitch by one semitone (value: 8)
+- `Accidental::DoubleSharp` - Raises pitch by two semitones (value: 9)
+
 ## Musical Theory
 
 ### Interval Representation
@@ -148,6 +185,19 @@ The library uses a semitone-based interval system where:
 ### Scale Patterns
 
 Scales are represented as bit patterns where each bit position (0-15) represents a semitone interval from the root. For example, the major scale pattern `0b0000_1101_0101_1010` represents the intervals [2, 4, 5, 7, 9, 11, 12].
+
+### Accidental System
+
+Musical accidentals are represented with their corresponding Unicode symbols and numeric encodings:
+
+- **Natural** (♮): No pitch modification, displayed as empty string
+- **Reset** (♮): Explicitly cancels previous accidentals in the same measure
+- **Flat** (♭): Lowers pitch by one semitone
+- **Double Flat** (♭♭): Lowers pitch by two semitones
+- **Sharp** (♯): Raises pitch by one semitone
+- **Double Sharp** (♯♯): Raises pitch by two semitones
+
+The numeric encoding allows for efficient storage and processing of accidental information in musical applications.
 
 ## Performance
 
@@ -211,5 +261,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Initial release
 - Scale representation and builders
 - Predefined musical scales
+- Musical accidental types with Unicode symbols
 - Built on top of `muzze-bitflags` for efficient bit operations
 - Comprehensive test suite
