@@ -277,7 +277,7 @@ Musical intervals are represented with their corresponding standard names and nu
 - **Minor 3rd (m3)**: Three semitones
 - **Major 3rd (M3)**: Four semitones
 - **Perfect 4th (P4)**: Five semitones
-- **Augmented 4th (A4)**: Six semitones, also known as the tritone
+- **Augmented 4th (d5)**: Six semitones, also known as the tritone
 - **Diminished 5th (d5)**: Six semitones, equivalent to augmented 4th (tritone)
 - **Perfect 5th (P5)**: Seven semitones
 - **Minor 6th (m6)**: Eight semitones
@@ -377,8 +377,8 @@ let semitone_values: Vec<u8> = major_chord_intervals.iter().map(|&i| u8::from(i)
 // Test interval relationships
 assert_eq!(AUGMENTED_FOURTH, DIMINISHED_FIFTH); // Both are tritones (same semitone value)
 assert_eq!(u8::from(AUGMENTED_FOURTH), 6);
-assert_eq!(AUGMENTED_FOURTH.to_string(), "A4");
-assert_eq!(DIMINISHED_FIFTH.to_string(), "A4"); // Same display as augmented fourth
+assert_eq!(AUGMENTED_FOURTH.to_string(), "d5");
+assert_eq!(DIMINISHED_FIFTH.to_string(), "d5"); // Both display as diminished fifth
 
 // Calculate interval differences
 let major_third_semitones = u8::from(MAJOR_THIRD);

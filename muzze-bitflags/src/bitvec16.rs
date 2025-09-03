@@ -41,6 +41,31 @@ impl BitVec16 {
         Self::from_bits_retain(value)
     }
 
+    /// Creates a new BitVec16 from a vector of booleans
+    ///
+    /// This method creates a BitVec16 from a vector of booleans, where each boolean represents a bit in the BitVec16.
+    ///
+    /// # Arguments
+    /// * `bits` - A vector of booleans representing the bits of the BitVec16
+    ///
+    /// # Returns
+    /// A new BitVec16 instance with the specified bit pattern
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_bitflags::BitVec16;
+    /// let bitvec = BitVec16::from_vec([true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, true]);
+    /// ```
+    #[inline]
+    pub fn from_vec(bits: [bool; 16]) -> Self {
+        let value = bits.into_iter().enumerate().fold(0, |acc, (index, b)| {
+            let b = (b as u16) << index;
+            acc | b
+        });
+
+        Self::from_u16(value)
+    }
+
     /// Returns the total number of bits in a BitVec16
     ///
     /// # Returns
@@ -455,5 +480,14 @@ mod tests {
             .set_index(3)
             .build();
         assert_eq!(bitvec.inner(), 0b0000_0000_0000_1011);
+    }
+
+    #[test]
+    fn test_from_vec() {
+        let bitvec = BitVec16::from_vec([
+            true, false, true, true, false, false, false, false, false, false, false, false, false,
+            false, false, true,
+        ]);
+        assert_eq!(bitvec.inner(), 0b1000_0000_0000_1101);
     }
 }

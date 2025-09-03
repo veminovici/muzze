@@ -47,6 +47,31 @@ impl U4Vec16 {
         Self::from_bits_retain(value)
     }
 
+    /// Creates a new U4Vec16 from a vector of 4-bit values
+    ///
+    /// This method creates a U4Vec16 from a vector of 4-bit values, where each value represents an element in the U4Vec16.
+    ///
+    /// # Arguments
+    /// * `items` - A vector of 4-bit values to convert to U4Vec16
+    ///
+    /// # Returns
+    /// A new U4Vec16 instance with the specified bit pattern
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_bitflags::U4Vec16;
+    ///let vec = U4Vec16::from_vec([0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D]);
+    ///assert_eq!(vec.inner(), 0xD000_0000_0000_000A);
+    /// ```
+    #[inline]
+    pub fn from_vec(items: [u8; 16]) -> Self {
+        let value = items.into_iter().enumerate().fold(0, |acc, (index, item)| {
+            let item = (item as u64) << (Self::ITEM_SIZE * index);
+            acc | item
+        });
+        Self::from_u64(value)
+    }
+
     /// Returns the total number of items in a U4Vec16
     ///
     /// # Returns
@@ -201,7 +226,8 @@ impl U4Vec16Iter {
     ///
     /// # Returns
     /// A new iterator positioned at item 0
-    fn new(vec: U4Vec16) -> Self {
+    #[inline]
+    const fn new(vec: U4Vec16) -> Self {
         Self { vec, index: 0 }
     }
 }
@@ -270,6 +296,7 @@ impl Index<usize> for U4Vec16 {
     /// assert_eq!(vec[0], 0x0F); // Access item at position 0
     /// assert_eq!(vec[15], 0x1); // Access item at position 15
     /// ```
+    #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         // Static array of all possible 4-bit values (0-15) for efficient lookup
         const VALS: [u8; 16] = [
@@ -407,5 +434,14 @@ mod tests {
             0b0000, 0b1010, 0b1011, 0b1110, 0b1111,
         ];
         assert_eq!(items, expect);
+    }
+
+    #[test]
+    fn test_from_vec() {
+        let vec = U4Vec16::from_vec([
+            0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x0D,
+        ]);
+        assert_eq!(vec.inner(), 0xD000_0000_0000_000A);
     }
 }
