@@ -110,6 +110,53 @@ impl U4Vec16 {
         (val & Self::ITEM_MASK) as u8
     }
 
+    /// Resets the 4-bit item at the specified index
+    ///
+    /// This method resets the 4-bit item at the specified index to 0.
+    ///
+    /// # Arguments
+    /// * `index` - The item position to reset (0-15)
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_bitflags::U4Vec16;
+    /// let mut vec = U4Vec16::from_u64(0x1234567890ABCDEF);
+    /// vec.reset_item(0);
+    /// assert_eq!(vec.item(0), 0x00);
+    /// ```
+    #[inline]
+    pub fn reset_item(&mut self, index: usize) {
+        let item = self.item(index) as u64;
+        let mask = item << (Self::ITEM_SIZE * index);
+        let rst = Self::from_bits_retain(mask);
+        *self ^= rst;
+    }
+
+    /// Sets the 4-bit item at the specified index to the given value
+    ///
+    /// This method sets the 4-bit item at the specified index to the given value.
+    ///
+    /// # Arguments
+    /// * `index` - The item position to set (0-15)
+    /// * `value` - The 4-bit value to set (0-15)
+    ///
+    /// # Example
+    /// ```
+    /// use muzze_bitflags::U4Vec16;
+    /// let mut vec = U4Vec16::from_u64(0x1234567890ABCDEF);
+    /// vec.set_item(0, 0x0F);
+    /// assert_eq!(vec.item(0), 0x0F);
+    /// ```
+    #[inline]
+    pub fn set_item(&mut self, index: usize, value: u8) {
+        self.reset_item(index);
+
+        let item = value as u64 & Self::ITEM_MASK;
+        let mask = item << (Self::ITEM_SIZE * index);
+        let rst = Self::from_bits_retain(mask);
+        *self |= rst;
+    }
+
     /// Returns the 4-bit item at position 0 (least significant)
     ///
     /// This is a convenience method equivalent to `self.item(0)`.
@@ -534,5 +581,32 @@ mod tests {
         assert_eq!(vec[13], 0b1011);
         assert_eq!(vec[14], 0b1110);
         assert_eq!(vec[15], 0b1111);
+    }
+
+    #[test]
+    fn test_reset_item() {
+        let mut vec = U4Vec16::from_u64(VAL);
+
+        vec.reset_item(1);
+
+        let items: Vec<u8> = vec.iter_items().collect();
+        let expect = vec![
+            0b1010, 0b0000, 0b1110, 0b1111, 0b0000, 0b0000, 0b0000, 0b0000, 0b0000, 0b0000, 0b0000,
+            0b0000, 0b1010, 0b1011, 0b1110, 0b1111,
+        ];
+        assert_eq!(items, expect);
+    }
+
+    #[test]
+    fn test_set_item() {
+        let mut vec = U4Vec16::from_u64(VAL);
+        vec.set_item(1, 0b1010);
+
+        let items: Vec<u8> = vec.iter_items().collect();
+        let expect = vec![
+            0b1010, 0b1010, 0b1110, 0b1111, 0b0000, 0b0000, 0b0000, 0b0000, 0b0000, 0b0000, 0b0000,
+            0b0000, 0b1010, 0b1011, 0b1110, 0b1111,
+        ];
+        assert_eq!(items, expect);
     }
 }
