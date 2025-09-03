@@ -6,6 +6,8 @@
 
 use muzze_bitflags::{BitVec16, BitVec16Builder};
 
+use crate::Step;
+
 /// Represents a musical scale using a 16-bit vector
 ///
 /// Each bit position (0-15) represents a semitone interval from the root note.
@@ -68,25 +70,25 @@ impl Scale {
     ///
     /// This method calculates the semitone differences between consecutive
     /// intervals in the scale, representing the step pattern of the scale.
-    /// For example, a major scale has steps: [2, 2, 1, 2, 2, 2, 1].
+    /// For example, a major scale has steps: [WHOLE, WHOLE, HALF, WHOLE, WHOLE, WHOLE, HALF].
     ///
     /// # Returns
-    /// An iterator that yields u8 values representing step intervals
+    /// An iterator that yields Step values representing step intervals
     ///
     /// # Example
     /// ```
-    /// use muzze_std::Scale;
+    /// use muzze_std::{Scale, Step, WHOLE, HALF};
     /// let scale = Scale::from_u16(0b0000_0000_0000_1111);
-    /// let steps: Vec<u8> = scale.steps().collect();
-    /// // For a major scale, this would yield [2, 2, 1, 2, 2, 2, 1]
+    /// let steps: Vec<Step> = scale.steps().collect();
+    /// // For a major scale, this would yield [WHOLE, WHOLE, HALF, WHOLE, WHOLE, WHOLE, HALF]
     /// ```
     #[inline]
-    pub fn steps(&self) -> impl Iterator<Item = u8> {
+    pub fn steps(&self) -> impl Iterator<Item = Step> {
         let mut last = 0;
         self.intervals().map(move |interval| {
             let step = interval - last;
             last = interval;
-            step
+            Step::from(step)
         })
     }
 
@@ -122,7 +124,7 @@ impl Scale {
 ///
 /// # Musical Theory
 /// The major scale contains the intervals: 2nd, 3rd, 4th, 5th, 6th, 7th, octave
-/// from the root note, following the step pattern [2, 2, 1, 2, 2, 2, 1].
+/// from the root note, following the step pattern [WHOLE, WHOLE, HALF, WHOLE, WHOLE, WHOLE, HALF].
 ///
 /// # Bit Pattern
 /// The bit pattern `0b0000_1101_0101_1010` represents the semitone intervals
@@ -136,7 +138,7 @@ pub const MAJOR: Scale = Scale::from_u16(0b0000_1101_0101_1010);
 ///
 /// # Musical Theory
 /// The natural minor scale contains the intervals: 2nd, 3rd, 4th, 5th, 6th, 7th, octave
-/// from the root note, following the step pattern [2, 1, 2, 2, 1, 2, 2].
+/// from the root note, following the step pattern [WHOLE, HALF, WHOLE, WHOLE, HALF, WHOLE, WHOLE].
 ///
 /// # Bit Pattern
 /// The bit pattern `0b0000_1010_1101_0110` represents the semitone intervals
@@ -149,7 +151,7 @@ pub const NATURAL_MINOR: Scale = Scale::from_u16(0b0000_1010_1101_0110);
 /// with a raised 7th degree. This creates a stronger leading tone resolution.
 ///
 /// # Musical Theory
-/// The harmonic minor scale follows the step pattern [2, 1, 2, 2, 1, 3, 1],
+/// The harmonic minor scale follows the step pattern [WHOLE, HALF, WHOLE, WHOLE, HALF, WHOLE_HALF, HALF],
 /// where the 6th to 7th degree is an augmented 2nd (3 semitones).
 ///
 /// # Bit Pattern
@@ -164,7 +166,7 @@ pub const HARMONIC_MINOR: Scale = Scale::from_u16(0b0000_1100_1101_0110);
 /// descending form is identical to the natural minor scale.
 ///
 /// # Musical Theory
-/// The ascending melodic minor follows the step pattern [2, 1, 2, 2, 2, 2, 1],
+/// The ascending melodic minor follows the step pattern [WHOLE, HALF, WHOLE, WHOLE, WHOLE, WHOLE, HALF],
 /// creating a smooth melodic line without the augmented 2nd of the harmonic minor.
 ///
 /// # Bit Pattern
@@ -332,15 +334,15 @@ impl Default for ScaleBuilder {
 ///
 /// # Examples
 /// ```
-/// use muzze_std::{MAJOR, ScaleStepBuilder};
+/// use muzze_std::{MAJOR, ScaleStepBuilder, WHOLE, HALF};
 /// let scale = ScaleStepBuilder::default()
-///     .add_step(2)  // Whole step
-///     .add_step(2)  // Whole step
-///     .add_step(1)  // Half step
-///     .add_step(2)  // Whole step
-///     .add_step(2)  // Whole step
-///     .add_step(2)  // Whole step
-///     .add_step(1)  // Half step
+///     .add_step(WHOLE)  // Whole step
+///     .add_step(WHOLE)  // Whole step
+///     .add_step(HALF)   // Half step
+///     .add_step(WHOLE)  // Whole step
+///     .add_step(WHOLE)  // Whole step
+///     .add_step(WHOLE)  // Whole step
+///     .add_step(HALF)   // Half step
 ///     .build();
 /// // This creates a major scale with step pattern [2, 2, 1, 2, 2, 2, 1]
 /// assert_eq!(scale, MAJOR);
@@ -373,11 +375,11 @@ impl ScaleStepBuilder {
     ///
     /// This method adds a step interval to the scale, where the step represents
     /// the number of semitones to move from the last added interval. This allows
-    /// building scales by specifying step patterns (e.g., whole steps = 2,
-    /// half steps = 1) rather than absolute semitone positions.
+    /// building scales by specifying step patterns (e.g., whole steps, half steps)
+    /// rather than absolute semitone positions.
     ///
     /// # Arguments
-    /// * `step` - The number of semitones to add from the last interval (1-16)
+    /// * `step` - The step interval to add from the last interval
     ///
     /// # Returns
     /// A new ScaleStepBuilder with the specified step interval added
@@ -387,17 +389,17 @@ impl ScaleStepBuilder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::ScaleStepBuilder;
+    /// use muzze_std::{ScaleStepBuilder, WHOLE, HALF};
     /// let scale = ScaleStepBuilder::default()
-    ///     .add_step(2)  // Add whole step (major 2nd)
-    ///     .add_step(2)  // Add whole step (major 3rd)
-    ///     .add_step(1)  // Add half step (perfect 4th)
+    ///     .add_step(WHOLE)  // Add whole step (major 2nd)
+    ///     .add_step(WHOLE)  // Add whole step (major 3rd)
+    ///     .add_step(HALF)   // Add half step (perfect 4th)
     ///     .build();
     /// let intervals: Vec<u8> = scale.intervals().collect();
     /// assert_eq!(intervals, vec![2, 4, 5]);
     /// ```
-    pub const fn add_step(self, step: u8) -> Self {
-        let interval = self.last_interval + step;
+    pub const fn add_step(self, step: Step) -> Self {
+        let interval = self.last_interval + step.inner();
         let last_interval = interval;
         Self {
             scale_builder: self.scale_builder.set_interval(last_interval),
@@ -415,15 +417,15 @@ impl ScaleStepBuilder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::{MAJOR, ScaleStepBuilder};
+    /// use muzze_std::{MAJOR, ScaleStepBuilder, WHOLE, HALF};
     /// let scale = ScaleStepBuilder::default()
-    ///     .add_step(2)
-    ///     .add_step(2)
-    ///     .add_step(1)
-    ///     .add_step(2)
-    ///     .add_step(2)
-    ///     .add_step(2)
-    ///     .add_step(1)
+    ///     .add_step(WHOLE)
+    ///     .add_step(WHOLE)
+    ///     .add_step(HALF)
+    ///     .add_step(WHOLE)
+    ///     .add_step(WHOLE)
+    ///     .add_step(WHOLE)
+    ///     .add_step(HALF)
     ///     .build();
     /// // This creates a major scale with intervals [2, 4, 5, 7, 9, 11, 12]
     /// assert_eq!(scale, MAJOR);
@@ -449,6 +451,8 @@ impl Default for ScaleStepBuilder {
 
 #[cfg(test)]
 mod tests {
+    use crate::{HALF, WHOLE};
+
     use super::*;
 
     const C: u8 = 60;
@@ -482,7 +486,7 @@ mod tests {
             vec![2, 4, 5, 7, 9, 11, 12]
         );
         assert_eq!(
-            MAJOR.steps().collect::<Vec<u8>>(),
+            MAJOR.steps().map(|s| s.into()).collect::<Vec<u8>>(),
             vec![2, 2, 1, 2, 2, 2, 1]
         );
 
@@ -504,7 +508,7 @@ mod tests {
             vec![2, 3, 5, 7, 8, 10, 12]
         );
         assert_eq!(
-            NATURAL_MINOR.steps().collect::<Vec<u8>>(),
+            NATURAL_MINOR.steps().map(|s| s.into()).collect::<Vec<u8>>(),
             vec![2, 1, 2, 2, 1, 2, 2]
         );
 
@@ -526,7 +530,10 @@ mod tests {
             vec![2, 3, 5, 7, 8, 11, 12]
         );
         assert_eq!(
-            HARMONIC_MINOR.steps().collect::<Vec<u8>>(),
+            HARMONIC_MINOR
+                .steps()
+                .map(|s| s.into())
+                .collect::<Vec<u8>>(),
             vec![2, 1, 2, 2, 1, 3, 1]
         );
 
@@ -548,7 +555,7 @@ mod tests {
             vec![2, 3, 5, 7, 9, 11, 12]
         );
         assert_eq!(
-            MELODIC_MINOR.steps().collect::<Vec<u8>>(),
+            MELODIC_MINOR.steps().map(|s| s.into()).collect::<Vec<u8>>(),
             vec![2, 1, 2, 2, 2, 2, 1]
         );
 
@@ -565,7 +572,10 @@ mod tests {
             vec![2, 4, 7, 9]
         );
         assert_eq!(
-            PENTATONIC_MAJOR.steps().collect::<Vec<u8>>(),
+            PENTATONIC_MAJOR
+                .steps()
+                .map(|s| s.into())
+                .collect::<Vec<u8>>(),
             vec![2, 2, 3, 2]
         );
 
@@ -582,7 +592,10 @@ mod tests {
             vec![3, 5, 7, 10]
         );
         assert_eq!(
-            PENTATONIC_MINOR.steps().collect::<Vec<u8>>(),
+            PENTATONIC_MINOR
+                .steps()
+                .map(|s| s.into())
+                .collect::<Vec<u8>>(),
             vec![3, 2, 2, 3]
         );
 
@@ -599,7 +612,7 @@ mod tests {
             vec![3, 5, 6, 7, 10, 12]
         );
         assert_eq!(
-            BLUES_MINOR.steps().collect::<Vec<u8>>(),
+            BLUES_MINOR.steps().map(|s| s.into()).collect::<Vec<u8>>(),
             vec![3, 2, 1, 1, 3, 2]
         );
 
@@ -616,7 +629,7 @@ mod tests {
             vec![2, 3, 4, 7, 9]
         );
         assert_eq!(
-            BLUES_MAJOR.steps().collect::<Vec<u8>>(),
+            BLUES_MAJOR.steps().map(|s| s.into()).collect::<Vec<u8>>(),
             vec![2, 1, 1, 3, 2]
         );
         assert_eq!(
@@ -632,7 +645,10 @@ mod tests {
             vec![2, 4, 6, 8, 10]
         );
         assert_eq!(
-            JAZZ_WHOLE_TONE.steps().collect::<Vec<u8>>(),
+            JAZZ_WHOLE_TONE
+                .steps()
+                .map(|s| s.into())
+                .collect::<Vec<u8>>(),
             vec![2, 2, 2, 2, 2]
         );
         assert_eq!(
@@ -648,7 +664,10 @@ mod tests {
             vec![2, 3, 5, 6, 8, 9, 11]
         );
         assert_eq!(
-            JAZZ_WHOLEHALF_DIMINISHED.steps().collect::<Vec<u8>>(),
+            JAZZ_WHOLEHALF_DIMINISHED
+                .steps()
+                .map(|s| s.into())
+                .collect::<Vec<u8>>(),
             vec![2, 1, 2, 1, 2, 1, 2]
         );
         assert_eq!(
@@ -664,7 +683,7 @@ mod tests {
             vec![2, 4, 5, 7, 8, 9, 11, 12]
         );
         assert_eq!(
-            BIBOP_MAJOR.steps().collect::<Vec<u8>>(),
+            BIBOP_MAJOR.steps().map(|s| s.into()).collect::<Vec<u8>>(),
             vec![2, 2, 1, 2, 1, 1, 2, 1]
         );
         assert_eq!(
@@ -680,7 +699,7 @@ mod tests {
             vec![2, 3, 4, 5, 7, 9, 10, 12]
         );
         assert_eq!(
-            BIBOP_MINOR.steps().collect::<Vec<u8>>(),
+            BIBOP_MINOR.steps().map(|s| s.into()).collect::<Vec<u8>>(),
             vec![2, 1, 1, 1, 2, 2, 1, 2]
         );
         assert_eq!(
@@ -696,7 +715,10 @@ mod tests {
             vec![2, 4, 5, 7, 9, 10, 11, 12]
         );
         assert_eq!(
-            BIBOP_DOMINANT.steps().collect::<Vec<u8>>(),
+            BIBOP_DOMINANT
+                .steps()
+                .map(|s| s.into())
+                .collect::<Vec<u8>>(),
             vec![2, 2, 1, 2, 2, 1, 1, 1]
         );
         assert_eq!(
@@ -731,13 +753,13 @@ mod tests {
     #[test]
     fn test_scale_step_builder() {
         let scale = ScaleStepBuilder::default()
-            .add_step(2)
-            .add_step(2)
-            .add_step(1)
-            .add_step(2)
-            .add_step(2)
-            .add_step(2)
-            .add_step(1)
+            .add_step(WHOLE)
+            .add_step(WHOLE)
+            .add_step(HALF)
+            .add_step(WHOLE)
+            .add_step(WHOLE)
+            .add_step(WHOLE)
+            .add_step(HALF)
             .build();
 
         assert_eq!(
