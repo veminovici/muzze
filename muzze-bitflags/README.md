@@ -138,36 +138,213 @@ The library is designed for high performance:
 
 ### BitVec16
 
-- `from_u16(value)` - Create from u16 value
-- `inner()` - Get underlying u16 value
-- `capacity()` - Get total number of bits (always 16)
-- `bit(index)` - Check if bit at index is set (0-15)
-- `indeces_on()` - Iterator over set bit indices
-- `indeces_off()` - Iterator over unset bit indices
-- `iter_bits()` - Iterator over all bits as booleans
+#### Methods
+- `from_u16(value: u16) -> BitVec16` - Create from u16 value
+- `from_vec(bits: [bool; 16]) -> BitVec16` - Create from array of 16 booleans
+- `inner() -> u16` - Get underlying u16 value
+- `capacity() -> usize` - Get total number of bits (always 16)
+- `bit(index: usize) -> bool` - Check if bit at index is set (0-15)
+- `indeces_on() -> impl Iterator<Item = usize>` - Iterator over set bit indices
+- `indeces_off() -> impl Iterator<Item = usize>` - Iterator over unset bit indices
+- `iter_bits() -> BitVec16Iter` - Iterator over all bits as booleans
+
+#### Traits
 - `Index<usize>` - Support for bracket notation access
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_bitflags::BitVec16;
+
+// Create from u16 value
+let bitvec = BitVec16::from_u16(0b1010_1010_1010_1010);
+
+// Create from boolean array
+let bool_array = [true, false, true, false, true, false, true, false,
+                  true, false, true, false, true, false, true, false];
+let bitvec_from_array = BitVec16::from_vec(bool_array);
+assert_eq!(bitvec, bitvec_from_array);
+
+// Check individual bits
+assert!(bitvec.bit(1));   // Bit 1 is set
+assert!(!bitvec.bit(0));  // Bit 0 is not set
+assert!(bitvec.bit(15));  // Bit 15 is set
+
+// Get capacity
+assert_eq!(bitvec.capacity(), 16);
+
+// Get underlying value
+assert_eq!(bitvec.inner(), 0b1010_1010_1010_1010);
+
+// Iterate over set bits
+let set_indices: Vec<usize> = bitvec.indeces_on().collect();
+assert_eq!(set_indices, vec![1, 3, 5, 7, 9, 11, 13, 15]);
+
+// Iterate over unset bits
+let unset_indices: Vec<usize> = bitvec.indeces_off().collect();
+assert_eq!(unset_indices, vec![0, 2, 4, 6, 8, 10, 12, 14]);
+
+// Iterate over all bits
+let all_bits: Vec<bool> = bitvec.iter_bits().collect();
+assert_eq!(all_bits, vec![false, true, false, true, false, true, false, true,
+                          false, true, false, true, false, true, false, true]);
+
+// Bracket notation access
+assert_eq!(bitvec[0], false);
+assert_eq!(bitvec[1], true);
+assert_eq!(bitvec[15], true);
+```
 
 ### BitVec16Builder
 
-- `new()` - Create new builder with all bits unset
-- `set_index(index)` - Set bit at index (0-15) to true
-- `build()` - Finalize and return BitVec16
+#### Methods
+- `new() -> BitVec16Builder` - Create new builder with all bits unset
+- `set_index(index: u8) -> BitVec16Builder` - Set bit at index (0-15) to true
+- `build() -> BitVec16` - Finalize and return BitVec16
+
+#### Traits
+- `Default` - Creates a builder with no bits set
+
+#### Examples
+```rust
+use muzze_bitflags::{BitVec16, BitVec16Builder};
+
+// Create builder and set specific bits
+let custom_bitvec = BitVec16Builder::default()
+    .set_index(0)   // Set bit 0
+    .set_index(2)   // Set bit 2
+    .set_index(15)  // Set bit 15
+    .build();
+
+// Verify the result
+assert!(custom_bitvec.bit(0));
+assert!(!custom_bitvec.bit(1));
+assert!(custom_bitvec.bit(2));
+assert!(!custom_bitvec.bit(3));
+assert!(custom_bitvec.bit(15));
+
+// Get the underlying value
+assert_eq!(custom_bitvec.inner(), 0b1000_0000_0000_0101);
+
+// Using new() method
+let builder = BitVec16Builder::new();
+let empty_bitvec = builder.build();
+assert_eq!(empty_bitvec.inner(), 0);
+
+// Chaining multiple set_index calls
+let complex_bitvec = BitVec16Builder::new()
+    .set_index(1)
+    .set_index(3)
+    .set_index(5)
+    .set_index(7)
+    .build();
+assert_eq!(complex_bitvec.inner(), 0b1010_1010);
+```
 
 ### U4Vec16
 
-- `from_u64(value)` - Create from u64 value
-- `inner()` - Get underlying u64 value
-- `capacity()` - Get total number of items (always 16)
-- `item(index)` - Get 4-bit item at index (0-15)
-- `iter_items()` - Iterator over all 4-bit items
+#### Methods
+- `from_u64(value: u64) -> U4Vec16` - Create from u64 value
+- `from_vec(items: [u8; 16]) -> U4Vec16` - Create from array of 16 u8 values
+- `inner() -> u64` - Get underlying u64 value
+- `capacity() -> usize` - Get total number of items (always 16)
+- `item(index: usize) -> u8` - Get 4-bit item at index (0-15)
+- `reset_item(index: usize)` - Reset item at index to 0 (mutable)
+- `set_item(index: usize, value: u8)` - Set item at index to value (mutable)
+- `iter_items() -> U4Vec16Iter` - Iterator over all 4-bit items
+
+#### Traits
 - `Index<usize>` - Support for bracket notation access
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_bitflags::U4Vec16;
+
+// Create from u64 value
+let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
+
+// Create from array
+let items = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+let vec_from_array = U4Vec16::from_vec(items);
+
+// Access individual 4-bit items
+assert_eq!(vec.item(0), 0x0F);   // Least significant 4 bits
+assert_eq!(vec.item(1), 0x0E);
+assert_eq!(vec.item(15), 0x1);   // Most significant 4 bits
+
+// Get capacity
+assert_eq!(vec.capacity(), 16);
+
+// Get underlying value
+assert_eq!(vec.inner(), 0x1234567890ABCDEF);
+
+// Iterate over all items
+let all_items: Vec<u8> = vec.iter_items().collect();
+assert_eq!(all_items, vec![15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]);
+
+// Bracket notation access
+assert_eq!(vec[0], 15);
+assert_eq!(vec[1], 14);
+assert_eq!(vec[15], 0);
+
+// Mutable operations
+let mut mutable_vec = U4Vec16::from_u64(0);
+mutable_vec.set_item(0, 5);
+mutable_vec.set_item(15, 10);
+assert_eq!(mutable_vec.item(0), 5);
+assert_eq!(mutable_vec.item(15), 10);
+
+// Reset items
+mutable_vec.reset_item(0);
+assert_eq!(mutable_vec.item(0), 0);
+```
 
 ### U4x2
 
-- `new(first, second)` - Create with two 4-bit values (0-15 each)
-- `inner()` - Get underlying u8 value
-- `first()` - Extract first 4-bit value (lower bits)
-- `second()` - Extract second 4-bit value (upper bits)
+#### Methods
+- `new(first: u8, second: u8) -> U4x2` - Create with two 4-bit values (0-15 each)
+- `inner() -> u8` - Get underlying u8 value
+- `first() -> u8` - Extract first 4-bit value (lower bits)
+- `second() -> u8` - Extract second 4-bit value (upper bits)
+
+#### Traits
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_bitflags::U4x2;
+
+// Pack two 4-bit values into a single u8
+let packed = U4x2::new(10, 5);  // First: 10, Second: 5
+
+// Extract the values
+assert_eq!(packed.first(), 10);   // Lower 4 bits
+assert_eq!(packed.second(), 5);   // Upper 4 bits
+assert_eq!(packed.inner(), 0b0101_1010);  // 5 << 4 | 10
+
+// Create with different values
+let velocity_pair = U4x2::new(15, 12);  // Max velocity, high velocity
+assert_eq!(velocity_pair.first(), 15);
+assert_eq!(velocity_pair.second(), 12);
+assert_eq!(velocity_pair.inner(), 0b1100_1111);  // 12 << 4 | 15
+
+// Edge cases
+let min_values = U4x2::new(0, 0);
+assert_eq!(min_values.first(), 0);
+assert_eq!(min_values.second(), 0);
+assert_eq!(min_values.inner(), 0);
+
+let max_values = U4x2::new(15, 15);
+assert_eq!(max_values.first(), 15);
+assert_eq!(max_values.second(), 15);
+assert_eq!(max_values.inner(), 0b1111_1111);
+
+// Musical application: note velocities
+let note_velocities = U4x2::new(8, 12);  // Attack: 8, Release: 12
+assert_eq!(note_velocities.first(), 8);   // Attack velocity
+assert_eq!(note_velocities.second(), 12); // Release velocity
+```
 
 ## Testing
 

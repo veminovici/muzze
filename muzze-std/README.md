@@ -248,6 +248,275 @@ The library provides comprehensive accidental types for musical notation:
 - `DOUBLE_SHARP` - Double sharp accidental constant
 - `RESET_ACCIDENTAL` - Reset accidental constant
 
+## API Reference
+
+### Scale
+
+#### Methods
+- `from_u16(value: u16) -> Scale` - Create a scale from a u16 bit pattern
+- `intervals() -> impl Iterator<Item = Interval>` - Get an iterator over the intervals in the scale
+- `steps() -> impl Iterator<Item = Step>` - Get an iterator over the step intervals in the scale
+- `apply(root: u8) -> impl Iterator<Item = u8>` - Apply the scale to a root note, returning note values
+
+#### Examples
+```rust
+use muzze_std::{Scale, MAJOR, MAJOR_THIRD, PERFECT_FIFTH};
+
+// Create a scale from bit pattern
+let custom_scale = Scale::from_u16(0b0000_1101_0101_1010);
+
+// Get intervals in the scale
+let intervals: Vec<u8> = MAJOR.intervals().map(|i| u8::from(i)).collect();
+// Result: [2, 4, 5, 7, 9, 11, 12]
+
+// Get step intervals
+let steps: Vec<String> = MAJOR.steps().map(|s| s.to_string()).collect();
+// Result: ["W", "W", "H", "W", "W", "W", "H"]
+
+// Apply scale to root note (C = 0)
+let notes: Vec<u8> = MAJOR.apply(0).collect();
+// Result: [0, 2, 4, 5, 7, 9, 11, 12] (C major scale)
+```
+
+#### Predefined Scale Constants
+- `MAJOR` - Major scale
+- `NATURAL_MINOR` - Natural minor scale
+- `HARMONIC_MINOR` - Harmonic minor scale
+- `MELODIC_MINOR` - Melodic minor scale
+- `PENTATONIC_MAJOR` - Major pentatonic scale
+- `PENTATONIC_MINOR` - Minor pentatonic scale
+- `BLUES_MAJOR` - Major blues scale
+- `BLUES_MINOR` - Minor blues scale
+- `JAZZ_WHOLE_TONE` - Whole tone scale
+- `JAZZ_WHOLEHALF_DIMINISHED` - Whole-half diminished scale
+- `BIBOP_MAJOR` - Bebop major scale
+- `BIBOP_MINOR` - Bebop minor scale
+- `BIBOP_DOMINANT` - Bebop dominant scale
+
+### ScaleBuilder
+
+#### Methods
+- `new() -> ScaleBuilder` - Create a new scale builder
+- `set_interval(interval: Interval) -> ScaleBuilder` - Add an interval to the scale
+- `build() -> Scale` - Build the final scale
+
+#### Traits
+- `Default` - Creates a builder with no intervals set
+
+#### Examples
+```rust
+use muzze_std::{ScaleBuilder, MAJOR_SECOND, MAJOR_THIRD, PERFECT_FIFTH, OCTAVE};
+
+// Build a custom scale using intervals
+let custom_scale = ScaleBuilder::default()
+    .set_interval(MAJOR_SECOND)  // Major 2nd
+    .set_interval(MAJOR_THIRD)   // Major 3rd
+    .set_interval(PERFECT_FIFTH) // Perfect 5th
+    .set_interval(OCTAVE)        // Octave
+    .build();
+
+// Get the intervals
+let intervals: Vec<u8> = custom_scale.intervals().map(|i| u8::from(i)).collect();
+// Result: [2, 4, 7, 12]
+```
+
+### ScaleStepBuilder
+
+#### Methods
+- `new() -> ScaleStepBuilder` - Create a new step-based scale builder
+- `add_step(step: Step) -> ScaleStepBuilder` - Add a step interval to the scale
+- `build() -> Scale` - Build the final scale
+
+#### Traits
+- `Default` - Creates a builder with no steps added
+
+#### Examples
+```rust
+use muzze_std::{ScaleStepBuilder, WHOLE, HALF};
+
+// Build a scale using step patterns
+let major_scale = ScaleStepBuilder::default()
+    .add_step(WHOLE)  // Whole step
+    .add_step(WHOLE)  // Whole step
+    .add_step(HALF)   // Half step
+    .add_step(WHOLE)  // Whole step
+    .add_step(WHOLE)  // Whole step
+    .add_step(WHOLE)  // Whole step
+    .add_step(HALF)   // Half step
+    .build();
+
+// This creates the same pattern as the predefined MAJOR scale
+assert_eq!(major_scale, muzze_std::MAJOR);
+```
+
+### Step
+
+#### Methods
+- `inner() -> u8` - Get the underlying semitone value
+- `from(value: u8) -> Step` - Create a step from a semitone value
+- `to_string() -> String` - Get the string representation of the step
+
+#### Predefined Step Constants
+- `HALF` - Half step (1 semitone)
+- `WHOLE` - Whole step (2 semitones)
+- `WHOLE_HALF` - Whole-half step (3 semitones)
+
+#### Traits
+- `From<u8> for Step` - Convert from u8 to Step
+- `From<Step> for u8` - Convert from Step to u8
+- `Display` - String formatting
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_std::{Step, HALF, WHOLE, WHOLE_HALF};
+
+// Using predefined constants
+assert_eq!(HALF.inner(), 1);
+assert_eq!(WHOLE.inner(), 2);
+assert_eq!(WHOLE_HALF.inner(), 3);
+
+// String representations
+assert_eq!(HALF.to_string(), "H");
+assert_eq!(WHOLE.to_string(), "W");
+assert_eq!(WHOLE_HALF.to_string(), "WH");
+
+// Creating custom steps
+let custom_step = Step::from(4);
+assert_eq!(custom_step.to_string(), "S4");
+assert_eq!(custom_step.inner(), 4);
+
+// Conversions
+let semitone_value: u8 = WHOLE.into();
+assert_eq!(semitone_value, 2);
+
+let step_from_semitones = Step::from(3);
+assert_eq!(step_from_semitones, WHOLE_HALF);
+```
+
+### Interval
+
+#### Methods
+- `inner() -> u8` - Get the underlying semitone value
+- `add_step(step: Step) -> Interval` - Add a step to this interval
+- `from(value: u8) -> Interval` - Create an interval from a semitone value
+- `to_string() -> String` - Get the string representation of the interval
+
+#### Predefined Interval Constants
+- `UNISON` - Unison (0 semitones)
+- `MINOR_SECOND` - Minor 2nd (1 semitone)
+- `MAJOR_SECOND` - Major 2nd (2 semitones)
+- `MINOR_THIRD` - Minor 3rd (3 semitones)
+- `MAJOR_THIRD` - Major 3rd (4 semitones)
+- `PERFECT_FOURTH` - Perfect 4th (5 semitones)
+- `AUGMENTED_FOURTH` - Augmented 4th (6 semitones)
+- `DIMINISHED_FIFTH` - Diminished 5th (6 semitones)
+- `PERFECT_FIFTH` - Perfect 5th (7 semitones)
+- `MINOR_SIXTH` - Minor 6th (8 semitones)
+- `MAJOR_SIXTH` - Major 6th (9 semitones)
+- `MINOR_SEVENTH` - Minor 7th (10 semitones)
+- `MAJOR_SEVENTH` - Major 7th (11 semitones)
+- `OCTAVE` - Octave (12 semitones)
+
+#### Traits
+- `From<u8> for Interval` - Convert from u8 to Interval
+- `From<Interval> for u8` - Convert from Interval to u8
+- `Display` - String formatting
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_std::{Interval, MAJOR_THIRD, PERFECT_FIFTH, OCTAVE, WHOLE, HALF};
+
+// Using predefined constants
+assert_eq!(MAJOR_THIRD.inner(), 4);
+assert_eq!(PERFECT_FIFTH.inner(), 7);
+assert_eq!(OCTAVE.inner(), 12);
+
+// String representations
+assert_eq!(MAJOR_THIRD.to_string(), "M3");
+assert_eq!(PERFECT_FIFTH.to_string(), "P5");
+assert_eq!(OCTAVE.to_string(), "P8");
+
+// Creating custom intervals
+let custom_interval = Interval::from(15);
+assert_eq!(custom_interval.to_string(), "I15");
+assert_eq!(custom_interval.inner(), 15);
+
+// Adding steps to intervals
+let major_third_plus_whole = MAJOR_THIRD.add_step(WHOLE);
+assert_eq!(major_third_plus_whole.inner(), 6); // 4 + 2 = 6
+
+let octave_plus_half = OCTAVE.add_step(HALF);
+assert_eq!(octave_plus_half.inner(), 13); // 12 + 1 = 13
+
+// Conversions
+let semitone_value: u8 = PERFECT_FIFTH.into();
+assert_eq!(semitone_value, 7);
+
+let interval_from_semitones = Interval::from(4);
+assert_eq!(interval_from_semitones, MAJOR_THIRD);
+```
+
+### Accidental
+
+#### Enum Variants
+- `Accidental::Natural` - No pitch modification
+- `Accidental::Reset` - Explicitly cancels previous accidentals
+- `Accidental::Flat` - Lowers pitch by one semitone
+- `Accidental::DoubleFlat` - Lowers pitch by two semitones
+- `Accidental::Sharp` - Raises pitch by one semitone
+- `Accidental::DoubleSharp` - Raises pitch by two semitones
+
+#### Predefined Accidental Constants
+- `NATURAL` - Natural accidental constant
+- `FLAT` - Flat accidental constant
+- `SHARP` - Sharp accidental constant
+- `DOUBLE_FLAT` - Double flat accidental constant
+- `DOUBLE_SHARP` - Double sharp accidental constant
+- `RESET_ACCIDENTAL` - Reset accidental constant
+
+#### Methods
+- `from(value: u8) -> Accidental` - Create an accidental from a u8 value
+- `to_string() -> String` - Get the string representation of the accidental
+
+#### Traits
+- `From<u8> for Accidental` - Convert from u8 to Accidental
+- `From<Accidental> for u8` - Convert from Accidental to u8
+- `Display` - String formatting
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_std::{Accidental, NATURAL, FLAT, SHARP, DOUBLE_FLAT, DOUBLE_SHARP};
+
+// Using predefined constants
+assert_eq!(NATURAL.to_string(), "♮");
+assert_eq!(FLAT.to_string(), "♭");
+assert_eq!(SHARP.to_string(), "♯");
+assert_eq!(DOUBLE_FLAT.to_string(), "𝄫");
+assert_eq!(DOUBLE_SHARP.to_string(), "𝄪");
+
+// Creating accidentals from values
+let natural = Accidental::from(0);
+assert_eq!(natural, NATURAL);
+
+let sharp = Accidental::from(8);
+assert_eq!(sharp, SHARP);
+
+// Conversions
+let value: u8 = FLAT.into();
+assert_eq!(value, 2);
+
+let accidental_from_value = Accidental::from(8);
+assert_eq!(accidental_from_value, SHARP);
+
+// Using enum variants directly
+let flat_variant = Accidental::Flat;
+assert_eq!(flat_variant, FLAT);
+assert_eq!(flat_variant.to_string(), "♭");
+```
+
 ## Musical Theory
 
 ### Interval Representation
