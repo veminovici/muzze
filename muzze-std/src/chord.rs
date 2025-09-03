@@ -6,6 +6,40 @@ use crate::{
 };
 use muzze_bitflags::{u4vec16::U4Vec16Builder, U4Vec16};
 
+/// Macro to generate chord constants with consistent documentation and structure
+///
+/// This macro reduces code duplication by generating chord constants with:
+/// - Consistent documentation format
+/// - Proper chord construction using ChordBuilder
+/// - Standardized naming conventions
+///
+/// The macro takes the following parameters:
+/// - `$name`: The constant name (e.g., `MAJOR_TRIAD`)
+/// - `$display_name`: The display name for the chord
+/// - `$description`: The description text
+/// - `$quality`: The quality description
+/// - `$display_format`: The display format string
+/// - `[$($degree:expr),*]`: Array of degree constants
+macro_rules! chord_const {
+    (
+        $name:ident,
+        $display_name:literal,
+        $description:literal,
+        $quality:literal,
+        $display_format:literal,
+        [$($degree:expr),*]
+    ) => {
+        /// $description
+        ///
+        /// **Degrees**: $display_format
+        /// **Quality**: $quality
+        /// **Display**: $display_format
+        pub const $name: Chord = ChordBuilder::with_root($display_name)
+            $(.set_degree($degree))*
+            .build();
+    };
+}
+
 /// Represents a musical chord as a collection of degrees
 ///
 /// A `Chord` is a fundamental musical structure consisting of multiple notes
@@ -160,180 +194,113 @@ impl Display for Chord {
     }
 }
 
-/// Major triad chord constant
-///
-/// A major triad consists of a root, major third, and perfect fifth.
-/// This is the most fundamental major chord and forms the basis of
-/// major harmony in Western music.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5)
-/// **Quality**: Major (bright, stable sound)
-/// **Display**: R-3-5
-pub const MAJOR_TRIAD: Chord = ChordBuilder::with_root("major triad")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .build();
+chord_const!(
+    MAJOR_TRIAD,
+    "major triad",
+    "A major triad consists of a root, major third, and perfect fifth. This is the most fundamental major chord and forms the basis of major harmony in Western music.",
+    "Major (bright, stable sound)",
+    "R-3-5",
+    [THIRD, FIFTH]
+);
 
-/// Minor triad chord constant
-///
-/// A minor triad consists of a root, minor third, and perfect fifth.
-/// This is the most fundamental minor chord and forms the basis of
-/// minor harmony in Western music.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5)
-/// **Quality**: Minor (dark, melancholic sound)
-/// **Display**: R-♭3-5
-pub const MINOR_TRIAD: Chord = ChordBuilder::with_root("minor triad")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FIFTH)
-    .build();
+chord_const!(
+    MINOR_TRIAD,
+    "minor triad",
+    "A minor triad consists of a root, minor third, and perfect fifth. This is the most fundamental minor chord and forms the basis of minor harmony in Western music.",
+    "Minor (dark, melancholic sound)",
+    "R-♭3-5",
+    [FLAT_THIRD, FIFTH]
+);
 
-/// Diminished triad chord constant
-///
-/// A diminished triad consists of a root, minor third, and diminished fifth.
-/// This chord creates a very tense, unstable sound and is commonly used
-/// as a passing chord or in diminished harmony.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5)
-/// **Quality**: Diminished (tense, unstable sound)
-/// **Display**: R-♭3-♭5
-pub const DIMINISHED_TRIAD: Chord = ChordBuilder::with_root("diminished triad")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FLAT_FIFTH)
-    .build();
+chord_const!(
+    DIMINISHED_TRIAD,
+    "diminished triad",
+    "A diminished triad consists of a root, minor third, and diminished fifth. This chord creates a very tense, unstable sound and is commonly used as a passing chord or in diminished harmony.",
+    "Diminished (tense, unstable sound)",
+    "R-♭3-♭5",
+    [FLAT_THIRD, FLAT_FIFTH]
+);
 
-/// Augmented triad chord constant
-///
-/// An augmented triad consists of a root, major third, and augmented fifth.
-/// This chord creates a bright, tense sound and is commonly used in
-/// augmented harmony and as a passing chord.
-///
-/// **Degrees**: Root (R), Major Third (3), Augmented Fifth (♯5)
-/// **Quality**: Augmented (bright, tense sound)
-/// **Display**: R-3-♯5
-pub const AUGMENTED_TRIAD: Chord = ChordBuilder::with_root("augmented triad")
-    .set_degree(THIRD)
-    .set_degree(SHARP_FIFTH)
-    .build();
+chord_const!(
+    AUGMENTED_TRIAD,
+    "augmented triad",
+    "An augmented triad consists of a root, major third, and augmented fifth. This chord creates a bright, tense sound and is commonly used in augmented harmony and as a passing chord.",
+    "Augmented (bright, tense sound)",
+    "R-3-♯5",
+    [THIRD, SHARP_FIFTH]
+);
 
-/// Major seventh chord constant
-///
-/// A major seventh chord consists of a root, major third, perfect fifth,
-/// and major seventh. This chord has a sophisticated, jazzy sound and is
-/// commonly used in jazz and contemporary music.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7)
-/// **Quality**: Major 7th (sophisticated, jazzy sound)
-/// **Display**: R-3-5-7
-pub const MAJOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root("major seventh chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SEVENTH)
-    .build();
+chord_const!(
+    MAJOR_SEVENTH_CHORD,
+    "major seventh chord",
+    "A major seventh chord consists of a root, major third, perfect fifth, and major seventh. This chord has a sophisticated, jazzy sound and is commonly used in jazz and contemporary music.",
+    "Major 7th (sophisticated, jazzy sound)",
+    "R-3-5-7",
+    [THIRD, FIFTH, SEVENTH]
+);
 
-/// Minor seventh chord constant
-///
-/// A minor seventh chord consists of a root, minor third, perfect fifth,
-/// and minor seventh. This chord has a mellow, bluesy sound and is
-/// commonly used in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7)
-/// **Quality**: Minor 7th (mellow, bluesy sound)
-/// **Display**: R-♭3-5-♭7
-pub const MINOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root("minor seventh chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .build();
+chord_const!(
+    MINOR_SEVENTH_CHORD,
+    "minor seventh chord",
+    "A minor seventh chord consists of a root, minor third, perfect fifth, and minor seventh. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Minor 7th (mellow, bluesy sound)",
+    "R-♭3-5-♭7",
+    [FLAT_THIRD, FIFTH, FLAT_SEVENTH]
+);
 
-/// Dominant seventh chord constant
-///
-/// A dominant seventh chord consists of a root, major third, perfect fifth,
-/// and minor seventh. This chord has a strong, bluesy sound and is
-/// commonly used as a dominant chord in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7)
-/// **Quality**: Dominant 7th (strong, bluesy sound)
-/// **Display**: R-3-5-♭7
-pub const DOMINANT_SEVENTH: Chord = ChordBuilder::with_root("dominant seventh chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .build();
+chord_const!(
+    DOMINANT_SEVENTH,
+    "dominant seventh chord",
+    "A dominant seventh chord consists of a root, major third, perfect fifth, and minor seventh. This chord has a strong, bluesy sound and is commonly used as a dominant chord in functional harmony.",
+    "Dominant 7th (strong, bluesy sound)",
+    "R-3-5-♭7",
+    [THIRD, FIFTH, FLAT_SEVENTH]
+);
 
-/// Half-diminished seventh chord constant
-///
-/// A half-diminished seventh chord consists of a root, minor third, diminished fifth,
-/// and minor seventh. This chord has a tense, unstable sound and is commonly used
-/// as a minor ii chord in functional harmony.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5), Minor Seventh (♭7)
-/// **Quality**: Half-diminished 7th (tense, unstable sound)
-/// **Display**: R-♭3-♭5-♭7
-pub const HALF_DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root("half-diminished seventh chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FLAT_FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .build();
+chord_const!(
+    HALF_DIMINISHED_SEVENTH,
+    "half-diminished seventh chord",
+    "A half-diminished seventh chord consists of a root, minor third, diminished fifth, and minor seventh. This chord has a tense, unstable sound and is commonly used as a minor ii chord in functional harmony.",
+    "Half-diminished 7th (tense, unstable sound)",
+    "R-♭3-♭5-♭7",
+    [FLAT_THIRD, FLAT_FIFTH, FLAT_SEVENTH]
+);
 
-/// Diminished seventh chord constant
-///
-/// A diminished seventh chord consists of a root, minor third, diminished fifth,
-/// and diminished seventh. This chord has a very tense, unstable sound and is
-/// commonly used as a passing chord or in diminished harmony.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5), Diminished Seventh (♭♭7)
-/// **Quality**: Diminished 7th (very tense, unstable sound)
-/// **Display**: R-♭3-♭5-♭♭7
-pub const DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root("diminished seventh chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FLAT_FIFTH)
-    .set_degree(DOUBLEFLAT_SEVENTH)
-    .build();
+chord_const!(
+    DIMINISHED_SEVENTH,
+    "diminished seventh chord",
+    "A diminished seventh chord consists of a root, minor third, diminished fifth, and diminished seventh. This chord has a very tense, unstable sound and is commonly used as a passing chord or in diminished harmony.",
+    "Diminished 7th (very tense, unstable sound)",
+    "R-♭3-♭5-♭♭7",
+    [FLAT_THIRD, FLAT_FIFTH, DOUBLEFLAT_SEVENTH]
+);
 
-/// Augmented seventh chord constant
-///
-/// An augmented seventh chord consists of a root, major third, augmented fifth,
-/// and minor seventh. This chord has a bright, tense sound and is commonly used
-/// in augmented harmony and as a passing chord.
-///
-/// **Degrees**: Root (R), Major Third (3), Augmented Fifth (♯5), Minor Seventh (♭7)
-/// **Quality**: Augmented 7th (bright, tense sound)
-/// **Display**: R-3-♯5-♭7
-pub const AUGMENTED_SEVENTH: Chord = ChordBuilder::with_root("augmented seventh chord")
-    .set_degree(THIRD)
-    .set_degree(SHARP_FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .build();
+chord_const!(
+    AUGMENTED_SEVENTH,
+    "augmented seventh chord",
+    "An augmented seventh chord consists of a root, major third, augmented fifth, and minor seventh. This chord has a bright, tense sound and is commonly used in augmented harmony and as a passing chord.",
+    "Augmented 7th (bright, tense sound)",
+    "R-3-♯5-♭7",
+    [THIRD, SHARP_FIFTH, FLAT_SEVENTH]
+);
 
-/// Minor major seventh chord constant
-///
-/// A minor major seventh chord consists of a root, minor third, perfect fifth,
-/// and major seventh. This chord has a mellow, bluesy sound and is commonly used
-/// in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Major Seventh (7)
-/// **Quality**: Minor major 7th (mellow, bluesy sound)
-/// **Display**: R-♭3-5-7
-pub const MINOR_MAJOR_SEVENTH: Chord = ChordBuilder::with_root("minor major seventh chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SEVENTH)
-    .build();
+chord_const!(
+    MINOR_MAJOR_SEVENTH,
+    "minor major seventh chord",
+    "A minor major seventh chord consists of a root, minor third, perfect fifth, and major seventh. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Minor major 7th (mellow, bluesy sound)",
+    "R-♭3-5-7",
+    [FLAT_THIRD, FIFTH, SEVENTH]
+);
 
-/// Sixth chord constant
-///
-/// A sixth chord consists of a root, major third, and sixth. This chord has a
-/// mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Sixth (6)
-/// **Quality**: Sixth (mellow, bluesy sound)
-/// **Display**: R-3-5-6
-pub const SIXTH_CHORD: Chord = ChordBuilder::with_root("sixth chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SIXTH)
-    .build();
+chord_const!(
+    SIXTH_CHORD,
+    "sixth chord",
+    "A sixth chord consists of a root, major third, and sixth. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Sixth (mellow, bluesy sound)",
+    "R-3-5-6",
+    [THIRD, FIFTH, SIXTH]
+);
 
 /// Sixth minor chord constant
 ///
