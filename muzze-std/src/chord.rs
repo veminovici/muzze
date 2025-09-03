@@ -1,248 +1,10 @@
-//! Chord Degree Types
-//!
-//! This module provides types for representing chord degrees and their accidentals.
-//! Chord degrees represent the position of notes within a chord (1st, 3rd, 5th, etc.)
-//! and can be modified with accidentals (natural, flat, sharp, double flat).
-
 use std::fmt::Display;
 
+use crate::{
+    Degree, DegreeAccidental, DOUBLEFLAT_SEVENTH, ELEVENTH, FIFTH, FLAT_FIFTH, FLAT_SEVENTH,
+    FLAT_THIRD, FOURTH, NINTH, ROOT, SECOND, SEVENTH, SHARP_FIFTH, SIXTH, THIRD, THIRTEENTH,
+};
 use muzze_bitflags::{u4vec16::U4Vec16Builder, U4Vec16};
-
-/// Represents the accidental modification for a chord degree
-///
-/// This enum defines the possible accidental modifications that can be applied
-/// to chord degrees. Each variant corresponds to a specific pitch modification
-/// in musical theory.
-///
-/// # Examples
-///
-/// ```rust
-/// use muzze_std::{DegreeAccidental, DEGREE_NATURAL, DEGREE_FLAT};
-///
-/// let natural = DEGREE_NATURAL;
-/// let flat = DEGREE_FLAT;
-/// assert_eq!(natural, DegreeAccidental::Natural);
-/// assert_eq!(flat, DegreeAccidental::Flat);
-/// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[repr(u8)]
-pub enum DegreeAccidental {
-    /// Natural accidental - no pitch modification
-    Natural = 1,
-    /// Flat accidental - lowers pitch by one semitone
-    Flat = 2,
-    /// Double flat accidental - lowers pitch by two semitones
-    DoubleFlat = 3,
-    /// Sharp accidental - raises pitch by one semitone
-    Sharp = 4,
-}
-
-impl Display for DegreeAccidental {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            DegreeAccidental::Natural => write!(f, ""),
-            DegreeAccidental::Flat => write!(f, "♭"),
-            DegreeAccidental::DoubleFlat => write!(f, "♭♭"),
-            DegreeAccidental::Sharp => write!(f, "♯"),
-        }
-    }
-}
-
-impl From<DegreeAccidental> for u8 {
-    #[inline]
-    fn from(accidental: DegreeAccidental) -> Self {
-        accidental as u8
-    }
-}
-
-impl From<u8> for DegreeAccidental {
-    #[inline]
-    fn from(value: u8) -> Self {
-        match value {
-            1 => DegreeAccidental::Natural,
-            2 => DegreeAccidental::Flat,
-            3 => DegreeAccidental::DoubleFlat,
-            4 => DegreeAccidental::Sharp,
-            _ => panic!("Invalid degree accidental value: {value}"),
-        }
-    }
-}
-
-/// Natural accidental constant for chord degrees
-///
-/// This represents no pitch modification for a chord degree.
-/// It's equivalent to `DegreeAccidental::Natural`.
-pub const DEGREE_NATURAL: DegreeAccidental = DegreeAccidental::Natural;
-
-/// Flat accidental constant for chord degrees
-///
-/// This represents a flat accidental that lowers the pitch by one semitone.
-/// It's equivalent to `DegreeAccidental::Flat`.
-pub const DEGREE_FLAT: DegreeAccidental = DegreeAccidental::Flat;
-
-/// Double flat accidental constant for chord degrees
-///
-/// This represents a double flat accidental that lowers the pitch by two semitones.
-/// It's equivalent to `DegreeAccidental::DoubleFlat`.
-pub const DEGREE_DOUBLEFLAT: DegreeAccidental = DegreeAccidental::DoubleFlat;
-
-/// Sharp accidental constant for chord degrees
-///
-/// This represents a sharp accidental that raises the pitch by one semitone.
-/// It's equivalent to `DegreeAccidental::Sharp`.
-pub const DEGREE_SHARP: DegreeAccidental = DegreeAccidental::Sharp;
-
-/// Represents a chord degree with its accidental modification
-///
-/// A `Degree` represents a specific position within a chord (1st, 3rd, 5th, etc.)
-/// along with any accidental modification. This is used to describe the
-/// theoretical structure of chords in music theory.
-///
-/// # Examples
-///
-/// ```rust
-/// use muzze_std::{Degree, THIRD, FLAT_THIRD, SHARP_FIFTH};
-///
-/// // Using predefined constants
-/// let major_third = THIRD;        // Natural 3rd
-/// let minor_third = FLAT_THIRD;   // Flat 3rd
-/// let augmented_fifth = SHARP_FIFTH; // Sharp 5th
-/// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Degree {
-    /// The degree number (1-7 for standard chord degrees)
-    degree: u8,
-    /// The accidental modification for this degree
-    accidental: DegreeAccidental,
-}
-
-impl Degree {
-    /// Creates a new `Degree` with the specified degree number and accidental
-    ///
-    /// # Arguments
-    /// * `degree` - The degree number (typically 1-7 for chord degrees)
-    /// * `accidental` - The accidental modification for this degree
-    ///
-    /// # Returns
-    /// A new `Degree` instance with the specified degree and accidental
-    const fn new(degree: u8, accidental: DegreeAccidental) -> Self {
-        Self { degree, accidental }
-    }
-}
-
-impl Display for Degree {
-    /// Formats the degree as its string representation
-    ///
-    /// The root degree (1st degree) is displayed as "R" for clarity,
-    /// while all other degrees show their accidental (if any) followed
-    /// by the degree number.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// use muzze_std::{ROOT, THIRD, FLAT_THIRD, SHARP_FIFTH};
-    ///
-    /// assert_eq!(format!("{}", ROOT), "R");
-    /// assert_eq!(format!("{}", THIRD), "3");
-    /// assert_eq!(format!("{}", FLAT_THIRD), "♭3");
-    /// assert_eq!(format!("{}", SHARP_FIFTH), "♯5");
-    /// ```
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.degree == 1 {
-            write!(f, "R")
-        } else {
-            write!(f, "{}{}", self.accidental, self.degree)
-        }
-    }
-}
-
-/// Root degree constant - 1st degree with natural accidental
-///
-/// This represents the root note of a chord, which is the fundamental
-/// note that gives the chord its name and tonal center. When displayed,
-/// the root degree shows as "R" instead of "1".
-pub const ROOT: Degree = Degree::new(1, DEGREE_NATURAL);
-
-/// Second degree constant - 2nd degree with natural accidental
-pub const SECOND: Degree = Degree::new(2, DEGREE_NATURAL);
-
-/// Third degree constant - 3rd degree with natural accidental
-///
-/// This represents a major third interval from the root. In major chords,
-/// this creates the characteristic "major" sound.
-pub const THIRD: Degree = Degree::new(3, DEGREE_NATURAL);
-
-/// Flat third degree constant - 3rd degree with flat accidental
-///
-/// This represents a minor third interval from the root. In minor chords,
-/// this creates the characteristic "minor" sound.
-pub const FLAT_THIRD: Degree = Degree::new(3, DEGREE_FLAT);
-
-/// Fourth degree constant - 4th degree with natural accidental
-///
-/// This represents a perfect fourth interval from the root. This degree
-/// is commonly used in suspended chords (sus4) and some jazz voicings.
-pub const FOURTH: Degree = Degree::new(4, DEGREE_NATURAL);
-
-/// Fifth degree constant - 5th degree with natural accidental
-///
-/// This represents a perfect fifth interval from the root. This is a
-/// fundamental interval in most chord types and provides harmonic stability.
-pub const FIFTH: Degree = Degree::new(5, DEGREE_NATURAL);
-
-/// Sixth degree constant - 6th degree with natural accidental
-///
-/// This represents a minor sixth interval from the root. This is used
-/// in minor sixth chords and creates a mellow, bluesy sound.
-pub const SIXTH: Degree = Degree::new(6, DEGREE_NATURAL);
-
-/// Flat fifth degree constant - 5th degree with flat accidental
-///
-/// This represents a diminished fifth interval from the root. This is used
-/// in diminished chords and creates the characteristic "tritone" sound.
-pub const FLAT_FIFTH: Degree = Degree::new(5, DEGREE_FLAT);
-
-/// Sharp fifth degree constant - 5th degree with sharp accidental
-///
-/// This represents an augmented fifth interval from the root. This is used
-/// in augmented chords and creates a bright, tense sound.
-pub const SHARP_FIFTH: Degree = Degree::new(5, DEGREE_SHARP);
-
-/// Seventh degree constant - 7th degree with natural accidental
-///
-/// This represents a major seventh interval from the root. This is used
-/// in major 7th chords and creates a sophisticated, jazzy sound.
-pub const SEVENTH: Degree = Degree::new(7, DEGREE_NATURAL);
-
-/// Flat seventh degree constant - 7th degree with flat accidental
-///
-/// This represents a minor seventh interval from the root. This is used
-/// in dominant 7th chords and minor 7th chords, creating a bluesy sound.
-pub const FLAT_SEVENTH: Degree = Degree::new(7, DEGREE_FLAT);
-
-/// Double flat seventh degree constant - 7th degree with double flat accidental
-///
-/// This represents a diminished seventh interval from the root. This is used
-/// in diminished 7th chords and creates a very tense, unstable sound.
-pub const DOUBLEFLAT_SEVENTH: Degree = Degree::new(7, DEGREE_DOUBLEFLAT);
-
-/// Ninth degree constant - 9th degree with natural accidental
-///
-/// This represents a major ninth interval from the root. This is used
-/// in major ninth chords and creates a bright, tense sound.
-pub const NINTH: Degree = Degree::new(9, DEGREE_NATURAL);
-
-/// Eleventh degree constant - 11th degree with natural accidental
-///
-/// This represents a major eleventh interval from the root. This is used
-/// in major eleventh chords and creates a bright, tense sound.
-pub const ELEVENTH: Degree = Degree::new(11, DEGREE_NATURAL);
-
-/// Thirteenth degree constant - 13th degree with natural accidental
-///
-/// This represents a major thirteenth interval from the root. This is used
-/// in major thirteenth chords and creates a bright, tense sound.
-pub const THIRTEENTH: Degree = Degree::new(13, DEGREE_NATURAL);
 
 /// Represents a musical chord as a collection of degrees
 ///
@@ -261,7 +23,7 @@ pub const THIRTEENTH: Degree = Degree::new(13, DEGREE_NATURAL);
 /// use muzze_std::{Chord, ChordBuilder, ROOT, THIRD, FIFTH};
 ///
 /// // Create a major triad using the builder
-/// let major_triad = ChordBuilder::with_root()
+/// let major_triad = ChordBuilder::with_root("my chord")
 ///     .set_degree(THIRD)
 ///     .set_degree(FIFTH)
 ///     .build();
@@ -286,12 +48,16 @@ pub const THIRTEENTH: Degree = Degree::new(13, DEGREE_NATURAL);
 /// - **Fast iteration**: O(1) access to individual degrees
 /// - **Memory compact**: No heap allocations required
 /// - **Const construction**: Can be created at compile time
-pub struct Chord(U4Vec16);
+pub struct Chord {
+    degrees: U4Vec16,
+    name: &'static str,
+}
 
 impl Chord {
     /// Creates a new `Chord` from a `U4Vec16` containing degree accidentals
     ///
     /// # Arguments
+    /// * `name` - The name of the chord
     /// * `degrees` - A `U4Vec16` where each 4-bit value represents the accidental
     ///   for the corresponding degree (0=natural, 1=flat, 2=double flat, 3=sharp)
     ///
@@ -302,13 +68,18 @@ impl Chord {
     /// ```rust
     /// use muzze_std::{Chord, ChordBuilder, ROOT, FLAT_THIRD};
     ///
-    /// let chord = ChordBuilder::with_root()
+    /// let chord = ChordBuilder::with_root("m")
     ///     .set_degree(FLAT_THIRD)
     ///     .build();
     /// ```
     #[inline]
-    const fn new(degrees: U4Vec16) -> Self {
-        Self(degrees)
+    const fn new(name: &'static str, degrees: U4Vec16) -> Self {
+        Self { name, degrees }
+    }
+
+    #[inline]
+    pub const fn name(&self) -> &'static str {
+        self.name
     }
 
     /// Returns an iterator over all degrees in the chord
@@ -324,7 +95,7 @@ impl Chord {
     /// ```rust
     /// use muzze_std::{Chord, ChordBuilder, ROOT, THIRD, FIFTH};
     ///
-    /// let chord = ChordBuilder::with_root()
+    /// let chord = ChordBuilder::with_root("my chord")
     ///     .set_degree(THIRD)
     ///     .set_degree(FIFTH)
     ///     .build();
@@ -337,13 +108,19 @@ impl Chord {
     /// ```
     #[inline]
     pub fn degrees(&self) -> impl Iterator<Item = Degree> {
-        self.0.iter_items().enumerate().filter_map(|(index, acc)| {
-            if acc == 0 {
-                None
-            } else {
-                Some(Degree::new(index as u8 + 1, DegreeAccidental::from(acc)))
-            }
-        })
+        self.degrees
+            .iter_items()
+            .enumerate()
+            .filter_map(|(index, acc)| {
+                if acc == 0 {
+                    None
+                } else {
+                    let index = index as u8 + 1;
+                    let acc = DegreeAccidental::try_from(acc).unwrap();
+                    let degree = Degree::new(index, acc);
+                    Some(degree)
+                }
+            })
     }
 }
 
@@ -365,17 +142,17 @@ impl Display for Chord {
     /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let xs = self
-            .0
+            .degrees
             .iter_items()
             .enumerate()
             .filter_map(|(index, accidental)| {
                 if accidental == 0 {
                     None
                 } else {
-                    Some(
-                        Degree::new(index as u8 + 1, DegreeAccidental::from(accidental))
-                            .to_string(),
-                    )
+                    let index = index as u8 + 1;
+                    let acc = DegreeAccidental::try_from(accidental).unwrap();
+                    let degree = Degree::new(index, acc);
+                    Some(degree.to_string())
                 }
             })
             .collect::<Vec<_>>();
@@ -392,7 +169,7 @@ impl Display for Chord {
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5)
 /// **Quality**: Major (bright, stable sound)
 /// **Display**: R-3-5
-pub const MAJOR_TRIAD: Chord = ChordBuilder::with_root()
+pub const MAJOR_TRIAD: Chord = ChordBuilder::with_root("major triad")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .build();
@@ -406,7 +183,7 @@ pub const MAJOR_TRIAD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5)
 /// **Quality**: Minor (dark, melancholic sound)
 /// **Display**: R-♭3-5
-pub const MINOR_TRIAD: Chord = ChordBuilder::with_root()
+pub const MINOR_TRIAD: Chord = ChordBuilder::with_root("minor triad")
     .set_degree(FLAT_THIRD)
     .set_degree(FIFTH)
     .build();
@@ -420,7 +197,7 @@ pub const MINOR_TRIAD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5)
 /// **Quality**: Diminished (tense, unstable sound)
 /// **Display**: R-♭3-♭5
-pub const DIMINISHED_TRIAD: Chord = ChordBuilder::with_root()
+pub const DIMINISHED_TRIAD: Chord = ChordBuilder::with_root("diminished triad")
     .set_degree(FLAT_THIRD)
     .set_degree(FLAT_FIFTH)
     .build();
@@ -434,7 +211,7 @@ pub const DIMINISHED_TRIAD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Augmented Fifth (♯5)
 /// **Quality**: Augmented (bright, tense sound)
 /// **Display**: R-3-♯5
-pub const AUGMENTED_TRIAD: Chord = ChordBuilder::with_root()
+pub const AUGMENTED_TRIAD: Chord = ChordBuilder::with_root("augmented triad")
     .set_degree(THIRD)
     .set_degree(SHARP_FIFTH)
     .build();
@@ -448,7 +225,7 @@ pub const AUGMENTED_TRIAD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7)
 /// **Quality**: Major 7th (sophisticated, jazzy sound)
 /// **Display**: R-3-5-7
-pub const MAJOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
+pub const MAJOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root("major seventh chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(SEVENTH)
@@ -463,7 +240,7 @@ pub const MAJOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7)
 /// **Quality**: Minor 7th (mellow, bluesy sound)
 /// **Display**: R-♭3-5-♭7
-pub const MINOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
+pub const MINOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root("minor seventh chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -478,7 +255,7 @@ pub const MINOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7)
 /// **Quality**: Dominant 7th (strong, bluesy sound)
 /// **Display**: R-3-5-♭7
-pub const DOMINANT_SEVENTH: Chord = ChordBuilder::with_root()
+pub const DOMINANT_SEVENTH: Chord = ChordBuilder::with_root("dominant seventh chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -493,7 +270,7 @@ pub const DOMINANT_SEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5), Minor Seventh (♭7)
 /// **Quality**: Half-diminished 7th (tense, unstable sound)
 /// **Display**: R-♭3-♭5-♭7
-pub const HALF_DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
+pub const HALF_DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root("half-diminished seventh chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FLAT_FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -508,7 +285,7 @@ pub const HALF_DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5), Diminished Seventh (♭♭7)
 /// **Quality**: Diminished 7th (very tense, unstable sound)
 /// **Display**: R-♭3-♭5-♭♭7
-pub const DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
+pub const DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root("diminished seventh chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FLAT_FIFTH)
     .set_degree(DOUBLEFLAT_SEVENTH)
@@ -523,7 +300,7 @@ pub const DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Augmented Fifth (♯5), Minor Seventh (♭7)
 /// **Quality**: Augmented 7th (bright, tense sound)
 /// **Display**: R-3-♯5-♭7
-pub const AUGMENTED_SEVENTH: Chord = ChordBuilder::with_root()
+pub const AUGMENTED_SEVENTH: Chord = ChordBuilder::with_root("augmented seventh chord")
     .set_degree(THIRD)
     .set_degree(SHARP_FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -538,7 +315,7 @@ pub const AUGMENTED_SEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Major Seventh (7)
 /// **Quality**: Minor major 7th (mellow, bluesy sound)
 /// **Display**: R-♭3-5-7
-pub const MINOR_MAJOR_SEVENTH: Chord = ChordBuilder::with_root()
+pub const MINOR_MAJOR_SEVENTH: Chord = ChordBuilder::with_root("minor major seventh chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FIFTH)
     .set_degree(SEVENTH)
@@ -552,7 +329,7 @@ pub const MINOR_MAJOR_SEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Sixth (6)
 /// **Quality**: Sixth (mellow, bluesy sound)
 /// **Display**: R-3-5-6
-pub const SIXTH_CHORD: Chord = ChordBuilder::with_root()
+pub const SIXTH_CHORD: Chord = ChordBuilder::with_root("sixth chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(SIXTH)
@@ -566,7 +343,7 @@ pub const SIXTH_CHORD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Sixth (6)
 /// **Quality**: Sixth minor (mellow, bluesy sound)
 /// **Display**: R-♭3-5-6
-pub const SIXTH_MINOR_CHORD: Chord = ChordBuilder::with_root()
+pub const SIXTH_MINOR_CHORD: Chord = ChordBuilder::with_root("sixth minor chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FIFTH)
     .set_degree(SIXTH)
@@ -580,7 +357,7 @@ pub const SIXTH_MINOR_CHORD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Sixth (6), Ninth (9)
 /// **Quality**: Sixth ninth (mellow, bluesy sound)
 /// **Display**: R-3-5-6-9
-pub const SIXTH_NINTH_CHORD: Chord = ChordBuilder::with_root()
+pub const SIXTH_NINTH_CHORD: Chord = ChordBuilder::with_root("sixth ninth chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(SIXTH)
@@ -595,7 +372,9 @@ pub const SIXTH_NINTH_CHORD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Perfect Fifth (5)
 /// **Quality**: Fifth (mellow, bluesy sound)
 /// **Display**: R-5
-pub const FIFTH_CHORD: Chord = ChordBuilder::with_root().set_degree(FIFTH).build();
+pub const FIFTH_CHORD: Chord = ChordBuilder::with_root("fifth chord")
+    .set_degree(FIFTH)
+    .build();
 
 /// Dominant ninth chord constant
 ///
@@ -606,7 +385,7 @@ pub const FIFTH_CHORD: Chord = ChordBuilder::with_root().set_degree(FIFTH).build
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7), Ninth (9)
 /// **Quality**: Dominant 9th (strong, bluesy sound)
 /// **Display**: R-3-5-♭7-9
-pub const DOMINANT_NINTH: Chord = ChordBuilder::with_root()
+pub const DOMINANT_NINTH: Chord = ChordBuilder::with_root("dominant ninth chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -622,7 +401,7 @@ pub const DOMINANT_NINTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7), Ninth (9)
 /// **Quality**: Minor 9th (mellow, bluesy sound)
 /// **Display**: R-♭3-5-♭7-9
-pub const MINOR_NINTH: Chord = ChordBuilder::with_root()
+pub const MINOR_NINTH: Chord = ChordBuilder::with_root("minor ninth chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -638,7 +417,7 @@ pub const MINOR_NINTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7), Ninth (9)
 /// **Quality**: Major 9th (bright, tense sound)
 /// **Display**: R-3-5-7-9
-pub const MAJOR_NINTH: Chord = ChordBuilder::with_root()
+pub const MAJOR_NINTH: Chord = ChordBuilder::with_root("major ninth chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(SEVENTH)
@@ -654,7 +433,7 @@ pub const MAJOR_NINTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7), Eleventh (11)
 /// **Quality**: Eleventh (bright, tense sound)
 /// **Display**: R-3-5-7-11
-pub const ELEVENTH_CHORD: Chord = ChordBuilder::with_root()
+pub const ELEVENTH_CHORD: Chord = ChordBuilder::with_root("eleventh chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(SEVENTH)
@@ -671,7 +450,7 @@ pub const ELEVENTH_CHORD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7), Eleventh (11)
 /// **Quality**: Minor 11th (mellow, bluesy sound)
 /// **Display**: R-♭3-5-♭7-11
-pub const MINOR_ELEVENTH: Chord = ChordBuilder::with_root()
+pub const MINOR_ELEVENTH: Chord = ChordBuilder::with_root("minor eleventh chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -688,7 +467,7 @@ pub const MINOR_ELEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7), Eleventh (11), Thirteenth (13)
 /// **Quality**: Thirteenth (bright, tense sound)
 /// **Display**: R-3-5-♭7-11-13
-pub const THIRTEENTH_CHORD: Chord = ChordBuilder::with_root()
+pub const THIRTEENTH_CHORD: Chord = ChordBuilder::with_root("thirteenth chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -706,7 +485,7 @@ pub const THIRTEENTH_CHORD: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7), Eleventh (11), Thirteenth (13)
 /// **Quality**: Minor 13th (mellow, bluesy sound)
 /// **Display**: R-♭3-5-♭7-11-13
-pub const MINOR_THIRTEENTH: Chord = ChordBuilder::with_root()
+pub const MINOR_THIRTEENTH: Chord = ChordBuilder::with_root("minor thirteenth chord")
     .set_degree(FLAT_THIRD)
     .set_degree(FIFTH)
     .set_degree(FLAT_SEVENTH)
@@ -724,7 +503,7 @@ pub const MINOR_THIRTEENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Seventh (7), Eleventh (11), Thirteenth (13)
 /// **Quality**: Major 13th (bright, tense sound)
 /// **Display**: R-3-5-7-11-13
-pub const MAJOR_THIRTEENTH: Chord = ChordBuilder::with_root()
+pub const MAJOR_THIRTEENTH: Chord = ChordBuilder::with_root("major thirteenth chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(SEVENTH)
@@ -742,7 +521,7 @@ pub const MAJOR_THIRTEENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7), Eleventh (11)
 /// **Quality**: Major 11th (bright, tense sound)
 /// **Display**: R-3-5-7-11
-pub const MAJOR_ELEVENTH: Chord = ChordBuilder::with_root()
+pub const MAJOR_ELEVENTH: Chord = ChordBuilder::with_root("major eleventh chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(SEVENTH)
@@ -757,7 +536,7 @@ pub const MAJOR_ELEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Perfect Second (2), Perfect Fifth (5)
 /// **Quality**: Suspended 2nd (suspended, unresolved sound)
 /// **Display**: R-2-5
-pub const SUSPENDED_SECOND: Chord = ChordBuilder::with_root()
+pub const SUSPENDED_SECOND: Chord = ChordBuilder::with_root("suspended second chord")
     .set_degree(SECOND)
     .set_degree(FIFTH)
     .build();
@@ -771,7 +550,7 @@ pub const SUSPENDED_SECOND: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Perfect Fourth (4), Perfect Fifth (5)
 /// **Quality**: Suspended 4th (suspended, unresolved sound)
 /// **Display**: R-4-5
-pub const SUSPENDED_FOURTH: Chord = ChordBuilder::with_root()
+pub const SUSPENDED_FOURTH: Chord = ChordBuilder::with_root("suspended fourth chord")
     .set_degree(FOURTH)
     .set_degree(FIFTH)
     .build();
@@ -784,7 +563,7 @@ pub const SUSPENDED_FOURTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Perfect Second (2), Major Third (3), Perfect Fifth (5)
 /// **Quality**: Added 2nd (bright, tense sound)
 /// **Display**: R-2-3-5
-pub const ADDED_SECOND: Chord = ChordBuilder::with_root()
+pub const ADDED_SECOND: Chord = ChordBuilder::with_root("added second chord")
     .set_degree(SECOND)
     .set_degree(THIRD)
     .set_degree(FIFTH)
@@ -799,7 +578,7 @@ pub const ADDED_SECOND: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Ninth (9)
 /// **Quality**: Added 9th (bright, tense sound)
 /// **Display**: R-3-5-9
-pub const ADDED_NINTH: Chord = ChordBuilder::with_root()
+pub const ADDED_NINTH: Chord = ChordBuilder::with_root("added ninth chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(NINTH)
@@ -814,7 +593,7 @@ pub const ADDED_NINTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Eleventh (11)
 /// **Quality**: Added 11th (bright, tense sound)
 /// **Display**: R-3-5-11
-pub const ADDED_ELEVENTH: Chord = ChordBuilder::with_root()
+pub const ADDED_ELEVENTH: Chord = ChordBuilder::with_root("added eleventh chord")
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .set_degree(ELEVENTH)
@@ -829,11 +608,12 @@ pub const ADDED_ELEVENTH: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Flat Fifth (♭5), Flat Seventh (♭7)
 /// **Quality**: Dominant 7th flat 5 (strong, bluesy sound)
 /// **Display**: R-3-♭5-♭7
-pub const DOMINANT_SEVENTH_FLAT_FIVE: Chord = ChordBuilder::with_root()
-    .set_degree(THIRD)
-    .set_degree(FLAT_FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .build();
+pub const DOMINANT_SEVENTH_FLAT_FIVE: Chord =
+    ChordBuilder::with_root("dominant seventh flat five chord")
+        .set_degree(THIRD)
+        .set_degree(FLAT_FIFTH)
+        .set_degree(FLAT_SEVENTH)
+        .build();
 
 /// Dominant seventh sharp five chord constant
 ///
@@ -844,11 +624,12 @@ pub const DOMINANT_SEVENTH_FLAT_FIVE: Chord = ChordBuilder::with_root()
 /// **Degrees**: Root (R), Major Third (3), Sharp Fifth (♯5), Flat Seventh (♭7)
 /// **Quality**: Dominant 7th sharp 5 (strong, bluesy sound)
 /// **Display**: R-3-♯5-♭7
-pub const DOMINANT_SEVENTH_SHARP_FIVE: Chord = ChordBuilder::with_root()
-    .set_degree(THIRD)
-    .set_degree(SHARP_FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .build();
+pub const DOMINANT_SEVENTH_SHARP_FIVE: Chord =
+    ChordBuilder::with_root("dominant seventh sharp five chord")
+        .set_degree(THIRD)
+        .set_degree(SHARP_FIFTH)
+        .set_degree(FLAT_SEVENTH)
+        .build();
 
 /// A fluent builder for constructing `Chord` instances
 ///
@@ -865,19 +646,19 @@ pub const DOMINANT_SEVENTH_SHARP_FIVE: Chord = ChordBuilder::with_root()
 /// use muzze_std::{ChordBuilder, ROOT, THIRD, FIFTH, FLAT_THIRD, SHARP_FIFTH, FLAT_SEVENTH};
 ///
 /// // Build a major triad
-/// let major_triad = ChordBuilder::with_root()
+/// let major_triad = ChordBuilder::with_root("my chord")
 ///     .set_degree(THIRD)
 ///     .set_degree(FIFTH)
 ///     .build();
 ///
 /// // Build a minor triad with augmented fifth
-/// let minor_augmented = ChordBuilder::with_root()
+/// let minor_augmented = ChordBuilder::with_root("my chord")
 ///     .set_degree(FLAT_THIRD)
 ///     .set_degree(SHARP_FIFTH)
 ///     .build();
 ///
 /// // Build a complex jazz chord
-/// let jazz_chord = ChordBuilder::with_root()
+/// let jazz_chord = ChordBuilder::with_root("my chord")
 ///     .set_degree(THIRD)
 ///     .set_degree(SHARP_FIFTH)
 ///     .set_degree(FLAT_SEVENTH)
@@ -890,7 +671,10 @@ pub const DOMINANT_SEVENTH_SHARP_FIVE: Chord = ChordBuilder::with_root()
 /// - **Efficient storage**: Uses 64 bits total (16 degrees × 4 bits each)
 /// - **No allocations**: Stack-only operations with no heap allocations
 /// - **Method chaining**: Fluent interface for readable chord construction
-pub struct ChordBuilder(U4Vec16Builder);
+pub struct ChordBuilder {
+    name: &'static str,
+    bldr: U4Vec16Builder,
+}
 
 impl ChordBuilder {
     /// Creates a new `ChordBuilder` with a root degree
@@ -906,7 +690,7 @@ impl ChordBuilder {
     /// ```rust
     /// use muzze_std::{ChordBuilder, ROOT};
     ///
-    /// let builder = ChordBuilder::with_root();
+    /// let builder = ChordBuilder::with_root("my chord");
     /// let chord = builder.build();
     ///
     /// // The root degree should be set
@@ -914,8 +698,10 @@ impl ChordBuilder {
     /// assert_eq!(degrees[0], ROOT);
     /// ```
     #[inline]
-    pub const fn with_root() -> Self {
-        Self(U4Vec16Builder::new()).set_degree(ROOT)
+    pub const fn with_root(name: &'static str) -> Self {
+        let bldr = U4Vec16Builder::new();
+        let bldr = Self { name, bldr };
+        bldr.set_degree(ROOT)
     }
 
     /// Sets a degree in the chord being built
@@ -936,7 +722,7 @@ impl ChordBuilder {
     /// ```rust
     /// use muzze_std::{ChordBuilder, ROOT, THIRD, FLAT_THIRD};
     ///
-    /// let builder = ChordBuilder::with_root()
+    /// let builder = ChordBuilder::with_root("my chord")
     ///     .set_degree(THIRD)     // Set major third (3rd degree)
     ///     .set_degree(FLAT_THIRD); // Overwrite with minor third
     ///
@@ -947,10 +733,12 @@ impl ChordBuilder {
     /// ```
     #[inline]
     pub const fn set_degree(self, degree: Degree) -> Self {
-        Self(
-            self.0
-                .set_item(degree.degree as usize - 1, degree.accidental as u8),
-        )
+        Self {
+            name: self.name,
+            bldr: self
+                .bldr
+                .set_item(degree.degree() as usize - 1, degree.accidental() as u8),
+        }
     }
 
     /// Builds the final `Chord` from the builder
@@ -965,7 +753,7 @@ impl ChordBuilder {
     /// ```rust
     /// use muzze_std::{ChordBuilder, ROOT, THIRD, FIFTH};
     ///
-    /// let chord = ChordBuilder::with_root()
+    /// let chord = ChordBuilder::with_root("my chord")
     ///     .set_degree(THIRD)
     ///     .set_degree(FIFTH)
     ///     .build(); // Builder is consumed here
@@ -978,143 +766,14 @@ impl ChordBuilder {
     /// ```
     #[inline]
     pub const fn build(self) -> Chord {
-        Chord::new(self.0.build())
-    }
-}
-
-impl Default for ChordBuilder {
-    /// Creates a default `ChordBuilder` with a root degree
-    ///
-    /// This implementation provides a sensible default for `ChordBuilder`
-    /// by creating a new builder with the root degree set to natural.
-    /// This is equivalent to calling `ChordBuilder::new()`.
-    ///
-    /// # Returns
-    /// A new `ChordBuilder` instance with the root degree set to natural
-    ///
-    /// # Example
-    /// ```rust
-    /// use muzze_std::ChordBuilder;
-    ///
-    /// let builder = ChordBuilder::default();
-    /// let chord = builder.build();
-    ///
-    /// // The root degree should be set
-    /// let degrees: Vec<_> = chord.degrees().collect();
-    /// assert_eq!(degrees[0], muzze_std::ROOT);
-    /// ```
-    #[inline]
-    fn default() -> Self {
-        Self::with_root()
+        Chord::new(self.name, self.bldr.build())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    // DegreeAccidental tests
-    #[test]
-    fn test_degree_accidental_display() {
-        assert_eq!(format!("{DEGREE_NATURAL}"), "");
-        assert_eq!(format!("{DEGREE_FLAT}"), "♭");
-        assert_eq!(format!("{DEGREE_DOUBLEFLAT}"), "♭♭");
-        assert_eq!(format!("{DEGREE_SHARP}"), "♯");
-    }
-
-    #[test]
-    fn test_degree_accidental_from_u8() {
-        assert_eq!(DegreeAccidental::from(1), DEGREE_NATURAL);
-        assert_eq!(DegreeAccidental::from(2), DEGREE_FLAT);
-        assert_eq!(DegreeAccidental::from(3), DEGREE_DOUBLEFLAT);
-        assert_eq!(DegreeAccidental::from(4), DEGREE_SHARP);
-    }
-
-    #[test]
-    #[should_panic(expected = "Invalid degree accidental value: 5")]
-    fn test_degree_accidental_from_invalid_u8() {
-        let _ = DegreeAccidental::from(5);
-    }
-
-    #[test]
-    fn test_degree_accidental_to_u8() {
-        assert_eq!(u8::from(DEGREE_NATURAL), 1);
-        assert_eq!(u8::from(DEGREE_FLAT), 2);
-        assert_eq!(u8::from(DEGREE_DOUBLEFLAT), 3);
-        assert_eq!(u8::from(DEGREE_SHARP), 4);
-    }
-
-    #[test]
-    fn test_degree_accidental_roundtrip() {
-        for i in 1..=4 {
-            let accidental = DegreeAccidental::from(i);
-            assert_eq!(u8::from(accidental), i);
-        }
-    }
-
-    // Degree tests
-    #[test]
-    fn test_degree_display() {
-        assert_eq!(format!("{ROOT}"), "R");
-        assert_eq!(format!("{THIRD}"), "3");
-        assert_eq!(format!("{FLAT_THIRD}"), "♭3");
-        assert_eq!(format!("{SHARP_FIFTH}"), "♯5");
-        assert_eq!(format!("{DOUBLEFLAT_SEVENTH}"), "♭♭7");
-    }
-
-    #[test]
-    fn test_degree_new() {
-        let custom_degree = Degree::new(2, DEGREE_SHARP);
-        assert_eq!(format!("{custom_degree}"), "♯2");
-    }
-
-    #[test]
-    fn test_degree_constants() {
-        assert_eq!(ROOT.degree, 1);
-        assert_eq!(ROOT.accidental, DEGREE_NATURAL);
-
-        assert_eq!(SECOND.degree, 2);
-        assert_eq!(SECOND.accidental, DEGREE_NATURAL);
-
-        assert_eq!(THIRD.degree, 3);
-        assert_eq!(THIRD.accidental, DEGREE_NATURAL);
-
-        assert_eq!(FLAT_THIRD.degree, 3);
-        assert_eq!(FLAT_THIRD.accidental, DEGREE_FLAT);
-
-        assert_eq!(FOURTH.degree, 4);
-        assert_eq!(FOURTH.accidental, DEGREE_NATURAL);
-
-        assert_eq!(FIFTH.degree, 5);
-        assert_eq!(FIFTH.accidental, DEGREE_NATURAL);
-
-        assert_eq!(FLAT_FIFTH.degree, 5);
-        assert_eq!(FLAT_FIFTH.accidental, DEGREE_FLAT);
-
-        assert_eq!(SHARP_FIFTH.degree, 5);
-        assert_eq!(SHARP_FIFTH.accidental, DEGREE_SHARP);
-
-        assert_eq!(SIXTH.degree, 6);
-        assert_eq!(SIXTH.accidental, DEGREE_NATURAL);
-
-        assert_eq!(SEVENTH.degree, 7);
-        assert_eq!(SEVENTH.accidental, DEGREE_NATURAL);
-
-        assert_eq!(FLAT_SEVENTH.degree, 7);
-        assert_eq!(FLAT_SEVENTH.accidental, DEGREE_FLAT);
-
-        assert_eq!(DOUBLEFLAT_SEVENTH.degree, 7);
-        assert_eq!(DOUBLEFLAT_SEVENTH.accidental, DEGREE_DOUBLEFLAT);
-
-        assert_eq!(NINTH.degree, 9);
-        assert_eq!(NINTH.accidental, DEGREE_NATURAL);
-
-        assert_eq!(ELEVENTH.degree, 11);
-        assert_eq!(ELEVENTH.accidental, DEGREE_NATURAL);
-
-        assert_eq!(THIRTEENTH.degree, 13);
-        assert_eq!(THIRTEENTH.accidental, DEGREE_NATURAL);
-    }
+    use crate::{DEGREE_DOUBLEFLAT, DEGREE_FLAT, DEGREE_NATURAL, DEGREE_SHARP};
 
     // Chord tests
     #[test]
@@ -1123,13 +782,14 @@ mod tests {
             .set_item(0, DEGREE_NATURAL as u8)
             .set_item(2, DEGREE_NATURAL as u8)
             .set_item(4, DEGREE_NATURAL as u8);
-        let chord = Chord::new(builder.build());
+        let chord = Chord::new("test", builder.build());
 
         let degrees: Vec<Degree> = chord.degrees().collect();
         assert_eq!(degrees.len(), 3);
         assert_eq!(degrees[0], ROOT);
         assert_eq!(degrees[1], THIRD);
         assert_eq!(degrees[2], FIFTH);
+        assert_eq!(chord.name, "test");
     }
 
     #[test]
@@ -1138,41 +798,31 @@ mod tests {
             .set_item(0, DEGREE_NATURAL as u8)
             .set_item(2, DEGREE_FLAT as u8)
             .set_item(4, DEGREE_SHARP as u8);
-        let chord = Chord::new(builder.build());
+        let chord = Chord::new("test", builder.build());
 
         let degrees: Vec<Degree> = chord.degrees().collect();
         assert_eq!(degrees[0], ROOT);
         assert_eq!(degrees[1], FLAT_THIRD);
         assert_eq!(degrees[2], SHARP_FIFTH);
+        assert_eq!(chord.name, "test");
     }
 
     // ChordBuilder tests
     #[test]
     fn test_chord_builder_new() {
-        let builder = ChordBuilder::with_root();
+        let builder = ChordBuilder::with_root("test");
         let chord = builder.build();
         let degrees: Vec<Degree> = chord.degrees().collect();
 
         // Should only have the root degree
         assert_eq!(degrees.len(), 1);
         assert_eq!(degrees[0], ROOT);
-    }
-
-    #[test]
-    fn test_chord_builder_default() {
-        let builder = ChordBuilder::default();
-        let chord = builder.build();
-        let degrees: Vec<Degree> = chord.degrees().collect();
-
-        // All degrees should be natural (0)
-        for degree in degrees {
-            assert_eq!(degree.accidental, DEGREE_NATURAL);
-        }
+        assert_eq!(chord.name, "test");
     }
 
     #[test]
     fn test_chord_builder_set_degree() {
-        let builder = ChordBuilder::with_root()
+        let builder = ChordBuilder::with_root("test")
             .set_degree(THIRD)
             .set_degree(FIFTH);
         let chord = builder.build();
@@ -1181,11 +831,12 @@ mod tests {
         assert_eq!(degrees[0], ROOT);
         assert_eq!(degrees[1], THIRD);
         assert_eq!(degrees[2], FIFTH);
+        assert_eq!(chord.name, "test");
     }
 
     #[test]
     fn test_chord_builder_set_degree_chaining() {
-        let builder = ChordBuilder::with_root()
+        let builder = ChordBuilder::with_root("test")
             .set_degree(FLAT_THIRD)
             .set_degree(SHARP_FIFTH)
             .set_degree(FLAT_SEVENTH);
@@ -1200,7 +851,7 @@ mod tests {
 
     #[test]
     fn test_chord_builder_set_degree_overwrite() {
-        let builder = ChordBuilder::with_root()
+        let builder = ChordBuilder::with_root("test")
             .set_degree(THIRD)
             .set_degree(FLAT_THIRD); // This should overwrite the previous THIRD
         let chord = builder.build();
@@ -1211,7 +862,7 @@ mod tests {
 
     #[test]
     fn test_chord_builder_build_consumes() {
-        let builder = ChordBuilder::with_root();
+        let builder = ChordBuilder::with_root("test");
         let _chord = builder.build();
         // builder is consumed, so we can't use it again
     }
@@ -1510,7 +1161,7 @@ mod tests {
     // Edge case tests
     #[test]
     fn test_chord_builder_edge_values() {
-        let builder = ChordBuilder::with_root()
+        let builder = ChordBuilder::with_root("test")
             .set_degree(Degree::new(1, DEGREE_NATURAL))
             .set_degree(Degree::new(16, DEGREE_SHARP));
         let chord = builder.build();
@@ -1522,7 +1173,7 @@ mod tests {
 
     #[test]
     fn test_chord_builder_all_accidentals() {
-        let builder = ChordBuilder::with_root()
+        let builder = ChordBuilder::with_root("test")
             .set_degree(Degree::new(2, DEGREE_FLAT))
             .set_degree(Degree::new(3, DEGREE_DOUBLEFLAT))
             .set_degree(Degree::new(4, DEGREE_SHARP));
@@ -1537,7 +1188,7 @@ mod tests {
 
     #[test]
     fn test_chord_builder_complex_pattern() {
-        let builder = ChordBuilder::with_root()
+        let builder = ChordBuilder::with_root("test")
             .set_degree(FLAT_THIRD)
             .set_degree(FOURTH)
             .set_degree(SHARP_FIFTH)
@@ -1554,7 +1205,7 @@ mod tests {
 
     #[test]
     fn test_chord_builder_sparse_pattern() {
-        let builder = ChordBuilder::with_root()
+        let builder = ChordBuilder::with_root("test")
             .set_degree(SHARP_FIFTH)
             .set_degree(FLAT_SEVENTH);
         let chord = builder.build();
@@ -1568,7 +1219,7 @@ mod tests {
     // Display implementation tests
     #[test]
     fn test_chord_display_empty_chord() {
-        let chord = ChordBuilder::with_root().build();
+        let chord = ChordBuilder::with_root("test").build();
         let display = format!("{chord}");
         assert_eq!(display, "R");
     }
@@ -1761,7 +1412,7 @@ mod tests {
 
     #[test]
     fn test_chord_display_custom_chord() {
-        let chord = ChordBuilder::with_root()
+        let chord = ChordBuilder::with_root("test")
             .set_degree(Degree::new(2, DEGREE_SHARP))
             .set_degree(FLAT_THIRD)
             .set_degree(Degree::new(4, DEGREE_DOUBLEFLAT))
@@ -1775,7 +1426,7 @@ mod tests {
 
     #[test]
     fn test_chord_display_all_accidentals() {
-        let chord = ChordBuilder::with_root()
+        let chord = ChordBuilder::with_root("test")
             .set_degree(Degree::new(2, DEGREE_FLAT))
             .set_degree(Degree::new(3, DEGREE_DOUBLEFLAT))
             .set_degree(Degree::new(4, DEGREE_SHARP))
@@ -1787,7 +1438,7 @@ mod tests {
 
     #[test]
     fn test_chord_display_edge_degrees() {
-        let chord = ChordBuilder::with_root()
+        let chord = ChordBuilder::with_root("test")
             .set_degree(Degree::new(16, DEGREE_SHARP))
             .build();
 
@@ -1797,7 +1448,7 @@ mod tests {
 
     #[test]
     fn test_chord_display_complex_jazz_chord() {
-        let chord = ChordBuilder::with_root()
+        let chord = ChordBuilder::with_root("test")
             .set_degree(Degree::new(2, DEGREE_SHARP))
             .set_degree(THIRD)
             .set_degree(Degree::new(4, DEGREE_SHARP))
@@ -1813,7 +1464,7 @@ mod tests {
 
     #[test]
     fn test_chord_display_sparse_chord() {
-        let chord = ChordBuilder::with_root()
+        let chord = ChordBuilder::with_root("test")
             .set_degree(SHARP_FIFTH)
             .set_degree(FLAT_SEVENTH)
             .build();
@@ -1824,7 +1475,7 @@ mod tests {
 
     #[test]
     fn test_chord_display_alterations() {
-        let chord = ChordBuilder::with_root()
+        let chord = ChordBuilder::with_root("test")
             .set_degree(THIRD)
             .set_degree(FLAT_FIFTH)
             .set_degree(SHARP_FIFTH) // This should overwrite the flat fifth
@@ -1838,7 +1489,7 @@ mod tests {
 
     #[test]
     fn test_chord_display_unicode_symbols() {
-        let chord = ChordBuilder::with_root()
+        let chord = ChordBuilder::with_root("test")
             .set_degree(Degree::new(2, DEGREE_FLAT))
             .set_degree(Degree::new(3, DEGREE_DOUBLEFLAT))
             .set_degree(Degree::new(4, DEGREE_SHARP))
