@@ -163,6 +163,9 @@ impl Display for Degree {
 /// the root degree shows as "R" instead of "1".
 pub const ROOT: Degree = Degree::new(1, DEGREE_NATURAL);
 
+/// Second degree constant - 2nd degree with natural accidental
+pub const SECOND: Degree = Degree::new(2, DEGREE_NATURAL);
+
 /// Third degree constant - 3rd degree with natural accidental
 ///
 /// This represents a major third interval from the root. In major chords,
@@ -502,6 +505,17 @@ pub const AUGMENTED_SEVENTH: Chord = ChordBuilder::with_root()
 /// **Quality**: Suspended 4th (suspended, unresolved sound)
 pub const SUSPENDED_FOURTH: Chord = ChordBuilder::with_root()
     .set_degree(FOURTH)
+    .set_degree(FIFTH)
+    .build();
+
+/// A suspended second chord consists of a root, perfect second, and perfect fifth.
+/// This chord has a suspended, unresolved sound and is commonly used in
+/// contemporary music and jazz.
+///
+/// **Degrees**: Root (R), Perfect Second (2), Perfect Fifth (5)
+/// **Quality**: Suspended 2nd (suspended, unresolved sound)
+pub const SUSPENDED_SECOND: Chord = ChordBuilder::with_root()
+    .set_degree(SECOND)
     .set_degree(FIFTH)
     .build();
 
