@@ -302,301 +302,176 @@ chord_const!(
     [THIRD, FIFTH, SIXTH]
 );
 
-/// Sixth minor chord constant
-///
-/// A sixth minor chord consists of a root, minor third, and sixth. This chord has a
-/// mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Sixth (6)
-/// **Quality**: Sixth minor (mellow, bluesy sound)
-/// **Display**: R-♭3-5-6
-pub const SIXTH_MINOR_CHORD: Chord = ChordBuilder::with_root("sixth minor chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SIXTH)
-    .build();
+chord_const!(
+    SIXTH_MINOR_CHORD,
+    "sixth minor chord",
+    "A sixth minor chord consists of a root, minor third, and sixth. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Sixth minor (mellow, bluesy sound)",
+    "R-♭3-5-6",
+    [FLAT_THIRD, FIFTH, SIXTH]
+);
 
-/// Sixth ninth chord constant
-///
-/// A sixth ninth chord consists of a root, major third, and ninth. This chord has a
-/// mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Sixth (6), Ninth (9)
-/// **Quality**: Sixth ninth (mellow, bluesy sound)
-/// **Display**: R-3-5-6-9
-pub const SIXTH_NINTH_CHORD: Chord = ChordBuilder::with_root("sixth ninth chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SIXTH)
-    .set_degree(NINTH)
-    .build();
+chord_const!(
+    SIXTH_NINTH_CHORD,
+    "sixth ninth chord",
+    "A sixth ninth chord consists of a root, major third, and ninth. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Sixth ninth (mellow, bluesy sound)",
+    "R-3-5-6-9",
+    [THIRD, FIFTH, SIXTH, NINTH]
+);
 
-/// Fifth chord constant
-///
-/// A fifth chord consists of a root, perfect fifth, and perfect sixth. This chord has a
-/// mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Perfect Fifth (5)
-/// **Quality**: Fifth (mellow, bluesy sound)
-/// **Display**: R-5
-pub const FIFTH_CHORD: Chord = ChordBuilder::with_root("fifth chord")
-    .set_degree(FIFTH)
-    .build();
+chord_const!(
+    FIFTH_CHORD,
+    "fifth chord",
+    "A fifth chord consists of a root, perfect fifth, and perfect sixth. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Fifth (mellow, bluesy sound)",
+    "R-5",
+    [FIFTH]
+);
 
-/// Dominant ninth chord constant
-///
-/// A dominant ninth chord consists of a root, major third, perfect fifth,
-/// and minor seventh. This chord has a strong, bluesy sound and is commonly used
-/// as a dominant chord in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7), Ninth (9)
-/// **Quality**: Dominant 9th (strong, bluesy sound)
-/// **Display**: R-3-5-♭7-9
-pub const DOMINANT_NINTH: Chord = ChordBuilder::with_root("dominant ninth chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .set_degree(NINTH)
-    .build();
+chord_const!(
+    DOMINANT_NINTH,
+    "dominant ninth chord",
+    "A dominant ninth chord consists of a root, major third, perfect fifth, and minor seventh. This chord has a strong, bluesy sound and is commonly used as a dominant chord in functional harmony.",
+    "Dominant 9th (strong, bluesy sound)",
+    "R-3-5-♭7-9",
+    [THIRD, FIFTH, FLAT_SEVENTH, NINTH]
+);
 
-/// Minor ninth chord constant
-///
-/// A minor ninth chord consists of a root, minor third, perfect fifth,
-/// and minor seventh. This chord has a mellow, bluesy sound and is commonly used
-/// as a minor chord in functional harmony.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7), Ninth (9)
-/// **Quality**: Minor 9th (mellow, bluesy sound)
-/// **Display**: R-♭3-5-♭7-9
-pub const MINOR_NINTH: Chord = ChordBuilder::with_root("minor ninth chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .set_degree(NINTH)
-    .build();
+chord_const!(
+    MINOR_NINTH,
+    "minor ninth chord",
+    "A minor ninth chord consists of a root, minor third, perfect fifth, and minor seventh. This chord has a mellow, bluesy sound and is commonly used as a minor chord in functional harmony.",
+    "Minor 9th (mellow, bluesy sound)",
+    "R-♭3-5-♭7-9",
+    [FLAT_THIRD, FIFTH, FLAT_SEVENTH, NINTH]
+);
 
-/// Major ninth chord constant
-///
-/// A major ninth chord consists of a root, major third, perfect fifth,
-/// and major seventh. This chord has a bright, tense sound and is commonly used
-/// as a major chord in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7), Ninth (9)
-/// **Quality**: Major 9th (bright, tense sound)
-/// **Display**: R-3-5-7-9
-pub const MAJOR_NINTH: Chord = ChordBuilder::with_root("major ninth chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SEVENTH)
-    .set_degree(NINTH)
-    .build();
+chord_const!(
+    MAJOR_NINTH,
+    "major ninth chord",
+    "A major ninth chord consists of a root, major third, perfect fifth, and major seventh. This chord has a bright, tense sound and is commonly used as a major chord in functional harmony.",
+    "Major 9th (bright, tense sound)",
+    "R-3-5-7-9",
+    [THIRD, FIFTH, SEVENTH, NINTH]
+);
 
-/// Eleventh chord constant
-///
-/// An eleventh chord consists of a root, major third, perfect fifth,
-/// major seventh, and eleventh. This chord has a bright, tense sound and is
-/// commonly used in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7), Eleventh (11)
-/// **Quality**: Eleventh (bright, tense sound)
-/// **Display**: R-3-5-7-11
-pub const ELEVENTH_CHORD: Chord = ChordBuilder::with_root("eleventh chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SEVENTH)
-    .set_degree(NINTH)
-    .set_degree(ELEVENTH)
-    .build();
+chord_const!(
+    ELEVENTH_CHORD,
+    "eleventh chord",
+    "An eleventh chord consists of a root, major third, perfect fifth, major seventh, and eleventh. This chord has a bright, tense sound and is commonly used in functional harmony.",
+    "Eleventh (bright, tense sound)",
+    "R-3-5-7-11",
+    [THIRD, FIFTH, SEVENTH, NINTH, ELEVENTH]
+);
 
-/// Minor eleventh chord constant
-///
-/// A minor eleventh chord consists of a root, minor third, perfect fifth,
-/// minor seventh, and eleventh. This chord has a mellow, bluesy sound and is
-/// commonly used in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7), Eleventh (11)
-/// **Quality**: Minor 11th (mellow, bluesy sound)
-/// **Display**: R-♭3-5-♭7-11
-pub const MINOR_ELEVENTH: Chord = ChordBuilder::with_root("minor eleventh chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .set_degree(NINTH)
-    .set_degree(ELEVENTH)
-    .build();
+chord_const!(
+    MINOR_ELEVENTH,
+    "minor eleventh chord",
+    "A minor eleventh chord consists of a root, minor third, perfect fifth, minor seventh, and eleventh. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Minor 11th (mellow, bluesy sound)",
+    "R-♭3-5-♭7-11",
+    [FLAT_THIRD, FIFTH, FLAT_SEVENTH, NINTH, ELEVENTH]
+);
 
-/// Thirteenth chord constant
-///
-/// A thirteenth chord consists of a root, major third, perfect fifth,
-/// minor seventh, eleventh, and thirteenth. This chord has a bright, tense sound and is
-/// commonly used in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7), Eleventh (11), Thirteenth (13)
-/// **Quality**: Thirteenth (bright, tense sound)
-/// **Display**: R-3-5-♭7-11-13
-pub const THIRTEENTH_CHORD: Chord = ChordBuilder::with_root("thirteenth chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .set_degree(NINTH)
-    .set_degree(ELEVENTH)
-    .set_degree(THIRTEENTH)
-    .build();
+chord_const!(
+    THIRTEENTH_CHORD,
+    "thirteenth chord",
+    "A thirteenth chord consists of a root, major third, perfect fifth, minor seventh, eleventh, and thirteenth. This chord has a bright, tense sound and is commonly used in functional harmony.",
+    "Thirteenth (bright, tense sound)",
+    "R-3-5-♭7-11-13",
+    [THIRD, FIFTH, FLAT_SEVENTH, NINTH, ELEVENTH, THIRTEENTH]
+);
 
-/// Minor thirteenth chord constant
-///
-/// A minor thirteenth chord consists of a root, minor third, perfect fifth,
-/// minor seventh, eleventh, and thirteenth. This chord has a mellow, bluesy sound and is
-/// commonly used in jazz, blues, and contemporary music.
-///
-/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7), Eleventh (11), Thirteenth (13)
-/// **Quality**: Minor 13th (mellow, bluesy sound)
-/// **Display**: R-♭3-5-♭7-11-13
-pub const MINOR_THIRTEENTH: Chord = ChordBuilder::with_root("minor thirteenth chord")
-    .set_degree(FLAT_THIRD)
-    .set_degree(FIFTH)
-    .set_degree(FLAT_SEVENTH)
-    .set_degree(NINTH)
-    .set_degree(ELEVENTH)
-    .set_degree(THIRTEENTH)
-    .build();
+chord_const!(
+    MINOR_THIRTEENTH,
+    "minor thirteenth chord",
+    "A minor thirteenth chord consists of a root, minor third, perfect fifth, minor seventh, eleventh, and thirteenth. This chord has a mellow, bluesy sound and is commonly used in jazz, blues, and contemporary music.",
+    "Minor 13th (mellow, bluesy sound)",
+    "R-♭3-5-♭7-11-13",
+    [FLAT_THIRD, FIFTH, FLAT_SEVENTH, NINTH, ELEVENTH, THIRTEENTH]
+);
 
-/// Major thirteenth chord constant
-///
-/// A major thirteenth chord consists of a root, major third, perfect fifth,
-/// minor seventh, eleventh, and thirteenth. This chord has a bright, tense sound and is
-/// commonly used in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Seventh (7), Eleventh (11), Thirteenth (13)
-/// **Quality**: Major 13th (bright, tense sound)
-/// **Display**: R-3-5-7-11-13
-pub const MAJOR_THIRTEENTH: Chord = ChordBuilder::with_root("major thirteenth chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SEVENTH)
-    .set_degree(NINTH)
-    .set_degree(ELEVENTH)
-    .set_degree(THIRTEENTH)
-    .build();
+chord_const!(
+    MAJOR_THIRTEENTH,
+    "major thirteenth chord",
+    "A major thirteenth chord consists of a root, major third, perfect fifth, minor seventh, eleventh, and thirteenth. This chord has a bright, tense sound and is commonly used in functional harmony.",
+    "Major 13th (bright, tense sound)",
+    "R-3-5-7-11-13",
+    [THIRD, FIFTH, SEVENTH, NINTH, ELEVENTH, THIRTEENTH]
+);
 
-/// Major eleventh chord constant
-///
-/// A major eleventh chord consists of a root, major third, perfect fifth,
-/// major seventh, and eleventh. This chord has a bright, tense sound and is
-/// commonly used in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7), Eleventh (11)
-/// **Quality**: Major 11th (bright, tense sound)
-/// **Display**: R-3-5-7-11
-pub const MAJOR_ELEVENTH: Chord = ChordBuilder::with_root("major eleventh chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(SEVENTH)
-    .set_degree(NINTH)
-    .set_degree(ELEVENTH)
-    .build();
+chord_const!(
+    MAJOR_ELEVENTH,
+    "major eleventh chord",
+    "A major eleventh chord consists of a root, major third, perfect fifth, major seventh, and eleventh. This chord has a bright, tense sound and is commonly used in functional harmony.",
+    "Major 11th (bright, tense sound)",
+    "R-3-5-7-11",
+    [THIRD, FIFTH, SEVENTH, NINTH, ELEVENTH]
+);
 
-/// A suspended second chord consists of a root, perfect second, and perfect fifth.
-/// This chord has a suspended, unresolved sound and is commonly used in
-/// contemporary music and jazz.
-///
-/// **Degrees**: Root (R), Perfect Second (2), Perfect Fifth (5)
-/// **Quality**: Suspended 2nd (suspended, unresolved sound)
-/// **Display**: R-2-5
-pub const SUSPENDED_SECOND: Chord = ChordBuilder::with_root("suspended second chord")
-    .set_degree(SECOND)
-    .set_degree(FIFTH)
-    .build();
+chord_const!(
+    SUSPENDED_SECOND,
+    "suspended second chord",
+    "A suspended second chord consists of a root, perfect second, and perfect fifth. This chord has a suspended, unresolved sound and is commonly used in contemporary music and jazz.",
+    "Suspended 2nd (suspended, unresolved sound)",
+    "R-2-5",
+    [SECOND, FIFTH]
+);
 
-/// Suspended fourth chord constant
-///
-/// A suspended fourth chord consists of a root, perfect fourth, and perfect fifth.
-/// This chord has a suspended, unresolved sound and is commonly used in
-/// contemporary music and jazz.
-///
-/// **Degrees**: Root (R), Perfect Fourth (4), Perfect Fifth (5)
-/// **Quality**: Suspended 4th (suspended, unresolved sound)
-/// **Display**: R-4-5
-pub const SUSPENDED_FOURTH: Chord = ChordBuilder::with_root("suspended fourth chord")
-    .set_degree(FOURTH)
-    .set_degree(FIFTH)
-    .build();
+chord_const!(
+    SUSPENDED_FOURTH,
+    "suspended fourth chord",
+    "A suspended fourth chord consists of a root, perfect fourth, and perfect fifth. This chord has a suspended, unresolved sound and is commonly used in contemporary music and jazz.",
+    "Suspended 4th (suspended, unresolved sound)",
+    "R-4-5",
+    [FOURTH, FIFTH]
+);
 
-/// Added second chord constant
-///
-/// A added second chord consists of a root, perfect second, and perfect fifth.
-/// This chord has a bright, tense sound and is commonly used in functional harmony.
-///
-/// **Degrees**: Root (R), Perfect Second (2), Major Third (3), Perfect Fifth (5)
-/// **Quality**: Added 2nd (bright, tense sound)
-/// **Display**: R-2-3-5
-pub const ADDED_SECOND: Chord = ChordBuilder::with_root("added second chord")
-    .set_degree(SECOND)
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .build();
+chord_const!(
+    ADDED_SECOND,
+    "added second chord",
+    "A added second chord consists of a root, perfect second, and perfect fifth. This chord has a bright, tense sound and is commonly used in functional harmony.",
+    "Added 2nd (bright, tense sound)",
+    "R-2-3-5",
+    [SECOND, THIRD, FIFTH]
+);
 
-/// Added ninth chord constant
-///
-/// A added ninth chord consists of a root, major third, perfect fifth,
-/// and ninth. This chord has a bright, tense sound and is commonly used
-/// in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Ninth (9)
-/// **Quality**: Added 9th (bright, tense sound)
-/// **Display**: R-3-5-9
-pub const ADDED_NINTH: Chord = ChordBuilder::with_root("added ninth chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(NINTH)
-    .build();
+chord_const!(
+    ADDED_NINTH,
+    "added ninth chord",
+    "A added ninth chord consists of a root, major third, perfect fifth, and ninth. This chord has a bright, tense sound and is commonly used in functional harmony.",
+    "Added 9th (bright, tense sound)",
+    "R-3-5-9",
+    [THIRD, FIFTH, NINTH]
+);
 
-/// Added eleventh chord constant
-///
-/// A added eleventh chord consists of a root, major third, perfect fifth,
-/// major seventh, and eleventh. This chord has a bright, tense sound and is commonly used
-/// in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Eleventh (11)
-/// **Quality**: Added 11th (bright, tense sound)
-/// **Display**: R-3-5-11
-pub const ADDED_ELEVENTH: Chord = ChordBuilder::with_root("added eleventh chord")
-    .set_degree(THIRD)
-    .set_degree(FIFTH)
-    .set_degree(ELEVENTH)
-    .build();
+chord_const!(
+    ADDED_ELEVENTH,
+    "added eleventh chord",
+    "A added eleventh chord consists of a root, major third, perfect fifth, major seventh, and eleventh. This chord has a bright, tense sound and is commonly used in functional harmony.",
+    "Added 11th (bright, tense sound)",
+    "R-3-5-11",
+    [THIRD, FIFTH, ELEVENTH]
+);
 
-/// Dominant seventh flat five chord constant
-///
-/// A dominant seventh flat five chord consists of a root, major third, flat fifth,
-/// and flat seventh. This chord has a strong, bluesy sound and is commonly used
-/// as a dominant chord in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Flat Fifth (♭5), Flat Seventh (♭7)
-/// **Quality**: Dominant 7th flat 5 (strong, bluesy sound)
-/// **Display**: R-3-♭5-♭7
-pub const DOMINANT_SEVENTH_FLAT_FIVE: Chord =
-    ChordBuilder::with_root("dominant seventh flat five chord")
-        .set_degree(THIRD)
-        .set_degree(FLAT_FIFTH)
-        .set_degree(FLAT_SEVENTH)
-        .build();
+chord_const!(
+    DOMINANT_SEVENTH_FLAT_FIVE,
+    "dominant seventh flat five chord",
+    "A dominant seventh flat five chord consists of a root, major third, flat fifth, and flat seventh. This chord has a strong, bluesy sound and is commonly used as a dominant chord in functional harmony.",
+    "Dominant 7th flat 5 (strong, bluesy sound)",
+    "R-3-♭5-♭7",
+    [THIRD, FLAT_FIFTH, FLAT_SEVENTH]
+);
 
-/// Dominant seventh sharp five chord constant
-///
-/// A dominant seventh sharp five chord consists of a root, major third, sharp fifth,
-/// and flat seventh. This chord has a strong, bluesy sound and is commonly used
-/// as a dominant chord in functional harmony.
-///
-/// **Degrees**: Root (R), Major Third (3), Sharp Fifth (♯5), Flat Seventh (♭7)
-/// **Quality**: Dominant 7th sharp 5 (strong, bluesy sound)
-/// **Display**: R-3-♯5-♭7
-pub const DOMINANT_SEVENTH_SHARP_FIVE: Chord =
-    ChordBuilder::with_root("dominant seventh sharp five chord")
-        .set_degree(THIRD)
-        .set_degree(SHARP_FIFTH)
-        .set_degree(FLAT_SEVENTH)
-        .build();
+chord_const!(
+    DOMINANT_SEVENTH_SHARP_FIVE,
+    "dominant seventh sharp five chord",
+    "A dominant seventh sharp five chord consists of a root, major third, sharp fifth, and flat seventh. This chord has a strong, bluesy sound and is commonly used as a dominant chord in functional harmony.",
+    "Dominant 7th sharp 5 (strong, bluesy sound)",
+    "R-3-♯5-♭7",
+    [THIRD, SHARP_FIFTH, FLAT_SEVENTH]
+);
 
 /// A fluent builder for constructing `Chord` instances
 ///
