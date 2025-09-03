@@ -604,17 +604,37 @@ assert_eq!(flat_variant.to_string(), "♭");
 - Examples: "R-3-5" (major triad), "R-♭3-5" (minor triad), "R-3-5-♭7" (dominant seventh)
 
 #### Predefined Chord Constants
-- `MAJOR_TRIAD` - Major triad
-- `MINOR_TRIAD` - Minor triad
-- `DIMINISHED_TRIAD` - Diminished triad
-- `AUGMENTED_TRIAD` - Augmented triad
-- `MAJOR_SEVENTH_CHORD` - Major 7th chord
-- `MINOR_SEVENTH_CHORD` - Minor 7th chord
-- `DOMINANT_SEVENTH` - Dominant 7th chord
-- `HALF_DIMINISHED_SEVENTH` - Half-diminished 7th chord
-- `DIMINISHED_SEVENTH` - Diminished 7th chord
-- `AUGMENTED_SEVENTH` - Augmented 7th chord
-- `SUSPENDED_FOURTH` - Suspended 4th chord
+- `MAJOR_TRIAD` - Major triad (R-3-5)
+- `MINOR_TRIAD` - Minor triad (R-♭3-5)
+- `DIMINISHED_TRIAD` - Diminished triad (R-♭3-♭5)
+- `AUGMENTED_TRIAD` - Augmented triad (R-3-♯5)
+- `MAJOR_SEVENTH_CHORD` - Major 7th chord (R-3-5-7)
+- `MINOR_SEVENTH_CHORD` - Minor 7th chord (R-♭3-5-♭7)
+- `DOMINANT_SEVENTH` - Dominant 7th chord (R-3-5-♭7)
+- `HALF_DIMINISHED_SEVENTH` - Half-diminished 7th chord (R-♭3-♭5-♭7)
+- `DIMINISHED_SEVENTH` - Diminished 7th chord (R-♭3-♭5-♭♭7)
+- `AUGMENTED_SEVENTH` - Augmented 7th chord (R-3-♯5-♭7)
+- `MINOR_MAJOR_SEVENTH` - Minor Major 7th chord (R-♭3-5-7)
+- `SIXTH_CHORD` - 6th chord (R-3-5-6)
+- `SIXTH_MINOR_CHORD` - 6th Minor chord (R-♭3-5-6)
+- `SIXTH_NINTH_CHORD` - 6th/9th chord (R-3-5-6-9)
+- `FIFTH_CHORD` - 5th chord (R-5)
+- `DOMINANT_NINTH` - Dominant 9th chord (R-3-5-♭7-9)
+- `MINOR_NINTH` - Minor 9th chord (R-♭3-5-♭7-9)
+- `MAJOR_NINTH` - Major 9th chord (R-3-5-7-9)
+- `ELEVENTH_CHORD` - 11th chord (R-3-5-7-9-11)
+- `MINOR_ELEVENTH` - Minor 11th chord (R-♭3-5-♭7-9-11)
+- `MAJOR_ELEVENTH` - Major 11th chord (R-3-5-7-9-11)
+- `THIRTEENTH_CHORD` - 13th chord (R-3-5-♭7-11-13)
+- `MINOR_THIRTEENTH` - Minor 13th chord (R-♭3-5-♭7-9-11-13)
+- `MAJOR_THIRTEENTH` - Major 13th chord (R-3-5-7-9-11-13)
+- `ADDED_SECOND` - Added 2nd chord (R-2-3-5)
+- `ADDED_NINTH` - Added 9th chord (R-3-5-9)
+- `ADDED_ELEVENTH` - Added eleventh chord (R-3-5-11)
+- `DOMINANT_SEVENTH_FLAT_FIVE` - Dominant 7th flat 5 (R-3-♭5-♭7)
+- `DOMINANT_SEVENTH_SHARP_FIVE` - Dominant 7th sharp 5 (R-3-♯5-♭7)
+- `SUSPENDED_SECOND` - Suspended 2nd chord (R-2-5)
+- `SUSPENDED_FOURTH` - Suspended 4th chord (R-4-5)
 
 #### Traits
 - `Display` - String formatting
@@ -703,15 +723,20 @@ assert_eq!(degrees[1].to_string(), "♭3"); // Minor third (overwrote major thir
 
 #### Predefined Degree Constants
 - `ROOT` - Root degree (1st degree, natural)
+- `SECOND` - Second degree (2nd degree, natural)
 - `THIRD` - Major third degree (3rd degree, natural)
 - `FLAT_THIRD` - Minor third degree (3rd degree, flat)
 - `FOURTH` - Fourth degree (4th degree, natural)
 - `FIFTH` - Perfect fifth degree (5th degree, natural)
 - `FLAT_FIFTH` - Diminished fifth degree (5th degree, flat)
 - `SHARP_FIFTH` - Augmented fifth degree (5th degree, sharp)
+- `SIXTH` - Sixth degree (6th degree, natural)
 - `SEVENTH` - Major seventh degree (7th degree, natural)
 - `FLAT_SEVENTH` - Minor seventh degree (7th degree, flat)
 - `DOUBLEFLAT_SEVENTH` - Diminished seventh degree (7th degree, double flat)
+- `NINTH` - Ninth degree (9th degree, natural)
+- `ELEVENTH` - Eleventh degree (11th degree, natural)
+- `THIRTEENTH` - Thirteenth degree (13th degree, natural)
 
 #### Traits
 - `Display` - String formatting
