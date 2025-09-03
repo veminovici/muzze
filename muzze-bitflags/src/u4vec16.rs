@@ -146,15 +146,14 @@ impl U4Vec16 {
     /// ```
     /// use muzze_bitflags::U4Vec16;
     /// let mut vec = U4Vec16::from_u64(0x1234567890ABCDEF);
-    /// vec.reset_item(0);
+    /// let vec = vec.reset_item(0);
     /// assert_eq!(vec.item(0), 0x00);
     /// ```
     #[inline]
-    pub fn reset_item(&mut self, index: usize) {
+    pub const fn reset_item(self, index: usize) -> Self {
         let item = self.item(index) as u64;
         let mask = item << (Self::ITEM_SIZE * index);
-        let rst = Self::from_bits_retain(mask);
-        *self ^= rst;
+        Self::from_u64(self.inner() ^ mask)
     }
 
     /// Sets the 4-bit item at the specified index to the given value
@@ -169,17 +168,16 @@ impl U4Vec16 {
     /// ```
     /// use muzze_bitflags::U4Vec16;
     /// let mut vec = U4Vec16::from_u64(0x1234567890ABCDEF);
-    /// vec.set_item(0, 0x0F);
+    /// let vec = vec.set_item(0, 0x0F);
     /// assert_eq!(vec.item(0), 0x0F);
     /// ```
     #[inline]
-    pub fn set_item(&mut self, index: usize, value: u8) {
-        self.reset_item(index);
+    pub const fn set_item(self, index: usize, value: u8) -> Self {
+        let vec = self.reset_item(index);
 
         let item = value as u64 & Self::ITEM_MASK;
         let mask = item << (Self::ITEM_SIZE * index);
-        let rst = Self::from_bits_retain(mask);
-        *self |= rst;
+        Self::from_u64(vec.inner() | mask)
     }
 
     /// Returns an iterator over all 4-bit items in this U4Vec16
@@ -292,10 +290,8 @@ impl U4Vec16Builder {
     /// assert_eq!(vec.item(1), 10);
     /// ```
     #[inline]
-    pub fn set_item(self, index: usize, value: u8) -> Self {
-        let mut vec = self.vec;
-        vec.set_item(index, value);
-
+    pub const fn set_item(self, index: usize, value: u8) -> Self {
+        let vec = self.vec.set_item(index, value);
         Self { vec }
     }
 
@@ -555,9 +551,8 @@ mod tests {
 
     #[test]
     fn test_reset_item() {
-        let mut vec = U4Vec16::from_u64(VAL);
-
-        vec.reset_item(1);
+        let vec = U4Vec16::from_u64(VAL);
+        let vec = vec.reset_item(1);
 
         let items: Vec<u8> = vec.iter_items().collect();
         let expect = vec![
@@ -569,8 +564,8 @@ mod tests {
 
     #[test]
     fn test_set_item() {
-        let mut vec = U4Vec16::from_u64(VAL);
-        vec.set_item(1, 0b1010);
+        let vec = U4Vec16::from_u64(VAL);
+        let vec = vec.set_item(1, 0b1010);
 
         let items: Vec<u8> = vec.iter_items().collect();
         let expect = vec![
@@ -759,10 +754,7 @@ mod tests {
             .build();
 
         // Build using direct construction
-        let mut direct_vec = U4Vec16::from_u64(0);
-        direct_vec.set_item(0, 5);
-        direct_vec.set_item(1, 10);
-        direct_vec.set_item(15, 15);
+        let direct_vec = U4Vec16::from_u64(0).set_item(0, 5).set_item(1, 10).set_item(15, 15);
 
         // Both should produce the same result
         assert_eq!(builder_vec.inner(), direct_vec.inner());

@@ -158,6 +158,7 @@ The library is designed for high performance:
 
 - **Zero-allocation iterators** for efficient iteration without heap allocations
 - **Const functions** for compile-time evaluation and optimization
+- **Immutable operations** with const methods that return new instances for functional programming
 - **Bit manipulation** for fast operations using native CPU instructions
 - **Packed data structures** for memory efficiency and cache-friendly access
 - **ExactSizeIterator** implementation for optimal collection operations
@@ -279,8 +280,8 @@ assert_eq!(complex_bitvec.inner(), 0b1010_1010);
 - `inner() -> u64` - Get underlying u64 value
 - `capacity() -> usize` - Get total number of items (always 16)
 - `item(index: usize) -> u8` - Get 4-bit item at index (0-15)
-- `reset_item(index: usize)` - Reset item at index to 0 (mutable)
-- `set_item(index: usize, value: u8)` - Set item at index to value (mutable)
+- `reset_item(index: usize) -> U4Vec16` - Reset item at index to 0 (const, returns new instance)
+- `set_item(index: usize, value: u8) -> U4Vec16` - Set item at index to value (const, returns new instance)
 - `iter_items() -> U4Vec16Iter` - Iterator over all 4-bit items
 
 #### Traits
@@ -328,16 +329,17 @@ assert_eq!(vec[0], 15);
 assert_eq!(vec[1], 14);
 assert_eq!(vec[15], 0);
 
-// Mutable operations
-let mut mutable_vec = U4Vec16::from_u64(0);
-mutable_vec.set_item(0, 5);
-mutable_vec.set_item(15, 10);
-assert_eq!(mutable_vec.item(0), 5);
-assert_eq!(mutable_vec.item(15), 10);
+// Const operations (return new instances)
+let vec_with_items = U4Vec16::from_u64(0)
+    .set_item(0, 5)
+    .set_item(15, 10);
+assert_eq!(vec_with_items.item(0), 5);
+assert_eq!(vec_with_items.item(15), 10);
 
-// Reset items
-mutable_vec.reset_item(0);
-assert_eq!(mutable_vec.item(0), 0);
+// Reset items (const, returns new instance)
+let vec_reset = vec_with_items.reset_item(0);
+assert_eq!(vec_reset.item(0), 0);
+assert_eq!(vec_reset.item(15), 10); // Other items unchanged
 ```
 
 #### Examples
