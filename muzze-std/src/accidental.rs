@@ -34,7 +34,7 @@ use std::fmt::Display;
 ///
 /// Each accidental has a corresponding numeric value:
 /// - Natural: 0
-/// - Reset: 1
+/// - Reset: 15
 /// - Flat: 2
 /// - DoubleFlat: 3
 /// - Sharp: 8
@@ -79,6 +79,97 @@ pub enum Accidental {
     DoubleSharp = 9,
 }
 
+/// Natural accidental constant - no pitch modification
+///
+/// This is a convenience constant for the natural accidental, which represents
+/// the absence of any pitch modification. It's equivalent to `Accidental::Natural`.
+///
+/// # Examples
+///
+/// ```rust
+/// use muzze_std::NATURAL;
+///
+/// assert_eq!(NATURAL.to_string(), "");
+/// assert_eq!(u8::from(NATURAL), 0);
+/// ```
+pub const NATURAL: Accidental = Accidental::Natural;
+
+/// Flat accidental constant - lowers pitch by one semitone
+///
+/// This is a convenience constant for the flat accidental, which lowers
+/// the pitch of a note by one semitone (half step). It's equivalent to `Accidental::Flat`.
+///
+/// # Examples
+///
+/// ```rust
+/// use muzze_std::FLAT;
+///
+/// assert_eq!(FLAT.to_string(), "♭");
+/// assert_eq!(u8::from(FLAT), 2);
+/// ```
+pub const FLAT: Accidental = Accidental::Flat;
+
+/// Sharp accidental constant - raises pitch by one semitone
+///
+/// This is a convenience constant for the sharp accidental, which raises
+/// the pitch of a note by one semitone (half step). It's equivalent to `Accidental::Sharp`.
+///
+/// # Examples
+///
+/// ```rust
+/// use muzze_std::SHARP;
+///
+/// assert_eq!(SHARP.to_string(), "♯");
+/// assert_eq!(u8::from(SHARP), 8);
+/// ```
+pub const SHARP: Accidental = Accidental::Sharp;
+
+/// Reset accidental constant - explicitly cancels previous accidentals
+///
+/// This is a convenience constant for the reset accidental, which explicitly
+/// cancels any previous accidentals in the same measure, returning the note
+/// to its natural state. It's equivalent to `Accidental::Reset`.
+///
+/// # Examples
+///
+/// ```rust
+/// use muzze_std::RESET_ACCIDENTAL;
+///
+/// assert_eq!(RESET_ACCIDENTAL.to_string(), "♮");
+/// assert_eq!(u8::from(RESET_ACCIDENTAL), 15);
+/// ```
+pub const RESET_ACCIDENTAL: Accidental = Accidental::Reset;
+
+/// Double flat accidental constant - lowers pitch by two semitones
+///
+/// This is a convenience constant for the double flat accidental, which lowers
+/// the pitch of a note by two semitones (whole step). It's equivalent to `Accidental::DoubleFlat`.
+///
+/// # Examples
+///
+/// ```rust
+/// use muzze_std::DOUBLE_FLAT;
+///
+/// assert_eq!(DOUBLE_FLAT.to_string(), "♭♭");
+/// assert_eq!(u8::from(DOUBLE_FLAT), 3);
+/// ```
+pub const DOUBLE_FLAT: Accidental = Accidental::DoubleFlat;
+
+/// Double sharp accidental constant - raises pitch by two semitones
+///
+/// This is a convenience constant for the double sharp accidental, which raises
+/// the pitch of a note by two semitones (whole step). It's equivalent to `Accidental::DoubleSharp`.
+///
+/// # Examples
+///
+/// ```rust
+/// use muzze_std::DOUBLE_SHARP;
+///
+/// assert_eq!(DOUBLE_SHARP.to_string(), "♯♯");
+/// assert_eq!(u8::from(DOUBLE_SHARP), 9);
+/// ```
+pub const DOUBLE_SHARP: Accidental = Accidental::DoubleSharp;
+
 impl Display for Accidental {
     /// Formats the accidental as its Unicode symbol representation
     ///
@@ -117,7 +208,7 @@ impl From<Accidental> for u8 {
     ///
     /// This conversion uses the numeric encoding defined for each accidental:
     /// - Natural: 0
-    /// - Reset: 1
+    /// - Reset: 15
     /// - Flat: 2
     /// - DoubleFlat: 3
     /// - Sharp: 8

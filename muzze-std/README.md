@@ -8,7 +8,6 @@ A Rust library for musical computations and data structures, providing efficient
 - **ScaleBuilder**: Fluent interface for constructing custom scales
 - **ScaleStepBuilder**: Build scales using step patterns (whole steps, half steps)
 - **Accidental**: Musical accidental types with Unicode symbols (sharps, flats, naturals)
-- **Bit Vector Support**: Built on top of `muzze-bitflags` for efficient bit operations
 
 ## Installation
 
@@ -79,48 +78,28 @@ let c_major_notes: Vec<u8> = MAJOR.apply(C).collect();
 ### Working with Musical Accidentals
 
 ```rust
-use muzze_std::Accidental;
+use muzze_std::{Accidental, NATURAL, SHARP, FLAT, DOUBLE_SHARP, RESET_ACCIDENTAL};
 
-// Create accidentals
+// Using enum variants
 let natural = Accidental::Natural;
 let sharp = Accidental::Sharp;
 let flat = Accidental::Flat;
 let double_sharp = Accidental::DoubleSharp;
+
+// Using convenience constants
+let reset = RESET_ACCIDENTAL;
 
 // Display as Unicode symbols
 assert_eq!(natural.to_string(), "");
 assert_eq!(sharp.to_string(), "♯");
 assert_eq!(flat.to_string(), "♭");
 assert_eq!(double_sharp.to_string(), "♯♯");
+assert_eq!(reset.to_string(), "♮");
 
 // Convert to/from numeric values
 assert_eq!(u8::from(sharp), 8);
 assert_eq!(Accidental::from(8), Accidental::Sharp);
-assert_eq!(u8::from(Accidental::Reset), 15);
-```
-
-### Working with Bit Vectors
-
-```rust
-use muzze_std::{BitVec16, BitVec16Builder};
-
-// Create a bit vector from a u16
-let bits = BitVec16::from_u16(0b0000_1101_0101_1010);
-
-// Check if specific bits are set
-assert!(bits.bit(1));  // Bit 1 is set
-assert!(!bits.bit(0)); // Bit 0 is not set
-
-// Build a bit vector using the builder pattern
-let custom_bits = BitVec16Builder::default()
-    .set_index(0)
-    .set_index(2)
-    .set_index(4)
-    .build();
-
-// Get all set indices
-let set_indices: Vec<usize> = custom_bits.indeces_on().collect();
-// Result: [0, 2, 4]
+assert_eq!(u8::from(RESET_ACCIDENTAL), 15);
 ```
 
 ## Available Musical Types
@@ -156,12 +135,21 @@ The library includes many predefined scales:
 
 The library provides comprehensive accidental types for musical notation:
 
+#### Enum Variants
 - `Accidental::Natural` - No pitch modification (value: 0)
 - `Accidental::Reset` - Explicitly cancels previous accidentals (value: 15)
 - `Accidental::Flat` - Lowers pitch by one semitone (value: 2)
 - `Accidental::DoubleFlat` - Lowers pitch by two semitones (value: 3)
 - `Accidental::Sharp` - Raises pitch by one semitone (value: 8)
 - `Accidental::DoubleSharp` - Raises pitch by two semitones (value: 9)
+
+#### Convenience Constants
+- `NATURAL` - Natural accidental constant
+- `FLAT` - Flat accidental constant
+- `SHARP` - Sharp accidental constant
+- `DOUBLE_FLAT` - Double flat accidental constant
+- `DOUBLE_SHARP` - Double sharp accidental constant
+- `RESET_ACCIDENTAL` - Reset accidental constant
 
 ## Musical Theory
 
