@@ -7,7 +7,6 @@ A Rust library for musical computations and data structures, providing efficient
 - **Scale**: Musical scale representation with predefined scales and builders
 - **ScaleBuilder**: Fluent interface for constructing custom scales
 - **ScaleStepBuilder**: Build scales using step patterns (whole steps, half steps)
-- **Degreex**: Musical degree representation with accidentals (sharps, flats, etc.)
 - **Bit Vector Support**: Built on top of `muzze-bitflags` for efficient bit operations
 
 ## Installation
@@ -76,35 +75,31 @@ let c_major_notes: Vec<u8> = MAJOR.apply(C).collect();
 // Result: [60, 62, 64, 65, 67, 69, 71, 72] (C, D, E, F, G, A, B, C)
 ```
 
-### Working with Musical Degrees
+### Working with Bit Vectors
 
 ```rust
-use muzze_std::{THIRD, THIRD_FLAT, THIRD_SHARP, FIFTH, SEVENTH};
+use muzze_std::{BitVec16, BitVec16Builder};
 
-// Natural third degree
-assert_eq!(THIRD.first(), 3);   // Third degree
-assert_eq!(THIRD.second(), 0);  // Natural (no accidental)
+// Create a bit vector from a u16
+let bits = BitVec16::from_u16(0b0000_1101_0101_1010);
 
-// Flattened third degree (minor third)
-assert_eq!(THIRD_FLAT.first(), 3);   // Third degree
-assert_eq!(THIRD_FLAT.second(), 1);  // Flat accidental
+// Check if specific bits are set
+assert!(bits.bit(1));  // Bit 1 is set
+assert!(!bits.bit(0)); // Bit 0 is not set
 
-// Sharpened third degree (augmented third)
-assert_eq!(THIRD_SHARP.first(), 3);   // Third degree
-assert_eq!(THIRD_SHARP.second(), 3);  // Sharp accidental
+// Build a bit vector using the builder pattern
+let custom_bits = BitVec16Builder::default()
+    .set_index(0)
+    .set_index(2)
+    .set_index(4)
+    .build();
 
-// Perfect fifth
-assert_eq!(FIFTH.first(), 5);   // Fifth degree
-assert_eq!(FIFTH.second(), 0);  // Natural
-
-// Major seventh
-assert_eq!(SEVENTH.first(), 7);   // Seventh degree
-assert_eq!(SEVENTH.second(), 0);  // Natural
+// Get all set indices
+let set_indices: Vec<usize> = custom_bits.indeces_on().collect();
+// Result: [0, 2, 4]
 ```
 
-## Available Musical Types
-
-### Predefined Scales
+## Available Scales
 
 The library includes many predefined scales:
 
@@ -131,31 +126,6 @@ The library includes many predefined scales:
 - `BIBOP_MINOR` - Bebop minor scale
 - `BIBOP_DOMINANT` - Bebop dominant scale
 
-### Predefined Musical Degrees
-
-The library includes predefined musical degrees with accidentals:
-
-#### Third Degree Variations
-- `THIRD` - Natural third degree (major third)
-- `THIRD_FLAT` - Flattened third degree (minor third)
-- `THIRD_DOUBLEFLAT` - Double flattened third degree (diminished third)
-- `THIRD_SHARP` - Sharpened third degree (augmented third)
-- `THIRD_DOUBLESHARP` - Double sharpened third degree (doubly augmented third)
-
-#### Fifth Degree Variations
-- `FIFTH` - Natural fifth degree (perfect fifth)
-- `FIFTH_FLAT` - Flattened fifth degree (diminished fifth/tritone)
-- `FIFTH_DOUBLEFLAT` - Double flattened fifth degree (doubly diminished fifth)
-- `FIFTH_SHARP` - Sharpened fifth degree (augmented fifth)
-- `FIFTH_DOUBLESHARP` - Double sharpened fifth degree (doubly augmented fifth)
-
-#### Seventh Degree Variations
-- `SEVENTH` - Natural seventh degree (major seventh)
-- `SEVENTH_FLAT` - Flattened seventh degree (minor seventh)
-- `SEVENTH_DOUBLEFLAT` - Double flattened seventh degree (diminished seventh)
-- `SEVENTH_SHARP` - Sharpened seventh degree (augmented seventh)
-- `SEVENTH_DOUBLESHARP` - Double sharpened seventh degree (doubly augmented seventh)
-
 ## Musical Theory
 
 ### Interval Representation
@@ -178,17 +148,6 @@ The library uses a semitone-based interval system where:
 ### Scale Patterns
 
 Scales are represented as bit patterns where each bit position (0-15) represents a semitone interval from the root. For example, the major scale pattern `0b0000_1101_0101_1010` represents the intervals [2, 4, 5, 7, 9, 11, 12].
-
-### Degree and Accidental Encoding
-
-Musical degrees are encoded using a packed representation where:
-- The degree (1-7) is stored in the lower 4 bits
-- The accidental type is stored in the upper 4 bits:
-  - 0 = Natural (no accidental)
-  - 1 = Flat (♭)
-  - 2 = Double flat (♭♭)
-  - 3 = Sharp (♯)
-  - 4 = Double sharp (♯♯)
 
 ## Performance
 
@@ -251,7 +210,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ### Version 0.1.0
 - Initial release
 - Scale representation and builders
-- Musical degree representation with accidentals
-- Predefined musical scales and degrees
+- Predefined musical scales
 - Built on top of `muzze-bitflags` for efficient bit operations
 - Comprehensive test suite
