@@ -400,7 +400,7 @@ impl Iterator for U4Vec16Iter {
     /// which is useful for optimizing collection operations.
     ///
     /// # Returns
-    /// A tuple (usize, Option<usize>) where both values are the same
+    /// A tuple where both values are the same
     /// and represent the exact number of remaining items
     fn size_hint(&self) -> (usize, Option<usize>) {
         let remaining = U4Vec16::CAPACITY - self.index;
