@@ -1,7 +1,8 @@
 mod degreex;
 mod scale;
-mod utils;
 
 pub use degreex::*;
 pub use scale::*;
-pub use utils::*;
+
+// Re-export types from muzze-bitflags for convenience
+pub use muzze_bitflags::{BitVec16, BitVec16Builder, U4Vec16, U4x2};

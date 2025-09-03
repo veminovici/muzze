@@ -16,7 +16,7 @@ bitflags! {
     ///
     /// # Examples
     /// ```
-    /// use muzze_std::U4x2;
+    /// use muzze_bitflags::U4x2;
     /// let packed = U4x2::new(10, 5);  // First value: 10, Second value: 5
     /// assert_eq!(packed.first(), 10);
     /// assert_eq!(packed.second(), 5);
@@ -51,7 +51,7 @@ impl U4x2 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4x2;
+    /// use muzze_bitflags::U4x2;
     /// let packed = U4x2::new(10, 5);
     /// assert_eq!(packed.inner(), 0b0101_1010);  // 5 << 4 | 10
     /// ```
@@ -70,7 +70,7 @@ impl U4x2 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4x2;
+    /// use muzze_bitflags::U4x2;
     /// let packed = U4x2::new(10, 5);
     /// assert_eq!(packed.inner(), 0b0101_1010);
     /// ```
@@ -88,7 +88,7 @@ impl U4x2 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4x2;
+    /// use muzze_bitflags::U4x2;
     /// let packed = U4x2::new(10, 5);
     /// assert_eq!(packed.first(), 10);
     /// ```
@@ -107,7 +107,7 @@ impl U4x2 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4x2;
+    /// use muzze_bitflags::U4x2;
     /// let packed = U4x2::new(10, 5);
     /// assert_eq!(packed.second(), 5);
     /// ```

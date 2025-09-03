@@ -1,0 +1,14 @@
+[package]
+name = "muzze-bitflags"
+version = "0.1.0"
+edition = "2021"
+description = "Bit vector and packed data structures for musical computations"
+license = "MIT"
+repository = "https://github.com/your-username/muzze"
+keywords = ["music", "bit-vector", "data-structures", "performance"]
+categories = ["data-structures", "multimedia::audio"]
+
+[dependencies]
+bitflags = "2.5.3"
+
+[dev-dependencies]

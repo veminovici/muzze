@@ -39,7 +39,7 @@ impl U4Vec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4Vec16;
+    /// use muzze_bitflags::U4Vec16;
     /// let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
     /// ```
     #[inline]
@@ -54,7 +54,7 @@ impl U4Vec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4Vec16;
+    /// use muzze_bitflags::U4Vec16;
     /// let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
     /// assert_eq!(vec.capacity(), 16);
     /// ```
@@ -73,7 +73,7 @@ impl U4Vec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4Vec16;
+    /// use muzze_bitflags::U4Vec16;
     /// let vec = U4Vec16::from_u64(42);
     /// assert_eq!(vec.inner(), 42);
     /// ```
@@ -99,7 +99,7 @@ impl U4Vec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4Vec16;
+    /// use muzze_bitflags::U4Vec16;
     /// let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
     /// assert_eq!(vec.item(0), 0x0F); // Least significant 4 bits
     /// assert_eq!(vec.item(15), 0x1); // Most significant 4 bits
@@ -298,7 +298,7 @@ impl U4Vec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4Vec16;
+    /// use muzze_bitflags::U4Vec16;
     /// let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
     /// let items: Vec<u8> = vec.iter_items().collect();
     /// assert_eq!(items.len(), 16);
@@ -394,7 +394,7 @@ impl Index<usize> for U4Vec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::U4Vec16;
+    /// use muzze_bitflags::U4Vec16;
     /// let vec = U4Vec16::from_u64(0x1234567890ABCDEF);
     /// assert_eq!(vec[0], 0x0F); // Access item at position 0
     /// assert_eq!(vec[15], 0x1); // Access item at position 15

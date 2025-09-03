@@ -4,7 +4,7 @@
 //! Each bit position represents a semitone interval from the root note.
 //! The scales are defined using standard Western music theory patterns.
 
-use crate::{BitVec16, BitVec16Builder};
+use muzze_bitflags::{BitVec16, BitVec16Builder};
 
 /// Represents a musical scale using a 16-bit vector
 ///

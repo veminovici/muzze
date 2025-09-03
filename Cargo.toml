@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "muzze-bitflags",
     "muzze-std",
 ]
 resolver = "2"

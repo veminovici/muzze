@@ -5,7 +5,7 @@
 //! in the lower 4 bits and the accidental type is stored in the upper 4 bits
 //! using the U4x2 packed representation.
 
-use crate::U4x2;
+use muzze_bitflags::U4x2;
 
 /// A musical degree with accidentals
 ///

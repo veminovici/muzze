@@ -33,7 +33,7 @@ impl BitVec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16;
+    /// use muzze_bitflags::BitVec16;
     /// let bitvec = BitVec16::from_u16(0b1010_1010_1010_1010);
     /// ```
     #[inline]
@@ -60,7 +60,7 @@ impl BitVec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16;
+    /// use muzze_bitflags::BitVec16;
     /// let bitvec = BitVec16::from_u16(42);
     /// assert_eq!(bitvec.inner(), 42);
     /// ```
@@ -85,7 +85,7 @@ impl BitVec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16;
+    /// use muzze_bitflags::BitVec16;
     /// let bitvec = BitVec16::from_u16(0b0000_0000_0000_0001);
     /// assert_eq!(bitvec.bit(0), true);
     /// assert_eq!(bitvec.bit(1), false);
@@ -283,7 +283,7 @@ impl BitVec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16;
+    /// use muzze_bitflags::BitVec16;
     /// let bitvec = BitVec16::from_u16(0b1010_1010_1010_1010);
     /// let bits: Vec<bool> = bitvec.iter_bits().collect();
     /// assert_eq!(bits.len(), 16);
@@ -303,7 +303,7 @@ impl BitVec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16;
+    /// use muzze_bitflags::BitVec16;
     /// let bitvec = BitVec16::from_u16(0b1000_0000_0000_1101);
     /// let on_indices: Vec<usize> = bitvec.indeces_on().collect();
     /// assert_eq!(on_indices, vec![0, 2, 3, 15]);
@@ -325,7 +325,7 @@ impl BitVec16 {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16;
+    /// use muzze_bitflags::BitVec16;
     /// let bitvec = BitVec16::from_u16(0b1000_0000_0000_1101);
     /// let off_indices: Vec<usize> = bitvec.indeces_off().collect();
     /// assert_eq!(off_indices, vec![1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
@@ -347,7 +347,7 @@ impl BitVec16 {
 ///
 /// # Examples
 /// ```
-/// use muzze_std::BitVec16Builder;
+/// use muzze_bitflags::BitVec16Builder;
 /// let bitvec = BitVec16Builder::default()
 ///     .set_index(0)
 ///     .set_index(2)
@@ -371,13 +371,13 @@ impl BitVec16Builder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16Builder;
+    /// use muzze_bitflags::BitVec16Builder;
     /// let builder = BitVec16Builder::default();
     /// let bitvec = builder.build();
     /// assert_eq!(bitvec.inner(), 0);
     /// ```
     #[inline]
-    pub(crate) const fn new() -> Self {
+    pub const fn new() -> Self {
         let vec = BitVec16::from_u16(0);
         Self { vec }
     }
@@ -399,7 +399,7 @@ impl BitVec16Builder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16Builder;
+    /// use muzze_bitflags::BitVec16Builder;
     /// let bitvec = BitVec16Builder::default()
     ///     .set_index(0)
     ///     .set_index(7)
@@ -425,7 +425,7 @@ impl BitVec16Builder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::BitVec16Builder;
+    /// use muzze_bitflags::BitVec16Builder;
     /// let bitvec = BitVec16Builder::default()
     ///     .set_index(0)
     ///     .set_index(2)
