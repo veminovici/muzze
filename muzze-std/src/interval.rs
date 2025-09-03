@@ -147,7 +147,7 @@ pub const PERFECT_FOURTH: Interval = Interval(5);
 /// ```rust
 /// use muzze_std::AUGMENTED_FOURTH;
 ///
-/// assert_eq!(AUGMENTED_FOURTH.to_string(), "A4");
+/// assert_eq!(AUGMENTED_FOURTH.to_string(), "d5");
 /// assert_eq!(u8::from(AUGMENTED_FOURTH), 6);
 /// ```
 pub const AUGMENTED_FOURTH: Interval = Interval(6);
@@ -162,7 +162,7 @@ pub const AUGMENTED_FOURTH: Interval = Interval(6);
 /// ```rust
 /// use muzze_std::DIMINISHED_FIFTH;
 ///
-/// assert_eq!(DIMINISHED_FIFTH.to_string(), "A4");
+/// assert_eq!(DIMINISHED_FIFTH.to_string(), "d5");
 /// assert_eq!(u8::from(DIMINISHED_FIFTH), 6);
 /// ```
 pub const DIMINISHED_FIFTH: Interval = Interval(6);
@@ -382,7 +382,7 @@ impl Display for Interval {
             3 => write!(f, "m3"),
             4 => write!(f, "M3"),
             5 => write!(f, "P4"),
-            6 => write!(f, "A4"), // Default to augmented fourth for semitone 6
+            6 => write!(f, "d5"), // Default to augmented fourth for semitone 6
             7 => write!(f, "P5"),
             8 => write!(f, "m6"),
             9 => write!(f, "M6"),
@@ -407,8 +407,8 @@ mod tests {
         assert_eq!(MINOR_THIRD.to_string(), "m3");
         assert_eq!(MAJOR_THIRD.to_string(), "M3");
         assert_eq!(PERFECT_FOURTH.to_string(), "P4");
-        assert_eq!(AUGMENTED_FOURTH.to_string(), "A4");
-        assert_eq!(DIMINISHED_FIFTH.to_string(), "A4");
+        assert_eq!(AUGMENTED_FOURTH.to_string(), "d5");
+        assert_eq!(DIMINISHED_FIFTH.to_string(), "d5");
         assert_eq!(PERFECT_FIFTH.to_string(), "P5");
         assert_eq!(MINOR_SIXTH.to_string(), "m6");
         assert_eq!(MAJOR_SIXTH.to_string(), "M6");

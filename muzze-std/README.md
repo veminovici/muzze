@@ -215,8 +215,8 @@ The library provides comprehensive interval types for representing musical dista
 - `MINOR_THIRD` - Minor 3rd (3 semitones) - displayed as "m3"
 - `MAJOR_THIRD` - Major 3rd (4 semitones) - displayed as "M3"
 - `PERFECT_FOURTH` - Perfect 4th (5 semitones) - displayed as "P4"
-- `AUGMENTED_FOURTH` - Augmented 4th (6 semitones) - displayed as "A4"
-- `DIMINISHED_FIFTH` - Diminished 5th (6 semitones) - displayed as "A4"
+- `AUGMENTED_FOURTH` - Augmented 4th (6 semitones) - displayed as "d5"
+- `DIMINISHED_FIFTH` - Diminished 5th (6 semitones) - displayed as "d5"
 - `PERFECT_FIFTH` - Perfect 5th (7 semitones) - displayed as "P5"
 - `MINOR_SIXTH` - Minor 6th (8 semitones) - displayed as "m6"
 - `MAJOR_SIXTH` - Major 6th (9 semitones) - displayed as "M6"
@@ -278,7 +278,7 @@ Musical intervals are represented with their corresponding standard names and nu
 - **Major 3rd (M3)**: Four semitones
 - **Perfect 4th (P4)**: Five semitones
 - **Augmented 4th (A4)**: Six semitones, also known as the tritone
-- **Diminished 5th (A4)**: Six semitones, equivalent to augmented 4th (tritone)
+- **Diminished 5th (d5)**: Six semitones, equivalent to augmented 4th (tritone)
 - **Perfect 5th (P5)**: Seven semitones
 - **Minor 6th (m6)**: Eight semitones
 - **Major 6th (M6)**: Nine semitones
