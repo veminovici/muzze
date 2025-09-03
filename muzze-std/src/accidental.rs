@@ -372,7 +372,7 @@ mod tests {
     fn test_clone_and_copy() {
         // Test that accidentals can be cloned and copied
         let original = Accidental::Sharp;
-        let cloned = original.clone();
+        let cloned = original;
         let copied = original;
 
         assert_eq!(original, cloned);

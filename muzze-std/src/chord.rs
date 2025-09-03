@@ -1016,10 +1016,10 @@ mod tests {
     // DegreeAccidental tests
     #[test]
     fn test_degree_accidental_display() {
-        assert_eq!(format!("{}", DEGREE_NATURAL), "");
-        assert_eq!(format!("{}", DEGREE_FLAT), "♭");
-        assert_eq!(format!("{}", DEGREE_DOUBLEFLAT), "♭♭");
-        assert_eq!(format!("{}", DEGREE_SHARP), "♯");
+        assert_eq!(format!("{DEGREE_NATURAL}"), "");
+        assert_eq!(format!("{DEGREE_FLAT}"), "♭");
+        assert_eq!(format!("{DEGREE_DOUBLEFLAT}"), "♭♭");
+        assert_eq!(format!("{DEGREE_SHARP}"), "♯");
     }
 
     #[test]
@@ -1055,17 +1055,17 @@ mod tests {
     // Degree tests
     #[test]
     fn test_degree_display() {
-        assert_eq!(format!("{}", ROOT), "R");
-        assert_eq!(format!("{}", THIRD), "3");
-        assert_eq!(format!("{}", FLAT_THIRD), "♭3");
-        assert_eq!(format!("{}", SHARP_FIFTH), "♯5");
-        assert_eq!(format!("{}", DOUBLEFLAT_SEVENTH), "♭♭7");
+        assert_eq!(format!("{ROOT}"), "R");
+        assert_eq!(format!("{THIRD}"), "3");
+        assert_eq!(format!("{FLAT_THIRD}"), "♭3");
+        assert_eq!(format!("{SHARP_FIFTH}"), "♯5");
+        assert_eq!(format!("{DOUBLEFLAT_SEVENTH}"), "♭♭7");
     }
 
     #[test]
     fn test_degree_new() {
         let custom_degree = Degree::new(2, DEGREE_SHARP);
-        assert_eq!(format!("{}", custom_degree), "♯2");
+        assert_eq!(format!("{custom_degree}"), "♯2");
     }
 
     #[test]
@@ -1569,193 +1569,193 @@ mod tests {
     #[test]
     fn test_chord_display_empty_chord() {
         let chord = ChordBuilder::with_root().build();
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         assert_eq!(display, "R");
     }
 
     #[test]
     fn test_chord_display_major_triad() {
-        let display = format!("{}", MAJOR_TRIAD);
+        let display = format!("{MAJOR_TRIAD}");
         assert_eq!(display, "R-3-5");
     }
 
     #[test]
     fn test_chord_display_minor_triad() {
-        let display = format!("{}", MINOR_TRIAD);
+        let display = format!("{MINOR_TRIAD}");
         assert_eq!(display, "R-♭3-5");
     }
 
     #[test]
     fn test_chord_display_diminished_triad() {
-        let display = format!("{}", DIMINISHED_TRIAD);
+        let display = format!("{DIMINISHED_TRIAD}");
         assert_eq!(display, "R-♭3-♭5");
     }
 
     #[test]
     fn test_chord_display_augmented_triad() {
-        let display = format!("{}", AUGMENTED_TRIAD);
+        let display = format!("{AUGMENTED_TRIAD}");
         assert_eq!(display, "R-3-♯5");
     }
 
     #[test]
     fn test_chord_display_major_seventh_chord() {
-        let display = format!("{}", MAJOR_SEVENTH_CHORD);
+        let display = format!("{MAJOR_SEVENTH_CHORD}");
         assert_eq!(display, "R-3-5-7");
     }
 
     #[test]
     fn test_chord_display_minor_seventh_chord() {
-        let display = format!("{}", MINOR_SEVENTH_CHORD);
+        let display = format!("{MINOR_SEVENTH_CHORD}");
         assert_eq!(display, "R-♭3-5-♭7");
     }
 
     #[test]
     fn test_chord_display_dominant_seventh() {
-        let display = format!("{}", DOMINANT_SEVENTH);
+        let display = format!("{DOMINANT_SEVENTH}");
         assert_eq!(display, "R-3-5-♭7");
     }
 
     #[test]
     fn test_chord_display_half_diminished_seventh() {
-        let display = format!("{}", HALF_DIMINISHED_SEVENTH);
+        let display = format!("{HALF_DIMINISHED_SEVENTH}");
         assert_eq!(display, "R-♭3-♭5-♭7");
     }
 
     #[test]
     fn test_chord_display_diminished_seventh() {
-        let display = format!("{}", DIMINISHED_SEVENTH);
+        let display = format!("{DIMINISHED_SEVENTH}");
         assert_eq!(display, "R-♭3-♭5-♭♭7");
     }
 
     #[test]
     fn test_chord_display_augmented_seventh() {
-        let display = format!("{}", AUGMENTED_SEVENTH);
+        let display = format!("{AUGMENTED_SEVENTH}");
         assert_eq!(display, "R-3-♯5-♭7");
     }
 
     #[test]
     fn test_chord_display_suspended_fourth() {
-        let display = format!("{}", SUSPENDED_FOURTH);
+        let display = format!("{SUSPENDED_FOURTH}");
         assert_eq!(display, "R-4-5");
     }
 
     #[test]
     fn test_chord_display_minor_major_seventh() {
-        let display = format!("{}", MINOR_MAJOR_SEVENTH);
+        let display = format!("{MINOR_MAJOR_SEVENTH}");
         assert_eq!(display, "R-♭3-5-7");
     }
 
     #[test]
     fn test_chord_display_sixth_chord() {
-        let display = format!("{}", SIXTH_CHORD);
+        let display = format!("{SIXTH_CHORD}");
         assert_eq!(display, "R-3-5-6");
     }
 
     #[test]
     fn test_chord_display_sixth_minor_chord() {
-        let display = format!("{}", SIXTH_MINOR_CHORD);
+        let display = format!("{SIXTH_MINOR_CHORD}");
         assert_eq!(display, "R-♭3-5-6");
     }
 
     #[test]
     fn test_chord_display_sixth_ninth_chord() {
-        let display = format!("{}", SIXTH_NINTH_CHORD);
+        let display = format!("{SIXTH_NINTH_CHORD}");
         assert_eq!(display, "R-3-5-6-9");
     }
 
     #[test]
     fn test_chord_display_fifth_chord() {
-        let display = format!("{}", FIFTH_CHORD);
+        let display = format!("{FIFTH_CHORD}");
         assert_eq!(display, "R-5");
     }
 
     #[test]
     fn test_chord_display_dominant_ninth() {
-        let display = format!("{}", DOMINANT_NINTH);
+        let display = format!("{DOMINANT_NINTH}");
         assert_eq!(display, "R-3-5-♭7-9");
     }
 
     #[test]
     fn test_chord_display_minor_ninth() {
-        let display = format!("{}", MINOR_NINTH);
+        let display = format!("{MINOR_NINTH}");
         assert_eq!(display, "R-♭3-5-♭7-9");
     }
 
     #[test]
     fn test_chord_display_major_ninth() {
-        let display = format!("{}", MAJOR_NINTH);
+        let display = format!("{MAJOR_NINTH}");
         assert_eq!(display, "R-3-5-7-9");
     }
 
     #[test]
     fn test_chord_display_eleventh_chord() {
-        let display = format!("{}", ELEVENTH_CHORD);
+        let display = format!("{ELEVENTH_CHORD}");
         assert_eq!(display, "R-3-5-7-9-11");
     }
 
     #[test]
     fn test_chord_display_minor_eleventh() {
-        let display = format!("{}", MINOR_ELEVENTH);
+        let display = format!("{MINOR_ELEVENTH}");
         assert_eq!(display, "R-♭3-5-♭7-9-11");
     }
 
     #[test]
     fn test_chord_display_major_eleventh() {
-        let display = format!("{}", MAJOR_ELEVENTH);
+        let display = format!("{MAJOR_ELEVENTH}");
         assert_eq!(display, "R-3-5-7-9-11");
     }
 
     #[test]
     fn test_chord_display_thirteenth_chord() {
-        let display = format!("{}", THIRTEENTH_CHORD);
+        let display = format!("{THIRTEENTH_CHORD}");
         assert_eq!(display, "R-3-5-♭7-9-11-13");
     }
 
     #[test]
     fn test_chord_display_minor_thirteenth() {
-        let display = format!("{}", MINOR_THIRTEENTH);
+        let display = format!("{MINOR_THIRTEENTH}");
         assert_eq!(display, "R-♭3-5-♭7-9-11-13");
     }
 
     #[test]
     fn test_chord_display_major_thirteenth() {
-        let display = format!("{}", MAJOR_THIRTEENTH);
+        let display = format!("{MAJOR_THIRTEENTH}");
         assert_eq!(display, "R-3-5-7-9-11-13");
     }
 
     #[test]
     fn test_chord_display_suspended_second() {
-        let display = format!("{}", SUSPENDED_SECOND);
+        let display = format!("{SUSPENDED_SECOND}");
         assert_eq!(display, "R-2-5");
     }
 
     #[test]
     fn test_chord_display_added_second() {
-        let display = format!("{}", ADDED_SECOND);
+        let display = format!("{ADDED_SECOND}");
         assert_eq!(display, "R-2-3-5");
     }
 
     #[test]
     fn test_chord_display_added_ninth() {
-        let display = format!("{}", ADDED_NINTH);
+        let display = format!("{ADDED_NINTH}");
         assert_eq!(display, "R-3-5-9");
     }
 
     #[test]
     fn test_chord_display_added_eleventh() {
-        let display = format!("{}", ADDED_ELEVENTH);
+        let display = format!("{ADDED_ELEVENTH}");
         assert_eq!(display, "R-3-5-11");
     }
 
     #[test]
     fn test_chord_display_dominant_seventh_flat_five() {
-        let display = format!("{}", DOMINANT_SEVENTH_FLAT_FIVE);
+        let display = format!("{DOMINANT_SEVENTH_FLAT_FIVE}");
         assert_eq!(display, "R-3-♭5-♭7");
     }
 
     #[test]
     fn test_chord_display_dominant_seventh_sharp_five() {
-        let display = format!("{}", DOMINANT_SEVENTH_SHARP_FIVE);
+        let display = format!("{DOMINANT_SEVENTH_SHARP_FIVE}");
         assert_eq!(display, "R-3-♯5-♭7");
     }
 
@@ -1769,7 +1769,7 @@ mod tests {
             .set_degree(FLAT_SEVENTH)
             .build();
 
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         assert_eq!(display, "R-♯2-♭3-♭♭4-♯5-♭7");
     }
 
@@ -1781,7 +1781,7 @@ mod tests {
             .set_degree(Degree::new(4, DEGREE_SHARP))
             .build();
 
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         assert_eq!(display, "R-♭2-♭♭3-♯4");
     }
 
@@ -1791,7 +1791,7 @@ mod tests {
             .set_degree(Degree::new(16, DEGREE_SHARP))
             .build();
 
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         assert_eq!(display, "R-♯16");
     }
 
@@ -1807,7 +1807,7 @@ mod tests {
             .set_degree(Degree::new(9, DEGREE_NATURAL))
             .build();
 
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         assert_eq!(display, "R-♯2-3-♯4-♯5-♭6-♭7-9");
     }
 
@@ -1818,7 +1818,7 @@ mod tests {
             .set_degree(FLAT_SEVENTH)
             .build();
 
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         assert_eq!(display, "R-♯5-♭7");
     }
 
@@ -1832,7 +1832,7 @@ mod tests {
             .set_degree(FLAT_SEVENTH) // This should overwrite the natural seventh
             .build();
 
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         assert_eq!(display, "R-3-♯5-♭7");
     }
 
@@ -1844,7 +1844,7 @@ mod tests {
             .set_degree(Degree::new(4, DEGREE_SHARP))
             .build();
 
-        let display = format!("{}", chord);
+        let display = format!("{chord}");
         // Verify that Unicode symbols are properly displayed
         assert!(display.contains("♭")); // Flat symbol
         assert!(display.contains("♭♭")); // Double flat symbol

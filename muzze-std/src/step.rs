@@ -250,7 +250,7 @@ mod tests {
     fn test_clone_and_copy() {
         // Test that steps can be cloned and copied
         let original = WHOLE;
-        let cloned = original.clone();
+        let cloned = original;
         let copied = original;
 
         assert_eq!(original, cloned);
@@ -259,7 +259,7 @@ mod tests {
 
         // Test with custom step
         let custom_original = Step::from(7);
-        let custom_cloned = custom_original.clone();
+        let custom_cloned = custom_original;
         let custom_copied = custom_original;
 
         assert_eq!(custom_original, custom_cloned);
@@ -270,11 +270,11 @@ mod tests {
     #[test]
     fn test_debug_formatting() {
         // Test that debug formatting works correctly
-        let debug_str = format!("{:?}", HALF);
+        let debug_str = format!("{HALF:?}");
         assert!(debug_str.contains("Step"));
         assert!(debug_str.contains("1"));
 
-        let debug_str = format!("{:?}", WHOLE);
+        let debug_str = format!("{WHOLE:?}");
         assert!(debug_str.contains("Step"));
         assert!(debug_str.contains("2"));
 

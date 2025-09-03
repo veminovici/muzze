@@ -501,7 +501,7 @@ mod tests {
     fn test_clone_and_copy() {
         // Test that intervals can be cloned and copied
         let original = MAJOR_THIRD;
-        let cloned = original.clone();
+        let cloned = original;
         let copied = original;
 
         assert_eq!(original, cloned);
@@ -510,7 +510,7 @@ mod tests {
 
         // Test with custom interval
         let custom_original = Interval::from(15);
-        let custom_cloned = custom_original.clone();
+        let custom_cloned = custom_original;
         let custom_copied = custom_original;
 
         assert_eq!(custom_original, custom_cloned);
@@ -521,11 +521,11 @@ mod tests {
     #[test]
     fn test_debug_formatting() {
         // Test that debug formatting works correctly
-        let debug_str = format!("{:?}", MAJOR_THIRD);
+        let debug_str = format!("{MAJOR_THIRD:?}");
         assert!(debug_str.contains("Interval"));
         assert!(debug_str.contains("4"));
 
-        let debug_str = format!("{:?}", PERFECT_FIFTH);
+        let debug_str = format!("{PERFECT_FIFTH:?}");
         assert!(debug_str.contains("Interval"));
         assert!(debug_str.contains("7"));
 

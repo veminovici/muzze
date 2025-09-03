@@ -378,44 +378,44 @@ mod tests {
         let bitvec = BitVec16::from_u16(VAL);
 
         // Check the bits are set correctly
-        assert_eq!(bitvec[0], true);
-        assert_eq!(bitvec[1], false);
-        assert_eq!(bitvec[2], true);
-        assert_eq!(bitvec[3], true);
-        assert_eq!(bitvec[4], false);
-        assert_eq!(bitvec[5], false);
-        assert_eq!(bitvec[6], false);
-        assert_eq!(bitvec[7], false);
-        assert_eq!(bitvec[8], false);
-        assert_eq!(bitvec[9], false);
-        assert_eq!(bitvec[10], false);
-        assert_eq!(bitvec[11], false);
-        assert_eq!(bitvec[12], false);
-        assert_eq!(bitvec[13], false);
-        assert_eq!(bitvec[14], false);
-        assert_eq!(bitvec[15], true);
+        assert!(bitvec[0]);
+        assert!(!bitvec[1]);
+        assert!(bitvec[2]);
+        assert!(bitvec[3]);
+        assert!(!bitvec[4]);
+        assert!(!bitvec[5]);
+        assert!(!bitvec[6]);
+        assert!(!bitvec[7]);
+        assert!(!bitvec[8]);
+        assert!(!bitvec[9]);
+        assert!(!bitvec[10]);
+        assert!(!bitvec[11]);
+        assert!(!bitvec[12]);
+        assert!(!bitvec[13]);
+        assert!(!bitvec[14]);
+        assert!(bitvec[15]);
     }
 
     #[test]
     fn test_bit_at_index() {
         let bitvec = BitVec16::from_u16(VAL);
 
-        assert_eq!(bitvec.bit(0), true);
-        assert_eq!(bitvec.bit(1), false);
-        assert_eq!(bitvec.bit(2), true);
-        assert_eq!(bitvec.bit(3), true);
-        assert_eq!(bitvec.bit(4), false);
-        assert_eq!(bitvec.bit(5), false);
-        assert_eq!(bitvec.bit(6), false);
-        assert_eq!(bitvec.bit(7), false);
-        assert_eq!(bitvec.bit(8), false);
-        assert_eq!(bitvec.bit(9), false);
-        assert_eq!(bitvec.bit(10), false);
-        assert_eq!(bitvec.bit(11), false);
-        assert_eq!(bitvec.bit(12), false);
-        assert_eq!(bitvec.bit(13), false);
-        assert_eq!(bitvec.bit(14), false);
-        assert_eq!(bitvec.bit(15), true);
+        assert!(bitvec.bit(0));
+        assert!(!bitvec.bit(1));
+        assert!(bitvec.bit(2));
+        assert!(bitvec.bit(3));
+        assert!(!bitvec.bit(4));
+        assert!(!bitvec.bit(5));
+        assert!(!bitvec.bit(6));
+        assert!(!bitvec.bit(7));
+        assert!(!bitvec.bit(8));
+        assert!(!bitvec.bit(9));
+        assert!(!bitvec.bit(10));
+        assert!(!bitvec.bit(11));
+        assert!(!bitvec.bit(12));
+        assert!(!bitvec.bit(13));
+        assert!(!bitvec.bit(14));
+        assert!(bitvec.bit(15));
     }
 
     #[test]
