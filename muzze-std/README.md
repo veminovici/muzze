@@ -10,6 +10,10 @@ A Rust library for musical computations and data structures, providing efficient
 - **Step**: Musical step intervals with semitone values (half steps, whole steps, etc.)
 - **Interval**: Musical interval types with standard names and semitone values
 - **Accidental**: Musical accidental types with Unicode symbols (sharps, flats, naturals)
+- **Chord**: Musical chord representation with predefined chords and builders
+- **ChordBuilder**: Fluent interface for constructing custom chords
+- **Degree**: Chord degree representation with accidental modifications
+- **DegreeAccidental**: Accidental types for chord degrees (natural, flat, sharp, double flat)
 
 ## Installation
 
@@ -162,6 +166,42 @@ assert_eq!(Accidental::from(8), Accidental::Sharp);
 assert_eq!(u8::from(RESET_ACCIDENTAL), 15);
 ```
 
+### Working with Musical Chords
+
+```rust
+use muzze_std::{Chord, ChordBuilder, ROOT, THIRD, FIFTH, FLAT_THIRD, SHARP_FIFTH, FLAT_SEVENTH, MAJOR_TRIAD, MINOR_TRIAD, DOMINANT_SEVENTH};
+
+// Use predefined chords
+let major_triad = MAJOR_TRIAD;
+let minor_triad = MINOR_TRIAD;
+let dominant_seventh = DOMINANT_SEVENTH;
+
+// Build custom chords using the builder
+let custom_chord = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(SHARP_FIFTH)
+    .set_degree(FLAT_SEVENTH)
+    .build();
+
+// Iterate over chord degrees
+for degree in custom_chord.degrees() {
+    println!("{}", degree); // Prints: 1, 3, ♯5, ♭7
+}
+
+// Display chord as string
+let chord_display = format!("{}", major_triad);
+// Result: "Chord(1, 3, 5)" - shows only the degrees that are set
+
+// Create complex jazz chords
+let jazz_chord = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(Degree::new(2, DEGREE_SHARP))  // Sharp 2nd
+    .set_degree(SHARP_FIFTH)
+    .set_degree(FLAT_SEVENTH)
+    .set_degree(Degree::new(9, DEGREE_NATURAL)) // Natural 9th
+    .build();
+```
+
 ## Available Musical Types
 
 ### Predefined Scales
@@ -247,6 +287,41 @@ The library provides comprehensive accidental types for musical notation:
 - `DOUBLE_FLAT` - Double flat accidental constant
 - `DOUBLE_SHARP` - Double sharp accidental constant
 - `RESET_ACCIDENTAL` - Reset accidental constant
+
+### Musical Chords
+
+The library provides comprehensive chord types for musical harmony:
+
+#### Predefined Chord Constants
+- `MAJOR_TRIAD` - Major triad (Root, Major 3rd, Perfect 5th)
+- `MINOR_TRIAD` - Minor triad (Root, Minor 3rd, Perfect 5th)
+- `DIMINISHED_TRIAD` - Diminished triad (Root, Minor 3rd, Diminished 5th)
+- `AUGMENTED_TRIAD` - Augmented triad (Root, Major 3rd, Augmented 5th)
+- `MAJOR_SEVENTH_CHORD` - Major 7th chord (Root, Major 3rd, Perfect 5th, Major 7th)
+- `MINOR_SEVENTH_CHORD` - Minor 7th chord (Root, Minor 3rd, Perfect 5th, Minor 7th)
+- `DOMINANT_SEVENTH` - Dominant 7th chord (Root, Major 3rd, Perfect 5th, Minor 7th)
+- `HALF_DIMINISHED_SEVENTH` - Half-diminished 7th chord (Root, Minor 3rd, Diminished 5th, Minor 7th)
+- `DIMINISHED_SEVENTH` - Diminished 7th chord (Root, Minor 3rd, Diminished 5th, Diminished 7th)
+- `AUGMENTED_SEVENTH` - Augmented 7th chord (Root, Major 3rd, Augmented 5th, Minor 7th)
+- `SUSPENDED_FOURTH` - Suspended 4th chord (Root, Perfect 4th, Perfect 5th)
+
+#### Chord Degree Constants
+- `ROOT` - Root degree (1st degree, natural)
+- `THIRD` - Major third degree (3rd degree, natural)
+- `FLAT_THIRD` - Minor third degree (3rd degree, flat)
+- `FOURTH` - Fourth degree (4th degree, natural)
+- `FIFTH` - Perfect fifth degree (5th degree, natural)
+- `FLAT_FIFTH` - Diminished fifth degree (5th degree, flat)
+- `SHARP_FIFTH` - Augmented fifth degree (5th degree, sharp)
+- `SEVENTH` - Major seventh degree (7th degree, natural)
+- `FLAT_SEVENTH` - Minor seventh degree (7th degree, flat)
+- `DOUBLEFLAT_SEVENTH` - Diminished seventh degree (7th degree, double flat)
+
+#### Degree Accidental Constants
+- `DEGREE_NATURAL` - Natural accidental for chord degrees
+- `DEGREE_FLAT` - Flat accidental for chord degrees
+- `DEGREE_DOUBLEFLAT` - Double flat accidental for chord degrees
+- `DEGREE_SHARP` - Sharp accidental for chord degrees
 
 ## API Reference
 
@@ -517,6 +592,197 @@ assert_eq!(flat_variant, FLAT);
 assert_eq!(flat_variant.to_string(), "♭");
 ```
 
+### Chord
+
+#### Methods
+- `degrees() -> impl Iterator<Item = Degree>` - Get an iterator over the degrees in the chord
+- `to_string() -> String` - Get the string representation of the chord
+
+#### Predefined Chord Constants
+- `MAJOR_TRIAD` - Major triad
+- `MINOR_TRIAD` - Minor triad
+- `DIMINISHED_TRIAD` - Diminished triad
+- `AUGMENTED_TRIAD` - Augmented triad
+- `MAJOR_SEVENTH_CHORD` - Major 7th chord
+- `MINOR_SEVENTH_CHORD` - Minor 7th chord
+- `DOMINANT_SEVENTH` - Dominant 7th chord
+- `HALF_DIMINISHED_SEVENTH` - Half-diminished 7th chord
+- `DIMINISHED_SEVENTH` - Diminished 7th chord
+- `AUGMENTED_SEVENTH` - Augmented 7th chord
+- `SUSPENDED_FOURTH` - Suspended 4th chord
+
+#### Traits
+- `Display` - String formatting
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_std::{Chord, MAJOR_TRIAD, MINOR_TRIAD, DOMINANT_SEVENTH};
+
+// Using predefined chords
+let major_triad = MAJOR_TRIAD;
+let degrees: Vec<_> = major_triad.degrees().collect();
+assert_eq!(degrees.len(), 3);
+assert_eq!(degrees[0].to_string(), "1");  // Root
+assert_eq!(degrees[1].to_string(), "3");  // Major third
+assert_eq!(degrees[2].to_string(), "5");  // Perfect fifth
+
+// Display chord as string
+let chord_display = format!("{}", MAJOR_TRIAD);
+assert_eq!(chord_display, "Chord(1, 3, 5)");
+
+// Working with different chord types
+let minor_triad = MINOR_TRIAD;
+let minor_degrees: Vec<_> = minor_triad.degrees().collect();
+assert_eq!(minor_degrees[1].to_string(), "♭3"); // Minor third
+
+let dominant_seventh = DOMINANT_SEVENTH;
+let seventh_degrees: Vec<_> = dominant_seventh.degrees().collect();
+assert_eq!(seventh_degrees.len(), 4);
+assert_eq!(seventh_degrees[3].to_string(), "♭7"); // Minor seventh
+```
+
+### ChordBuilder
+
+#### Methods
+- `with_root() -> ChordBuilder` - Create a new chord builder with root degree set
+- `set_degree(degree: Degree) -> ChordBuilder` - Add or modify a degree in the chord
+- `build() -> Chord` - Build the final chord
+
+#### Traits
+- `Default` - Creates a builder with root degree set
+
+#### Examples
+```rust
+use muzze_std::{ChordBuilder, ROOT, THIRD, FIFTH, FLAT_THIRD, SHARP_FIFTH, FLAT_SEVENTH};
+
+// Build a major triad
+let major_triad = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(FIFTH)
+    .build();
+
+// Build a minor triad with augmented fifth
+let minor_augmented = ChordBuilder::with_root()
+    .set_degree(FLAT_THIRD)
+    .set_degree(SHARP_FIFTH)
+    .build();
+
+// Build a complex jazz chord
+let jazz_chord = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(SHARP_FIFTH)
+    .set_degree(FLAT_SEVENTH)
+    .build();
+
+// Overwrite degrees (last setting wins)
+let overwritten_chord = ChordBuilder::with_root()
+    .set_degree(THIRD)      // Set major third
+    .set_degree(FLAT_THIRD) // Overwrite with minor third
+    .build();
+
+let degrees: Vec<_> = overwritten_chord.degrees().collect();
+assert_eq!(degrees[1].to_string(), "♭3"); // Minor third (overwrote major third)
+```
+
+### Degree
+
+#### Methods
+- `new(degree: u8, accidental: DegreeAccidental) -> Degree` - Create a new degree
+- `to_string() -> String` - Get the string representation of the degree
+
+#### Predefined Degree Constants
+- `ROOT` - Root degree (1st degree, natural)
+- `THIRD` - Major third degree (3rd degree, natural)
+- `FLAT_THIRD` - Minor third degree (3rd degree, flat)
+- `FOURTH` - Fourth degree (4th degree, natural)
+- `FIFTH` - Perfect fifth degree (5th degree, natural)
+- `FLAT_FIFTH` - Diminished fifth degree (5th degree, flat)
+- `SHARP_FIFTH` - Augmented fifth degree (5th degree, sharp)
+- `SEVENTH` - Major seventh degree (7th degree, natural)
+- `FLAT_SEVENTH` - Minor seventh degree (7th degree, flat)
+- `DOUBLEFLAT_SEVENTH` - Diminished seventh degree (7th degree, double flat)
+
+#### Traits
+- `Display` - String formatting
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_std::{Degree, ROOT, THIRD, FLAT_THIRD, SHARP_FIFTH, DEGREE_NATURAL, DEGREE_FLAT, DEGREE_SHARP};
+
+// Using predefined constants
+assert_eq!(ROOT.to_string(), "1");
+assert_eq!(THIRD.to_string(), "3");
+assert_eq!(FLAT_THIRD.to_string(), "♭3");
+assert_eq!(SHARP_FIFTH.to_string(), "♯5");
+
+// Creating custom degrees
+let custom_degree = Degree::new(2, DEGREE_SHARP);
+assert_eq!(custom_degree.to_string(), "♯2");
+
+let flat_ninth = Degree::new(9, DEGREE_FLAT);
+assert_eq!(flat_ninth.to_string(), "♭9");
+
+// Working with degree accidentals
+let natural_degree = Degree::new(4, DEGREE_NATURAL);
+assert_eq!(natural_degree.to_string(), "4");
+```
+
+### DegreeAccidental
+
+#### Enum Variants
+- `DegreeAccidental::Natural` - No pitch modification (value: 1)
+- `DegreeAccidental::Flat` - Lowers pitch by one semitone (value: 2)
+- `DegreeAccidental::DoubleFlat` - Lowers pitch by two semitones (value: 3)
+- `DegreeAccidental::Sharp` - Raises pitch by one semitone (value: 4)
+
+#### Predefined Degree Accidental Constants
+- `DEGREE_NATURAL` - Natural accidental for chord degrees
+- `DEGREE_FLAT` - Flat accidental for chord degrees
+- `DEGREE_DOUBLEFLAT` - Double flat accidental for chord degrees
+- `DEGREE_SHARP` - Sharp accidental for chord degrees
+
+#### Methods
+- `from(value: u8) -> DegreeAccidental` - Create a degree accidental from a u8 value
+- `to_string() -> String` - Get the string representation of the degree accidental
+
+#### Traits
+- `From<u8> for DegreeAccidental` - Convert from u8 to DegreeAccidental
+- `From<DegreeAccidental> for u8` - Convert from DegreeAccidental to u8
+- `Display` - String formatting
+- `Debug`, `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash` - Standard traits
+
+#### Examples
+```rust
+use muzze_std::{DegreeAccidental, DEGREE_NATURAL, DEGREE_FLAT, DEGREE_DOUBLEFLAT, DEGREE_SHARP};
+
+// Using predefined constants
+assert_eq!(DEGREE_NATURAL.to_string(), "");
+assert_eq!(DEGREE_FLAT.to_string(), "♭");
+assert_eq!(DEGREE_DOUBLEFLAT.to_string(), "♭♭");
+assert_eq!(DEGREE_SHARP.to_string(), "♯");
+
+// Creating degree accidentals from values
+let natural = DegreeAccidental::from(1);
+assert_eq!(natural, DEGREE_NATURAL);
+
+let flat = DegreeAccidental::from(2);
+assert_eq!(flat, DEGREE_FLAT);
+
+// Conversions
+let value: u8 = DEGREE_SHARP.into();
+assert_eq!(value, 4);
+
+let accidental_from_value = DegreeAccidental::from(3);
+assert_eq!(accidental_from_value, DEGREE_DOUBLEFLAT);
+
+// Using enum variants directly
+let sharp_variant = DegreeAccidental::Sharp;
+assert_eq!(sharp_variant, DEGREE_SHARP);
+assert_eq!(sharp_variant.to_string(), "♯");
+```
+
 ## Musical Theory
 
 ### Interval Representation
@@ -584,6 +850,57 @@ Musical accidentals are represented with their corresponding Unicode symbols and
 - **Double Sharp** (♯♯): Raises pitch by two semitones
 
 The numeric encoding allows for efficient storage and processing of accidental information in musical applications.
+
+### Chord Theory
+
+Musical chords are represented as collections of degrees with their accidental modifications:
+
+#### Chord Degree System
+
+Chord degrees represent the position of notes within a chord (1st, 3rd, 5th, etc.) and can be modified with accidentals:
+
+- **Root (1)**: The fundamental note that gives the chord its name and tonal center
+- **Third (3)**: Major third (natural) or minor third (flat) - determines major/minor quality
+- **Fifth (5)**: Perfect fifth (natural), diminished fifth (flat), or augmented fifth (sharp)
+- **Seventh (7)**: Major seventh (natural), minor seventh (flat), or diminished seventh (double flat)
+- **Extensions (9, 11, 13)**: Higher degrees for extended chords
+
+#### Chord Quality Types
+
+The library supports all major chord quality types:
+
+- **Major Chords**: Root + Major 3rd + Perfect 5th (bright, stable sound)
+- **Minor Chords**: Root + Minor 3rd + Perfect 5th (dark, melancholic sound)
+- **Diminished Chords**: Root + Minor 3rd + Diminished 5th (tense, unstable sound)
+- **Augmented Chords**: Root + Major 3rd + Augmented 5th (bright, tense sound)
+- **Seventh Chords**: Triads with added seventh degrees (sophisticated, jazzy sound)
+- **Suspended Chords**: Chords where the third is replaced by another degree (suspended, unresolved sound)
+
+#### Chord Storage
+
+Chords are stored efficiently using a `U4Vec16` where each 4-bit value represents the accidental type for each degree position (1-16). A value of 0 represents natural, 1 represents flat, 2 represents double flat, and 3 represents sharp.
+
+#### Chord Construction
+
+The `ChordBuilder` provides a fluent interface for constructing chords:
+
+```rust
+use muzze_std::{ChordBuilder, ROOT, THIRD, FIFTH, FLAT_THIRD, SHARP_FIFTH, FLAT_SEVENTH};
+
+// Build a major triad
+let major_triad = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(FIFTH)
+    .build();
+
+// Build a complex jazz chord
+let jazz_chord = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(SHARP_FIFTH)
+    .set_degree(FLAT_SEVENTH)
+    .set_degree(Degree::new(9, DEGREE_NATURAL)) // Add 9th
+    .build();
+```
 
 ## Performance
 
@@ -660,6 +977,62 @@ let compound_interval = Interval::from(u8::from(OCTAVE) + u8::from(MAJOR_THIRD))
 assert_eq!(u8::from(compound_interval), 16); // Octave + Major 3rd
 ```
 
+### Working with Chords
+
+```rust
+use muzze_std::{Chord, ChordBuilder, MAJOR_TRIAD, MINOR_TRIAD, DOMINANT_SEVENTH, ROOT, THIRD, FIFTH, FLAT_THIRD, SHARP_FIFTH, FLAT_SEVENTH, DEGREE_NATURAL, DEGREE_SHARP};
+
+// Analyze predefined chords
+let major_triad = MAJOR_TRIAD;
+let degrees: Vec<_> = major_triad.degrees().collect();
+assert_eq!(degrees.len(), 3);
+assert_eq!(degrees[0].to_string(), "1");  // Root
+assert_eq!(degrees[1].to_string(), "3");  // Major third
+assert_eq!(degrees[2].to_string(), "5");  // Perfect fifth
+
+// Compare different chord types
+let minor_triad = MINOR_TRIAD;
+let minor_degrees: Vec<_> = minor_triad.degrees().collect();
+assert_eq!(minor_degrees[1].to_string(), "♭3"); // Minor third
+
+let dominant_seventh = DOMINANT_SEVENTH;
+let seventh_degrees: Vec<_> = dominant_seventh.degrees().collect();
+assert_eq!(seventh_degrees.len(), 4);
+assert_eq!(seventh_degrees[3].to_string(), "♭7"); // Minor seventh
+
+// Build custom chords
+let augmented_triad = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(SHARP_FIFTH)
+    .build();
+
+let augmented_degrees: Vec<_> = augmented_triad.degrees().collect();
+assert_eq!(augmented_degrees[2].to_string(), "♯5"); // Augmented fifth
+
+// Create complex jazz chords
+let jazz_chord = ChordBuilder::with_root()
+    .set_degree(THIRD)
+    .set_degree(Degree::new(2, DEGREE_SHARP))  // Sharp 2nd
+    .set_degree(SHARP_FIFTH)
+    .set_degree(FLAT_SEVENTH)
+    .set_degree(Degree::new(9, DEGREE_NATURAL)) // Natural 9th
+    .build();
+
+let jazz_degrees: Vec<_> = jazz_chord.degrees().collect();
+assert_eq!(jazz_degrees.len(), 5);
+assert_eq!(jazz_degrees[1].to_string(), "♯2"); // Sharp 2nd
+assert_eq!(jazz_degrees[2].to_string(), "3");  // Major third
+assert_eq!(jazz_degrees[3].to_string(), "♯5"); // Augmented fifth
+assert_eq!(jazz_degrees[4].to_string(), "♭7"); // Minor seventh
+
+// Display chords as strings
+let chord_display = format!("{}", major_triad);
+assert_eq!(chord_display, "Chord(1, 3, 5)");
+
+let complex_display = format!("{}", jazz_chord);
+assert_eq!(complex_display, "Chord(1, ♯2, 3, ♯5, ♭7, 9)");
+```
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -677,5 +1050,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Musical step intervals with semitone values
 - Musical interval types with standard names and semitone values
 - Musical accidental types with Unicode symbols
+- Chord representation and builders
+- Predefined musical chords (triads, seventh chords, suspended chords)
+- Chord degree system with accidental modifications
+- Degree accidental types for chord construction
 - Built on top of `muzze-bitflags` for efficient bit operations
 - Comprehensive test suite

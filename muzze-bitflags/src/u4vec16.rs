@@ -754,7 +754,10 @@ mod tests {
             .build();
 
         // Build using direct construction
-        let direct_vec = U4Vec16::from_u64(0).set_item(0, 5).set_item(1, 10).set_item(15, 15);
+        let direct_vec = U4Vec16::from_u64(0)
+            .set_item(0, 5)
+            .set_item(1, 10)
+            .set_item(15, 15);
 
         // Both should produce the same result
         assert_eq!(builder_vec.inner(), direct_vec.inner());
