@@ -92,6 +92,7 @@ impl Step {
     /// use muzze_std::Step;
     /// assert_eq!(Step::from(4).inner(), 4);
     /// ```
+    #[inline]
     pub const fn inner(&self) -> u8 {
         self.0
     }
@@ -111,8 +112,9 @@ impl From<Step> for u8 {
     /// assert_eq!(u8::from(WHOLE), 2);
     /// assert_eq!(u8::from(Step::from(4)), 4);
     /// ```
+    #[inline]
     fn from(step: Step) -> Self {
-        step.0
+        step.inner()
     }
 }
 
@@ -143,6 +145,7 @@ impl From<u8> for Step {
     /// assert_eq!(u8::from(whole_step), 2);
     /// assert_eq!(u8::from(custom_step), 5);
     /// ```
+    #[inline]
     fn from(value: u8) -> Self {
         Step(value)
     }

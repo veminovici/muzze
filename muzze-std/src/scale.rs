@@ -6,7 +6,7 @@
 
 use muzze_bitflags::{BitVec16, BitVec16Builder};
 
-use crate::Step;
+use crate::{Interval, Step, UNISON};
 
 /// Represents a musical scale using a 16-bit vector
 ///
@@ -17,9 +17,9 @@ use crate::Step;
 ///
 /// # Examples
 /// ```
-/// use muzze_std::Scale;
+/// use muzze_std::{Scale, Interval};
 /// let major_scale = Scale::from_u16(0b0000_0000_0000_1111);
-/// let intervals: Vec<u8> = major_scale.intervals().collect();
+/// let intervals: Vec<Interval> = major_scale.intervals().collect();
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Scale(BitVec16);
@@ -58,12 +58,15 @@ impl Scale {
     /// ```
     /// use muzze_std::Scale;
     /// let scale = Scale::from_u16(0b0000_0000_0000_1111);
-    /// let intervals: Vec<u8> = scale.intervals().collect();
+    /// let intervals: Vec<u8> = scale.intervals().map(|i| i.inner()).collect();
     /// // For a major scale, this would yield [1, 2, 3, 4, 5, 6, 7, 8]
     /// ```
     #[inline]
-    pub fn intervals(&self) -> impl Iterator<Item = u8> {
-        self.0.indeces_on().map(|i| (i + 1) as u8)
+    pub fn intervals(&self) -> impl Iterator<Item = Interval> {
+        self.0.indeces_on().map(|i| {
+            let val = (i + 1) as u8;
+            Interval::from(val)
+        })
     }
 
     /// Returns an iterator over the step intervals between consecutive scale degrees
@@ -86,8 +89,8 @@ impl Scale {
     pub fn steps(&self) -> impl Iterator<Item = Step> {
         let mut last = 0;
         self.intervals().map(move |interval| {
-            let step = interval - last;
-            last = interval;
+            let step = interval.inner() - last;
+            last = interval.inner();
             Step::from(step)
         })
     }
@@ -112,7 +115,10 @@ impl Scale {
     /// ```
     #[inline]
     pub fn apply(&self, root: u8) -> impl Iterator<Item = u8> {
-        std::iter::once(root).chain(self.intervals().map(move |interval| interval + root))
+        std::iter::once(root).chain(
+            self.intervals()
+                .map(move |interval| interval.inner() + root),
+        )
     }
 }
 
@@ -210,15 +216,15 @@ pub const BIBOP_DOMINANT: Scale = Scale::from_u16(0b0000_1111_0101_1010);
 ///
 /// # Examples
 /// ```
-/// use muzze_std::ScaleBuilder;
+/// use muzze_std::{ScaleBuilder, Interval, MAJOR_SECOND, MAJOR_THIRD, PERFECT_FOURTH, PERFECT_FIFTH, MAJOR_SIXTH, MAJOR_SEVENTH, OCTAVE};
 /// let scale = ScaleBuilder::default()
-///     .set_interval(2)  // Major 2nd
-///     .set_interval(4)  // Major 3rd
-///     .set_interval(5)  // Perfect 4th
-///     .set_interval(7)  // Perfect 5th
-///     .set_interval(9)  // Major 6th
-///     .set_interval(11) // Major 7th
-///     .set_interval(12) // Octave
+///     .set_interval(MAJOR_SECOND)  // Major 2nd
+///     .set_interval(MAJOR_THIRD)  // Major 3rd
+///     .set_interval(PERFECT_FOURTH)  // Perfect 4th
+///     .set_interval(PERFECT_FIFTH)  // Perfect 5th
+///     .set_interval(MAJOR_SIXTH)  // Major 6th
+///     .set_interval(MAJOR_SEVENTH) // Major 7th
+///     .set_interval(OCTAVE) // Octave
 ///     .build();
 /// // This creates a major scale
 /// ```
@@ -268,18 +274,18 @@ impl ScaleBuilder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::ScaleBuilder;
+    /// use muzze_std::{ScaleBuilder, Interval, MAJOR_SECOND, PERFECT_FIFTH, OCTAVE};
     /// let scale = ScaleBuilder::default()
-    ///     .set_interval(2)  // Add major 2nd
-    ///     .set_interval(7)  // Add perfect 5th
-    ///     .set_interval(12) // Add octave
+    ///     .set_interval(MAJOR_SECOND)  // Add major 2nd
+    ///     .set_interval(PERFECT_FIFTH)  // Add perfect 5th
+    ///     .set_interval(OCTAVE) // Add octave
     ///     .build();
-    /// let intervals: Vec<u8> = scale.intervals().collect();
+    /// let intervals: Vec<u8> = scale.intervals().map(|i| i.inner()).collect();
     /// assert_eq!(intervals, vec![2, 7, 12]);
     /// ```
     #[inline]
-    pub const fn set_interval(self, interval: u8) -> Self {
-        let vec_builder = self.vec_builder.set_index(interval - 1);
+    pub const fn set_interval(self, interval: Interval) -> Self {
+        let vec_builder = self.vec_builder.set_index(interval.inner() - 1);
         Self { vec_builder }
     }
 
@@ -293,15 +299,15 @@ impl ScaleBuilder {
     ///
     /// # Example
     /// ```
-    /// use muzze_std::{MAJOR, ScaleBuilder};
+    /// use muzze_std::{ScaleBuilder, Interval, MAJOR,MAJOR_SECOND, MAJOR_THIRD, PERFECT_FOURTH, PERFECT_FIFTH, MAJOR_SIXTH, MAJOR_SEVENTH, OCTAVE};
     /// let scale = ScaleBuilder::default()
-    ///     .set_interval(2)
-    ///     .set_interval(4)
-    ///     .set_interval(5)
-    ///     .set_interval(7)
-    ///     .set_interval(9)
-    ///     .set_interval(11)
-    ///     .set_interval(12)
+    ///     .set_interval(MAJOR_SECOND)  // Major 2nd
+    ///     .set_interval(MAJOR_THIRD)  // Major 3rd
+    ///     .set_interval(PERFECT_FOURTH)  // Perfect 4th
+    ///     .set_interval(PERFECT_FIFTH)  // Perfect 5th
+    ///     .set_interval(MAJOR_SIXTH)  // Major 6th
+    ///     .set_interval(MAJOR_SEVENTH) // Major 7th
+    ///     .set_interval(OCTAVE) // Octave
     ///     .build();
     /// // This creates a major scale with intervals [2, 4, 5, 7, 9, 11, 12]
     /// assert_eq!(scale, MAJOR);
@@ -351,7 +357,7 @@ pub struct ScaleStepBuilder {
     /// The underlying ScaleBuilder used for bit manipulation
     scale_builder: ScaleBuilder,
     /// The last interval that was added to track cumulative position
-    last_interval: u8,
+    last_interval: Interval,
 }
 
 impl ScaleStepBuilder {
@@ -367,7 +373,7 @@ impl ScaleStepBuilder {
     const fn new() -> Self {
         Self {
             scale_builder: ScaleBuilder::new(),
-            last_interval: 0,
+            last_interval: UNISON,
         }
     }
 
@@ -395,12 +401,11 @@ impl ScaleStepBuilder {
     ///     .add_step(WHOLE)  // Add whole step (major 3rd)
     ///     .add_step(HALF)   // Add half step (perfect 4th)
     ///     .build();
-    /// let intervals: Vec<u8> = scale.intervals().collect();
+    /// let intervals: Vec<u8> = scale.intervals().map(|i| i.inner()).collect();
     /// assert_eq!(intervals, vec![2, 4, 5]);
     /// ```
     pub const fn add_step(self, step: Step) -> Self {
-        let interval = self.last_interval + step.inner();
-        let last_interval = interval;
+        let last_interval = self.last_interval.add_step(step);
         Self {
             scale_builder: self.scale_builder.set_interval(last_interval),
             last_interval,
@@ -451,7 +456,10 @@ impl Default for ScaleStepBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::{HALF, WHOLE};
+    use crate::{
+        HALF, MAJOR_SECOND, MAJOR_SEVENTH, MAJOR_SIXTH, MAJOR_THIRD, OCTAVE, PERFECT_FIFTH,
+        PERFECT_FOURTH, WHOLE,
+    };
 
     use super::*;
 
@@ -482,7 +490,7 @@ mod tests {
     #[test]
     fn test_major_scale() {
         assert_eq!(
-            MAJOR.intervals().collect::<Vec<u8>>(),
+            MAJOR.intervals().map(|i| i.inner()).collect::<Vec<u8>>(),
             vec![2, 4, 5, 7, 9, 11, 12]
         );
         assert_eq!(
@@ -504,7 +512,10 @@ mod tests {
     #[test]
     fn test_natural_minor_scale() {
         assert_eq!(
-            NATURAL_MINOR.intervals().collect::<Vec<u8>>(),
+            NATURAL_MINOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 3, 5, 7, 8, 10, 12]
         );
         assert_eq!(
@@ -526,7 +537,10 @@ mod tests {
     #[test]
     fn test_harmonic_minor_scale() {
         assert_eq!(
-            HARMONIC_MINOR.intervals().collect::<Vec<u8>>(),
+            HARMONIC_MINOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 3, 5, 7, 8, 11, 12]
         );
         assert_eq!(
@@ -551,7 +565,10 @@ mod tests {
     #[test]
     fn test_melodic_minor_scale() {
         assert_eq!(
-            MELODIC_MINOR.intervals().collect::<Vec<u8>>(),
+            MELODIC_MINOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 3, 5, 7, 9, 11, 12]
         );
         assert_eq!(
@@ -568,7 +585,10 @@ mod tests {
     #[test]
     fn test_pentatonic_major_scale() {
         assert_eq!(
-            PENTATONIC_MAJOR.intervals().collect::<Vec<u8>>(),
+            PENTATONIC_MAJOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 4, 7, 9]
         );
         assert_eq!(
@@ -588,7 +608,10 @@ mod tests {
     #[test]
     fn test_pentatonic_minor_scale() {
         assert_eq!(
-            PENTATONIC_MINOR.intervals().collect::<Vec<u8>>(),
+            PENTATONIC_MINOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![3, 5, 7, 10]
         );
         assert_eq!(
@@ -608,7 +631,10 @@ mod tests {
     #[test]
     fn test_blues_minor_scale() {
         assert_eq!(
-            BLUES_MINOR.intervals().collect::<Vec<u8>>(),
+            BLUES_MINOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![3, 5, 6, 7, 10, 12]
         );
         assert_eq!(
@@ -625,7 +651,10 @@ mod tests {
     #[test]
     fn test_blues_major_scale() {
         assert_eq!(
-            BLUES_MAJOR.intervals().collect::<Vec<u8>>(),
+            BLUES_MAJOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 3, 4, 7, 9]
         );
         assert_eq!(
@@ -641,7 +670,10 @@ mod tests {
     #[test]
     fn test_jazz_whole_tone_scale() {
         assert_eq!(
-            JAZZ_WHOLE_TONE.intervals().collect::<Vec<u8>>(),
+            JAZZ_WHOLE_TONE
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 4, 6, 8, 10]
         );
         assert_eq!(
@@ -660,7 +692,10 @@ mod tests {
     #[test]
     fn test_jazz_wholehalf_diminished_scale() {
         assert_eq!(
-            JAZZ_WHOLEHALF_DIMINISHED.intervals().collect::<Vec<u8>>(),
+            JAZZ_WHOLEHALF_DIMINISHED
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 3, 5, 6, 8, 9, 11]
         );
         assert_eq!(
@@ -679,7 +714,10 @@ mod tests {
     #[test]
     fn test_bibop_major_scale() {
         assert_eq!(
-            BIBOP_MAJOR.intervals().collect::<Vec<u8>>(),
+            BIBOP_MAJOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 4, 5, 7, 8, 9, 11, 12]
         );
         assert_eq!(
@@ -695,7 +733,10 @@ mod tests {
     #[test]
     fn test_bibop_minor_scale() {
         assert_eq!(
-            BIBOP_MINOR.intervals().collect::<Vec<u8>>(),
+            BIBOP_MINOR
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 3, 4, 5, 7, 9, 10, 12]
         );
         assert_eq!(
@@ -711,7 +752,10 @@ mod tests {
     #[test]
     fn test_bibop_dominant_scale() {
         assert_eq!(
-            BIBOP_DOMINANT.intervals().collect::<Vec<u8>>(),
+            BIBOP_DOMINANT
+                .intervals()
+                .map(|i| i.inner())
+                .collect::<Vec<u8>>(),
             vec![2, 4, 5, 7, 9, 10, 11, 12]
         );
         assert_eq!(
@@ -735,16 +779,16 @@ mod tests {
     #[test]
     fn test_scale_builder() {
         let scale = ScaleBuilder::default()
-            .set_interval(2)
-            .set_interval(4)
-            .set_interval(5)
-            .set_interval(7)
-            .set_interval(9)
-            .set_interval(11)
-            .set_interval(12)
+            .set_interval(MAJOR_SECOND)
+            .set_interval(MAJOR_THIRD)
+            .set_interval(PERFECT_FOURTH)
+            .set_interval(PERFECT_FIFTH)
+            .set_interval(MAJOR_SIXTH)
+            .set_interval(MAJOR_SEVENTH)
+            .set_interval(OCTAVE)
             .build();
         assert_eq!(
-            scale.intervals().collect::<Vec<u8>>(),
+            scale.intervals().map(|i| i.inner()).collect::<Vec<u8>>(),
             vec![2, 4, 5, 7, 9, 11, 12]
         );
         assert_eq!(scale, MAJOR);
@@ -763,7 +807,7 @@ mod tests {
             .build();
 
         assert_eq!(
-            scale.intervals().collect::<Vec<u8>>(),
+            scale.intervals().map(|i| i.inner()).collect::<Vec<u8>>(),
             vec![2, 4, 5, 7, 9, 11, 12]
         );
         assert_eq!(scale, MAJOR);

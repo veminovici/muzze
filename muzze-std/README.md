@@ -8,6 +8,7 @@ A Rust library for musical computations and data structures, providing efficient
 - **ScaleBuilder**: Fluent interface for constructing custom scales
 - **ScaleStepBuilder**: Build scales using step patterns (whole steps, half steps)
 - **Step**: Musical step intervals with semitone values (half steps, whole steps, etc.)
+- **Interval**: Musical interval types with standard names and semitone values
 - **Accidental**: Musical accidental types with Unicode symbols (sharps, flats, naturals)
 
 ## Installation
@@ -35,19 +36,19 @@ muzze-std = "0.1.0"       # For complete musical functionality
 ### Working with Scales
 
 ```rust
-use muzze_std::{MAJOR, NATURAL_MINOR, ScaleBuilder, ScaleStepBuilder, HALF, WHOLE};
+use muzze_std::{MAJOR, NATURAL_MINOR, ScaleBuilder, ScaleStepBuilder, HALF, WHOLE, MAJOR_SECOND, MAJOR_THIRD, PERFECT_FIFTH, OCTAVE};
 
 // Use predefined scales
 let major_scale = MAJOR;
 let intervals: Vec<u8> = major_scale.intervals().collect();
-// Result: [2, 4, 5, 7, 9, 11, 12]
+// Result: [2, 4, 5, 7, 9, 11, 12] (Major 2nd, Major 3rd, Perfect 4th, Perfect 5th, Major 6th, Major 7th, Octave)
 
 // Build a scale using absolute intervals
 let custom_scale = ScaleBuilder::default()
-    .set_interval(2)  // Major 2nd
-    .set_interval(4)  // Major 3rd
-    .set_interval(7)  // Perfect 5th
-    .set_interval(12) // Octave
+    .set_interval(u8::from(MAJOR_SECOND))  // Major 2nd
+    .set_interval(u8::from(MAJOR_THIRD))   // Major 3rd
+    .set_interval(u8::from(PERFECT_FIFTH)) // Perfect 5th
+    .set_interval(u8::from(OCTAVE))        // Octave
     .build();
 
 // Build a scale using step patterns
@@ -67,13 +68,14 @@ assert_eq!(major_scale_built, MAJOR);
 ### Applying Scales to Notes
 
 ```rust
-use muzze_std::MAJOR;
+use muzze_std::{MAJOR, MAJOR_SECOND, MAJOR_THIRD, PERFECT_FOURTH, PERFECT_FIFTH, MAJOR_SIXTH, MAJOR_SEVENTH, OCTAVE};
 
 const C: u8 = 60; // Middle C
 
 // Apply the major scale to C
 let c_major_notes: Vec<u8> = MAJOR.apply(C).collect();
 // Result: [60, 62, 64, 65, 67, 69, 71, 72] (C, D, E, F, G, A, B, C)
+// The intervals are: [MAJOR_SECOND, MAJOR_THIRD, PERFECT_FOURTH, PERFECT_FIFTH, MAJOR_SIXTH, MAJOR_SEVENTH, OCTAVE]
 ```
 
 ### Working with Musical Steps
@@ -100,6 +102,37 @@ assert_eq!(u8::from(whole_half_step), 3);
 let custom_step = Step::from(4);
 assert_eq!(custom_step.to_string(), "S4");
 assert_eq!(u8::from(custom_step), 4);
+```
+
+### Working with Musical Intervals
+
+```rust
+use muzze_std::{Interval, MAJOR_THIRD, PERFECT_FIFTH, OCTAVE, AUGMENTED_FOURTH};
+
+// Using predefined constants
+let major_third = MAJOR_THIRD;
+let perfect_fifth = PERFECT_FIFTH;
+let octave = OCTAVE;
+
+// Display as musical notation
+assert_eq!(major_third.to_string(), "M3");
+assert_eq!(perfect_fifth.to_string(), "P5");
+assert_eq!(octave.to_string(), "P8");
+
+// Convert to/from semitone values
+assert_eq!(u8::from(major_third), 4);
+assert_eq!(u8::from(perfect_fifth), 7);
+assert_eq!(u8::from(octave), 12);
+
+// Create custom intervals
+let custom_interval = Interval::from(15);
+assert_eq!(custom_interval.to_string(), "I15");
+assert_eq!(u8::from(custom_interval), 15);
+
+// Test interval relationships
+assert_eq!(AUGMENTED_FOURTH, DIMINISHED_FIFTH); // Both are tritones (same semitone value)
+assert_eq!(u8::from(AUGMENTED_FOURTH), 6);
+assert_eq!(u8::from(MAJOR_THIRD) - u8::from(Interval::from(3)), 1); // Major vs Minor third
 ```
 
 ### Working with Musical Accidentals
@@ -171,6 +204,30 @@ The library provides step interval types for representing musical distances:
 - `Step::from(n)` - Create custom step with n semitones - displayed as "S{n}"
 - Supports any value from 0 to 255 semitones
 
+### Musical Intervals
+
+The library provides comprehensive interval types for representing musical distances with standard names:
+
+#### Predefined Interval Constants
+- `UNISON` - Unison (0 semitones) - displayed as "P1"
+- `MINOR_SECOND` - Minor 2nd (1 semitone) - displayed as "m2"
+- `MAJOR_SECOND` - Major 2nd (2 semitones) - displayed as "M2"
+- `MINOR_THIRD` - Minor 3rd (3 semitones) - displayed as "m3"
+- `MAJOR_THIRD` - Major 3rd (4 semitones) - displayed as "M3"
+- `PERFECT_FOURTH` - Perfect 4th (5 semitones) - displayed as "P4"
+- `AUGMENTED_FOURTH` - Augmented 4th (6 semitones) - displayed as "A4"
+- `DIMINISHED_FIFTH` - Diminished 5th (6 semitones) - displayed as "A4"
+- `PERFECT_FIFTH` - Perfect 5th (7 semitones) - displayed as "P5"
+- `MINOR_SIXTH` - Minor 6th (8 semitones) - displayed as "m6"
+- `MAJOR_SIXTH` - Major 6th (9 semitones) - displayed as "M6"
+- `MINOR_SEVENTH` - Minor 7th (10 semitones) - displayed as "m7"
+- `MAJOR_SEVENTH` - Major 7th (11 semitones) - displayed as "M7"
+- `OCTAVE` - Octave (12 semitones) - displayed as "P8"
+
+#### Custom Intervals
+- `Interval::from(n)` - Create custom interval with n semitones - displayed as "I{n}"
+- Supports any value from 0 to 255 semitones
+
 ### Musical Accidentals
 
 The library provides comprehensive accidental types for musical notation:
@@ -196,23 +253,44 @@ The library provides comprehensive accidental types for musical notation:
 ### Interval Representation
 
 The library uses a semitone-based interval system where:
-- 0 = Unison (root note)
-- 1 = Minor 2nd
-- 2 = Major 2nd
-- 3 = Minor 3rd
-- 4 = Major 3rd
-- 5 = Perfect 4th
-- 6 = Augmented 4th/Diminished 5th (tritone)
-- 7 = Perfect 5th
-- 8 = Minor 6th
-- 9 = Major 6th
-- 10 = Minor 7th
-- 11 = Major 7th
-- 12 = Octave
+- 0 = `UNISON` (root note)
+- 1 = `MINOR_SECOND`
+- 2 = `MAJOR_SECOND`
+- 3 = `MINOR_THIRD`
+- 4 = `MAJOR_THIRD`
+- 5 = `PERFECT_FOURTH`
+- 6 = `AUGMENTED_FOURTH`/`DIMINISHED_FIFTH` (tritone)
+- 7 = `PERFECT_FIFTH`
+- 8 = `MINOR_SIXTH`
+- 9 = `MAJOR_SIXTH`
+- 10 = `MINOR_SEVENTH`
+- 11 = `MAJOR_SEVENTH`
+- 12 = `OCTAVE`
+
+### Interval System
+
+Musical intervals are represented with their corresponding standard names and numeric encodings:
+
+- **Unison (P1)**: No pitch difference, same note
+- **Minor 2nd (m2)**: One semitone, equivalent to a half step
+- **Major 2nd (M2)**: Two semitones, equivalent to a whole step
+- **Minor 3rd (m3)**: Three semitones
+- **Major 3rd (M3)**: Four semitones
+- **Perfect 4th (P4)**: Five semitones
+- **Augmented 4th (A4)**: Six semitones, also known as the tritone
+- **Diminished 5th (A4)**: Six semitones, equivalent to augmented 4th (tritone)
+- **Perfect 5th (P5)**: Seven semitones
+- **Minor 6th (m6)**: Eight semitones
+- **Major 6th (M6)**: Nine semitones
+- **Minor 7th (m7)**: Ten semitones
+- **Major 7th (M7)**: Eleven semitones
+- **Octave (P8)**: Twelve semitones, where the higher note has double the frequency
+
+The numeric encoding allows for efficient storage and processing of interval information in musical applications, while the standard names provide familiar musical terminology.
 
 ### Scale Patterns
 
-Scales are represented as bit patterns where each bit position (0-15) represents a semitone interval from the root. For example, the major scale pattern `0b0000_1101_0101_1010` represents the intervals [2, 4, 5, 7, 9, 11, 12].
+Scales are represented as bit patterns where each bit position (0-15) represents a semitone interval from the root. For example, the major scale pattern `0b0000_1101_0101_1010` represents the intervals [MAJOR_SECOND, MAJOR_THIRD, PERFECT_FOURTH, PERFECT_FIFTH, MAJOR_SIXTH, MAJOR_SEVENTH, OCTAVE].
 
 ### Step System
 
@@ -252,15 +330,15 @@ The library is designed for high performance:
 ### Creating a Custom Scale
 
 ```rust
-use muzze_std::ScaleBuilder;
+use muzze_std::{ScaleBuilder, MAJOR_SECOND, PERFECT_FOURTH, PERFECT_FIFTH, MINOR_SEVENTH, OCTAVE};
 
 // Create a custom scale with specific intervals
 let custom_scale = ScaleBuilder::default()
-    .set_interval(2)  // Major 2nd
-    .set_interval(5)  // Perfect 4th
-    .set_interval(7)  // Perfect 5th
-    .set_interval(10) // Minor 7th
-    .set_interval(12) // Octave
+    .set_interval(u8::from(MAJOR_SECOND))  // Major 2nd
+    .set_interval(u8::from(PERFECT_FOURTH)) // Perfect 4th
+    .set_interval(u8::from(PERFECT_FIFTH))  // Perfect 5th
+    .set_interval(u8::from(MINOR_SEVENTH))  // Minor 7th
+    .set_interval(u8::from(OCTAVE))         // Octave
     .build();
 
 // Get the step pattern
@@ -271,11 +349,11 @@ let steps: Vec<Step> = custom_scale.steps().collect();
 ### Analyzing Scale Properties
 
 ```rust
-use muzze_std::{HARMONIC_MINOR, HALF, WHOLE, WHOLE_HALF};
+use muzze_std::{HARMONIC_MINOR, HALF, WHOLE, WHOLE_HALF, MAJOR_SECOND, MINOR_THIRD, PERFECT_FOURTH, PERFECT_FIFTH, MINOR_SIXTH, MAJOR_SEVENTH, OCTAVE};
 
 // Get all intervals in the harmonic minor scale
 let intervals: Vec<u8> = HARMONIC_MINOR.intervals().collect();
-// Result: [2, 3, 5, 7, 8, 11, 12]
+// Result: [2, 3, 5, 7, 8, 11, 12] (Major 2nd, Minor 3rd, Perfect 4th, Perfect 5th, Minor 6th, Major 7th, Octave)
 
 // Get the step pattern
 let steps: Vec<Step> = HARMONIC_MINOR.steps().collect();
@@ -284,6 +362,33 @@ let steps: Vec<Step> = HARMONIC_MINOR.steps().collect();
 // Count the number of notes in the scale
 let note_count = HARMONIC_MINOR.intervals().count();
 // Result: 7
+```
+
+### Working with Intervals
+
+```rust
+use muzze_std::{Interval, MAJOR_THIRD, PERFECT_FIFTH, OCTAVE, AUGMENTED_FOURTH, DIMINISHED_FIFTH};
+
+// Analyze chord intervals
+let major_chord_intervals = [MAJOR_THIRD, PERFECT_FIFTH];
+let semitone_values: Vec<u8> = major_chord_intervals.iter().map(|&i| u8::from(i)).collect();
+// Result: [4, 7] (Major 3rd + Perfect 5th)
+
+// Test interval relationships
+assert_eq!(AUGMENTED_FOURTH, DIMINISHED_FIFTH); // Both are tritones (same semitone value)
+assert_eq!(u8::from(AUGMENTED_FOURTH), 6);
+assert_eq!(AUGMENTED_FOURTH.to_string(), "A4");
+assert_eq!(DIMINISHED_FIFTH.to_string(), "A4"); // Same display as augmented fourth
+
+// Calculate interval differences
+let major_third_semitones = u8::from(MAJOR_THIRD);
+let perfect_fifth_semitones = u8::from(PERFECT_FIFTH);
+let difference = perfect_fifth_semitones - major_third_semitones;
+// Result: 3 (minor third between major third and perfect fifth)
+
+// Create compound intervals
+let compound_interval = Interval::from(u8::from(OCTAVE) + u8::from(MAJOR_THIRD));
+assert_eq!(u8::from(compound_interval), 16); // Octave + Major 3rd
 ```
 
 ## License
@@ -301,6 +406,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Scale representation and builders
 - Predefined musical scales
 - Musical step intervals with semitone values
+- Musical interval types with standard names and semitone values
 - Musical accidental types with Unicode symbols
 - Built on top of `muzze-bitflags` for efficient bit operations
 - Comprehensive test suite
