@@ -131,15 +131,36 @@ impl Degree {
 }
 
 impl Display for Degree {
+    /// Formats the degree as its string representation
+    ///
+    /// The root degree (1st degree) is displayed as "R" for clarity,
+    /// while all other degrees show their accidental (if any) followed
+    /// by the degree number.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use muzze_std::{ROOT, THIRD, FLAT_THIRD, SHARP_FIFTH};
+    ///
+    /// assert_eq!(format!("{}", ROOT), "R");
+    /// assert_eq!(format!("{}", THIRD), "3");
+    /// assert_eq!(format!("{}", FLAT_THIRD), "♭3");
+    /// assert_eq!(format!("{}", SHARP_FIFTH), "♯5");
+    /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}{}", self.accidental, self.degree)
+        if self.degree == 1 {
+            write!(f, "R")
+        } else {
+            write!(f, "{}{}", self.accidental, self.degree)
+        }
     }
 }
 
 /// Root degree constant - 1st degree with natural accidental
 ///
 /// This represents the root note of a chord, which is the fundamental
-/// note that gives the chord its name and tonal center.
+/// note that gives the chord its name and tonal center. When displayed,
+/// the root degree shows as "R" instead of "1".
 pub const ROOT: Degree = Degree::new(1, DEGREE_NATURAL);
 
 /// Third degree constant - 3rd degree with natural accidental
@@ -300,6 +321,21 @@ impl Chord {
 }
 
 impl Display for Chord {
+    /// Formats the chord as its string representation
+    ///
+    /// The chord is displayed as a hyphen-separated list of degrees,
+    /// where the root degree shows as "R" and other degrees show their
+    /// accidental (if any) followed by the degree number.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use muzze_std::{MAJOR_TRIAD, MINOR_TRIAD, DOMINANT_SEVENTH};
+    ///
+    /// assert_eq!(format!("{}", MAJOR_TRIAD), "R-3-5");
+    /// assert_eq!(format!("{}", MINOR_TRIAD), "R-♭3-5");
+    /// assert_eq!(format!("{}", DOMINANT_SEVENTH), "R-3-5-♭7");
+    /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let xs = self
             .0
@@ -316,7 +352,7 @@ impl Display for Chord {
                 }
             })
             .collect::<Vec<_>>();
-        write!(f, "Chord({})", xs.join(", "))
+        write!(f, "{}", xs.join("-"))
     }
 }
 
@@ -326,7 +362,7 @@ impl Display for Chord {
 /// This is the most fundamental major chord and forms the basis of
 /// major harmony in Western music.
 ///
-/// **Degrees**: Root (1), Major Third (3), Perfect Fifth (5)
+/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5)
 /// **Quality**: Major (bright, stable sound)
 pub const MAJOR_TRIAD: Chord = ChordBuilder::with_root()
     .set_degree(THIRD)
@@ -339,7 +375,7 @@ pub const MAJOR_TRIAD: Chord = ChordBuilder::with_root()
 /// This is the most fundamental minor chord and forms the basis of
 /// minor harmony in Western music.
 ///
-/// **Degrees**: Root (1), Minor Third (♭3), Perfect Fifth (5)
+/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5)
 /// **Quality**: Minor (dark, melancholic sound)
 pub const MINOR_TRIAD: Chord = ChordBuilder::with_root()
     .set_degree(FLAT_THIRD)
@@ -352,7 +388,7 @@ pub const MINOR_TRIAD: Chord = ChordBuilder::with_root()
 /// This chord creates a very tense, unstable sound and is commonly used
 /// as a passing chord or in diminished harmony.
 ///
-/// **Degrees**: Root (1), Minor Third (♭3), Diminished Fifth (♭5)
+/// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5)
 /// **Quality**: Diminished (tense, unstable sound)
 pub const DIMINISHED_TRIAD: Chord = ChordBuilder::with_root()
     .set_degree(FLAT_THIRD)
@@ -365,7 +401,7 @@ pub const DIMINISHED_TRIAD: Chord = ChordBuilder::with_root()
 /// This chord creates a bright, tense sound and is commonly used in
 /// augmented harmony and as a passing chord.
 ///
-/// **Degrees**: Root (1), Major Third (3), Augmented Fifth (♯5)
+/// **Degrees**: Root (R), Major Third (3), Augmented Fifth (♯5)
 /// **Quality**: Augmented (bright, tense sound)
 pub const AUGMENTED_TRIAD: Chord = ChordBuilder::with_root()
     .set_degree(THIRD)
@@ -378,7 +414,7 @@ pub const AUGMENTED_TRIAD: Chord = ChordBuilder::with_root()
 /// and major seventh. This chord has a sophisticated, jazzy sound and is
 /// commonly used in jazz and contemporary music.
 ///
-/// **Degrees**: Root (1), Major Third (3), Perfect Fifth (5), Major Seventh (7)
+/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Major Seventh (7)
 /// **Quality**: Major 7th (sophisticated, jazzy sound)
 pub const MAJOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
     .set_degree(THIRD)
@@ -392,7 +428,7 @@ pub const MAJOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
 /// and minor seventh. This chord has a mellow, bluesy sound and is
 /// commonly used in jazz, blues, and contemporary music.
 ///
-/// **Degrees**: Root (1), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7)
+/// **Degrees**: Root (R), Minor Third (♭3), Perfect Fifth (5), Minor Seventh (♭7)
 /// **Quality**: Minor 7th (mellow, bluesy sound)
 pub const MINOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
     .set_degree(FLAT_THIRD)
@@ -406,7 +442,7 @@ pub const MINOR_SEVENTH_CHORD: Chord = ChordBuilder::with_root()
 /// and minor seventh. This chord has a strong, bluesy sound and is
 /// commonly used as a dominant chord in functional harmony.
 ///
-/// **Degrees**: Root (1), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7)
+/// **Degrees**: Root (R), Major Third (3), Perfect Fifth (5), Minor Seventh (♭7)
 /// **Quality**: Dominant 7th (strong, bluesy sound)
 pub const DOMINANT_SEVENTH: Chord = ChordBuilder::with_root()
     .set_degree(THIRD)
@@ -420,7 +456,7 @@ pub const DOMINANT_SEVENTH: Chord = ChordBuilder::with_root()
 /// and minor seventh. This chord has a tense, unstable sound and is commonly used
 /// as a minor ii chord in functional harmony.
 ///
-/// **Degrees**: Root (1), Minor Third (♭3), Diminished Fifth (♭5), Minor Seventh (♭7)
+/// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5), Minor Seventh (♭7)
 /// **Quality**: Half-diminished 7th (tense, unstable sound)
 pub const HALF_DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
     .set_degree(FLAT_THIRD)
@@ -434,7 +470,7 @@ pub const HALF_DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
 /// and diminished seventh. This chord has a very tense, unstable sound and is
 /// commonly used as a passing chord or in diminished harmony.
 ///
-/// **Degrees**: Root (1), Minor Third (♭3), Diminished Fifth (♭5), Diminished Seventh (♭♭7)
+/// **Degrees**: Root (R), Minor Third (♭3), Diminished Fifth (♭5), Diminished Seventh (♭♭7)
 /// **Quality**: Diminished 7th (very tense, unstable sound)
 pub const DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
     .set_degree(FLAT_THIRD)
@@ -448,7 +484,7 @@ pub const DIMINISHED_SEVENTH: Chord = ChordBuilder::with_root()
 /// and minor seventh. This chord has a bright, tense sound and is commonly used
 /// in augmented harmony and as a passing chord.
 ///
-/// **Degrees**: Root (1), Major Third (3), Augmented Fifth (♯5), Minor Seventh (♭7)
+/// **Degrees**: Root (R), Major Third (3), Augmented Fifth (♯5), Minor Seventh (♭7)
 /// **Quality**: Augmented 7th (bright, tense sound)
 pub const AUGMENTED_SEVENTH: Chord = ChordBuilder::with_root()
     .set_degree(THIRD)
@@ -462,7 +498,7 @@ pub const AUGMENTED_SEVENTH: Chord = ChordBuilder::with_root()
 /// This chord has a suspended, unresolved sound and is commonly used in
 /// contemporary music and jazz.
 ///
-/// **Degrees**: Root (1), Perfect Fourth (4), Perfect Fifth (5)
+/// **Degrees**: Root (R), Perfect Fourth (4), Perfect Fifth (5)
 /// **Quality**: Suspended 4th (suspended, unresolved sound)
 pub const SUSPENDED_FOURTH: Chord = ChordBuilder::with_root()
     .set_degree(FOURTH)
@@ -674,7 +710,7 @@ mod tests {
     // Degree tests
     #[test]
     fn test_degree_display() {
-        assert_eq!(format!("{}", ROOT), "1");
+        assert_eq!(format!("{}", ROOT), "R");
         assert_eq!(format!("{}", THIRD), "3");
         assert_eq!(format!("{}", FLAT_THIRD), "♭3");
         assert_eq!(format!("{}", SHARP_FIFTH), "♯5");
@@ -960,73 +996,73 @@ mod tests {
     fn test_chord_display_empty_chord() {
         let chord = ChordBuilder::with_root().build();
         let display = format!("{}", chord);
-        assert_eq!(display, "Chord(1)");
+        assert_eq!(display, "R");
     }
 
     #[test]
     fn test_chord_display_major_triad() {
         let display = format!("{}", MAJOR_TRIAD);
-        assert_eq!(display, "Chord(1, 3, 5)");
+        assert_eq!(display, "R-3-5");
     }
 
     #[test]
     fn test_chord_display_minor_triad() {
         let display = format!("{}", MINOR_TRIAD);
-        assert_eq!(display, "Chord(1, ♭3, 5)");
+        assert_eq!(display, "R-♭3-5");
     }
 
     #[test]
     fn test_chord_display_diminished_triad() {
         let display = format!("{}", DIMINISHED_TRIAD);
-        assert_eq!(display, "Chord(1, ♭3, ♭5)");
+        assert_eq!(display, "R-♭3-♭5");
     }
 
     #[test]
     fn test_chord_display_augmented_triad() {
         let display = format!("{}", AUGMENTED_TRIAD);
-        assert_eq!(display, "Chord(1, 3, ♯5)");
+        assert_eq!(display, "R-3-♯5");
     }
 
     #[test]
     fn test_chord_display_major_seventh_chord() {
         let display = format!("{}", MAJOR_SEVENTH_CHORD);
-        assert_eq!(display, "Chord(1, 3, 5, 7)");
+        assert_eq!(display, "R-3-5-7");
     }
 
     #[test]
     fn test_chord_display_minor_seventh_chord() {
         let display = format!("{}", MINOR_SEVENTH_CHORD);
-        assert_eq!(display, "Chord(1, ♭3, 5, ♭7)");
+        assert_eq!(display, "R-♭3-5-♭7");
     }
 
     #[test]
     fn test_chord_display_dominant_seventh() {
         let display = format!("{}", DOMINANT_SEVENTH);
-        assert_eq!(display, "Chord(1, 3, 5, ♭7)");
+        assert_eq!(display, "R-3-5-♭7");
     }
 
     #[test]
     fn test_chord_display_half_diminished_seventh() {
         let display = format!("{}", HALF_DIMINISHED_SEVENTH);
-        assert_eq!(display, "Chord(1, ♭3, ♭5, ♭7)");
+        assert_eq!(display, "R-♭3-♭5-♭7");
     }
 
     #[test]
     fn test_chord_display_diminished_seventh() {
         let display = format!("{}", DIMINISHED_SEVENTH);
-        assert_eq!(display, "Chord(1, ♭3, ♭5, ♭♭7)");
+        assert_eq!(display, "R-♭3-♭5-♭♭7");
     }
 
     #[test]
     fn test_chord_display_augmented_seventh() {
         let display = format!("{}", AUGMENTED_SEVENTH);
-        assert_eq!(display, "Chord(1, 3, ♯5, ♭7)");
+        assert_eq!(display, "R-3-♯5-♭7");
     }
 
     #[test]
     fn test_chord_display_suspended_fourth() {
         let display = format!("{}", SUSPENDED_FOURTH);
-        assert_eq!(display, "Chord(1, 4, 5)");
+        assert_eq!(display, "R-4-5");
     }
 
     #[test]
@@ -1040,7 +1076,7 @@ mod tests {
             .build();
 
         let display = format!("{}", chord);
-        assert_eq!(display, "Chord(1, ♯2, ♭3, ♭♭4, ♯5, ♭7)");
+        assert_eq!(display, "R-♯2-♭3-♭♭4-♯5-♭7");
     }
 
     #[test]
@@ -1052,7 +1088,7 @@ mod tests {
             .build();
 
         let display = format!("{}", chord);
-        assert_eq!(display, "Chord(1, ♭2, ♭♭3, ♯4)");
+        assert_eq!(display, "R-♭2-♭♭3-♯4");
     }
 
     #[test]
@@ -1062,7 +1098,7 @@ mod tests {
             .build();
 
         let display = format!("{}", chord);
-        assert_eq!(display, "Chord(1, ♯16)");
+        assert_eq!(display, "R-♯16");
     }
 
     #[test]
@@ -1078,7 +1114,7 @@ mod tests {
             .build();
 
         let display = format!("{}", chord);
-        assert_eq!(display, "Chord(1, ♯2, 3, ♯4, ♯5, ♭6, ♭7, 9)");
+        assert_eq!(display, "R-♯2-3-♯4-♯5-♭6-♭7-9");
     }
 
     #[test]
@@ -1089,7 +1125,7 @@ mod tests {
             .build();
 
         let display = format!("{}", chord);
-        assert_eq!(display, "Chord(1, ♯5, ♭7)");
+        assert_eq!(display, "R-♯5-♭7");
     }
 
     #[test]
@@ -1103,7 +1139,7 @@ mod tests {
             .build();
 
         let display = format!("{}", chord);
-        assert_eq!(display, "Chord(1, 3, ♯5, ♭7)");
+        assert_eq!(display, "R-3-♯5-♭7");
     }
 
     #[test]
@@ -1121,30 +1157,5 @@ mod tests {
         assert!(display.contains("♯")); // Sharp symbol
         assert!(!display.contains("b")); // Should not contain ASCII 'b'
         assert!(!display.contains("#")); // Should not contain ASCII '#'
-    }
-
-    #[test]
-    fn test_chord_display_format_consistency() {
-        // Test that all chords display in the same format
-        let chords = [
-            MAJOR_TRIAD,
-            MINOR_TRIAD,
-            DIMINISHED_TRIAD,
-            AUGMENTED_TRIAD,
-            MAJOR_SEVENTH_CHORD,
-            MINOR_SEVENTH_CHORD,
-            DOMINANT_SEVENTH,
-            HALF_DIMINISHED_SEVENTH,
-            DIMINISHED_SEVENTH,
-            AUGMENTED_SEVENTH,
-            SUSPENDED_FOURTH,
-        ];
-
-        for chord in chords {
-            let display = format!("{}", chord);
-            assert!(display.starts_with("Chord("));
-            assert!(display.ends_with(")"));
-            assert!(!display.contains("Chord(Chord(")); // No double wrapping
-        }
     }
 }

@@ -185,12 +185,12 @@ let custom_chord = ChordBuilder::with_root()
 
 // Iterate over chord degrees
 for degree in custom_chord.degrees() {
-    println!("{}", degree); // Prints: 1, 3, ♯5, ♭7
+    println!("{}", degree); // Prints: R, 3, ♯5, ♭7
 }
 
 // Display chord as string
 let chord_display = format!("{}", major_triad);
-// Result: "Chord(1, 3, 5)" - shows only the degrees that are set
+// Result: "R-3-5" - shows only the degrees that are set
 
 // Create complex jazz chords
 let jazz_chord = ChordBuilder::with_root()
@@ -598,6 +598,11 @@ assert_eq!(flat_variant.to_string(), "♭");
 - `degrees() -> impl Iterator<Item = Degree>` - Get an iterator over the degrees in the chord
 - `to_string() -> String` - Get the string representation of the chord
 
+#### Display Format
+- Chords display as hyphen-separated degree representations
+- Root degree shows as "R", other degrees show their accidental (if any) followed by the degree number
+- Examples: "R-3-5" (major triad), "R-♭3-5" (minor triad), "R-3-5-♭7" (dominant seventh)
+
 #### Predefined Chord Constants
 - `MAJOR_TRIAD` - Major triad
 - `MINOR_TRIAD` - Minor triad
@@ -623,13 +628,13 @@ use muzze_std::{Chord, MAJOR_TRIAD, MINOR_TRIAD, DOMINANT_SEVENTH};
 let major_triad = MAJOR_TRIAD;
 let degrees: Vec<_> = major_triad.degrees().collect();
 assert_eq!(degrees.len(), 3);
-assert_eq!(degrees[0].to_string(), "1");  // Root
+assert_eq!(degrees[0].to_string(), "R");  // Root
 assert_eq!(degrees[1].to_string(), "3");  // Major third
 assert_eq!(degrees[2].to_string(), "5");  // Perfect fifth
 
 // Display chord as string
 let chord_display = format!("{}", MAJOR_TRIAD);
-assert_eq!(chord_display, "Chord(1, 3, 5)");
+assert_eq!(chord_display, "R-3-5");
 
 // Working with different chord types
 let minor_triad = MINOR_TRIAD;
@@ -691,6 +696,11 @@ assert_eq!(degrees[1].to_string(), "♭3"); // Minor third (overwrote major thir
 - `new(degree: u8, accidental: DegreeAccidental) -> Degree` - Create a new degree
 - `to_string() -> String` - Get the string representation of the degree
 
+#### Display Format
+- Root degree (1st degree) displays as "R" for clarity
+- All other degrees display as their accidental (if any) followed by the degree number
+- Examples: "R" (root), "3" (major third), "♭3" (minor third), "♯5" (augmented fifth)
+
 #### Predefined Degree Constants
 - `ROOT` - Root degree (1st degree, natural)
 - `THIRD` - Major third degree (3rd degree, natural)
@@ -712,7 +722,7 @@ assert_eq!(degrees[1].to_string(), "♭3"); // Minor third (overwrote major thir
 use muzze_std::{Degree, ROOT, THIRD, FLAT_THIRD, SHARP_FIFTH, DEGREE_NATURAL, DEGREE_FLAT, DEGREE_SHARP};
 
 // Using predefined constants
-assert_eq!(ROOT.to_string(), "1");
+assert_eq!(ROOT.to_string(), "R");
 assert_eq!(THIRD.to_string(), "3");
 assert_eq!(FLAT_THIRD.to_string(), "♭3");
 assert_eq!(SHARP_FIFTH.to_string(), "♯5");
@@ -859,7 +869,7 @@ Musical chords are represented as collections of degrees with their accidental m
 
 Chord degrees represent the position of notes within a chord (1st, 3rd, 5th, etc.) and can be modified with accidentals:
 
-- **Root (1)**: The fundamental note that gives the chord its name and tonal center
+- **Root (R)**: The fundamental note that gives the chord its name and tonal center (displays as "R")
 - **Third (3)**: Major third (natural) or minor third (flat) - determines major/minor quality
 - **Fifth (5)**: Perfect fifth (natural), diminished fifth (flat), or augmented fifth (sharp)
 - **Seventh (7)**: Major seventh (natural), minor seventh (flat), or diminished seventh (double flat)
@@ -892,6 +902,7 @@ let major_triad = ChordBuilder::with_root()
     .set_degree(THIRD)
     .set_degree(FIFTH)
     .build();
+// Result: "R-3-5"
 
 // Build a complex jazz chord
 let jazz_chord = ChordBuilder::with_root()
@@ -900,6 +911,7 @@ let jazz_chord = ChordBuilder::with_root()
     .set_degree(FLAT_SEVENTH)
     .set_degree(Degree::new(9, DEGREE_NATURAL)) // Add 9th
     .build();
+// Result: "R-3-♯5-♭7-9"
 ```
 
 ## Performance
@@ -986,7 +998,7 @@ use muzze_std::{Chord, ChordBuilder, MAJOR_TRIAD, MINOR_TRIAD, DOMINANT_SEVENTH,
 let major_triad = MAJOR_TRIAD;
 let degrees: Vec<_> = major_triad.degrees().collect();
 assert_eq!(degrees.len(), 3);
-assert_eq!(degrees[0].to_string(), "1");  // Root
+assert_eq!(degrees[0].to_string(), "R");  // Root
 assert_eq!(degrees[1].to_string(), "3");  // Major third
 assert_eq!(degrees[2].to_string(), "5");  // Perfect fifth
 
@@ -1027,10 +1039,10 @@ assert_eq!(jazz_degrees[4].to_string(), "♭7"); // Minor seventh
 
 // Display chords as strings
 let chord_display = format!("{}", major_triad);
-assert_eq!(chord_display, "Chord(1, 3, 5)");
+assert_eq!(chord_display, "R-3-5");
 
 let complex_display = format!("{}", jazz_chord);
-assert_eq!(complex_display, "Chord(1, ♯2, 3, ♯5, ♭7, 9)");
+assert_eq!(complex_display, "R-♯2-3-♯5-♭7-9");
 ```
 
 ## License
